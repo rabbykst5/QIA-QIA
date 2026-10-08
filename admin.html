@@ -9,7 +9,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Hind Siliguri', sans-serif; }
     body { background: #f1f5f9; color: #1e293b; font-size: 14.5px; }
     .hidden { display: none !important; }
-    .login-wrap { max-width: 400px; margin: 70px auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border-top: 6px solid #0f172a; }
+    .login-wrap { max-width: 400px; margin: 80px auto; background: #fff; padding: 32px; border-radius: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border-top: 6px solid #0f172a; }
     .login-wrap h2 { text-align: center; color: #0f172a; margin-bottom: 20px; }
     .topbar { background: #0f172a; color: #fff; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
     .container { max-width: 1200px; margin: 20px auto; padding: 0 12px; }
@@ -39,6 +39,14 @@
     .b-green { background: #dcfce7; color: #166534; }
     .b-red { background: #fee2e2; color: #991b1b; }
     .b-yellow { background: #fef9c3; color: #854d0e; }
+
+    /* ==================== IMAGE POPUP MODAL ==================== */
+    .img-modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(5px); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .img-modal-box { position: relative; max-width: 90vw; max-height: 90vh; background: #fff; padding: 14px; border-radius: 14px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); text-align: center; }
+    .img-modal-box img { max-width: 100%; max-height: 78vh; border-radius: 8px; object-fit: contain; display: block; margin: 0 auto; }
+    .img-modal-close { position: absolute; top: -14px; right: -14px; width: 38px; height: 38px; border-radius: 50%; background: #dc2626; color: #fff; border: 3px solid #fff; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
+    .img-modal-caption { margin-top: 10px; font-size: 15px; font-weight: 700; color: #0f172a; }
+
     @media print {
       .topbar, .nav-tabs, .no-print { display: none !important; }
       body { background: #fff; }
@@ -48,6 +56,16 @@
 </head>
 <body>
 
+<!-- ==================== IMAGE POPUP MODAL ==================== -->
+<div id="photoPopupModal" class="img-modal-overlay hidden" onclick="closePhotoPopup()">
+  <div class="img-modal-box" onclick="event.stopPropagation()">
+    <button class="img-modal-close" onclick="closePhotoPopup()">✕</button>
+    <img id="popupModalImg" src="" alt="Visit HD Photo">
+    <div id="popupModalCaption" class="img-modal-caption"></div>
+  </div>
+</div>
+
+<!-- ==================== LOGIN VIEW ==================== -->
 <div id="loginView" class="login-wrap">
   <h2>🛡️ অ্যাডমিন লগইন</h2>
   <div class="form-group">
@@ -62,12 +80,13 @@
   <p id="loginMsg" style="color:#dc2626; margin-top:10px; text-align:center; font-weight:600;"></p>
 </div>
 
+<!-- ==================== ADMIN PANEL ==================== -->
 <div id="adminPanel" class="hidden">
   <div class="topbar">
     <h3>🛡️ মাস্টার অ্যাডমিন প্যানেল (A to Z কন্ট্রোল রুম)</h3>
     <div>
       <button class="btn btn-primary btn-sm" onclick="loadAdminData()">🔄 রিফ্রেশ ডাটা</button>
-      <button class="btn btn-danger btn-sm" onclick="location.reload()">লগআউট</button>
+      <button class="btn btn-danger btn-sm" onclick="logoutAdmin()">লগআউট</button>
     </div>
   </div>
 
@@ -97,7 +116,7 @@
               <th>দোকান ও ঠিকানা</th>
               <th>প্রোপাইটার ও ১-ক্লিক কল</th>
               <th>মন্তব্য ও ফলো-আপ</th>
-              <th>HD ছবি ও ম্যাপ পিন</th>
+              <th>HD ছবি (পপ-আপ) ও ম্যাপ</th>
               <th>স্ট্যাটাস</th>
               <th>অ্যাকশন</th>
             </tr>
@@ -225,7 +244,46 @@
 
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw45glhGRu_tySZHMyawnkKEGOYxQnw1bx9KH_oZrKf16Mp-retUddYUo9wg8j17hlF/exec";
+  const ADM_STORAGE_KEY = "field_force_admin_session_v1";
   let adminCache = null;
+
+  // ছবি পপ-আপ (Lightbox Modal) ফাংশন
+  function openPhotoPopup(url, title) {
+    if (!url) return;
+    let displayUrl = url;
+    const match = url.match(/id=([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) {
+      displayUrl = "https://drive.google.com/thumbnail?id=" + match[1] + "&sz=w1600";
+    }
+    document.getElementById('popupModalImg').src = displayUrl;
+    document.getElementById('popupModalCaption').innerText = title || 'ভিজিটের ছবি';
+    document.getElementById('photoPopupModal').classList.remove('hidden');
+  }
+
+  function closePhotoPopup() {
+    document.getElementById('photoPopupModal').classList.add('hidden');
+    document.getElementById('popupModalImg').src = '';
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const saved = localStorage.getItem(ADM_STORAGE_KEY);
+    if (saved) {
+      showAdminUI();
+    }
+  });
+
+  function showAdminUI() {
+    document.getElementById('loginView').classList.add('hidden');
+    document.getElementById('adminPanel').classList.remove('hidden');
+    document.getElementById('salaryMonthPicker').value = new Date().toISOString().slice(0, 7);
+    loadAdminData();
+  }
+
+  function logoutAdmin() {
+    if (!confirm('আপনি কি অ্যাডমিন প্যানেল থেকে লগআউট করতে চান?')) return;
+    localStorage.removeItem(ADM_STORAGE_KEY);
+    location.reload();
+  }
 
   async function callAPI(payload) {
     const res = await fetch(SCRIPT_URL, {
@@ -249,13 +307,11 @@
         document.getElementById('loginMsg').innerText = res.message || 'শুধুমাত্র অ্যাডমিন লগইন করতে পারবেন!';
         return;
       }
-      document.getElementById('loginView').classList.add('hidden');
-      document.getElementById('adminPanel').classList.remove('hidden');
-      document.getElementById('salaryMonthPicker').value = new Date().toISOString().slice(0, 7);
-      loadAdminData();
+      localStorage.setItem(ADM_STORAGE_KEY, JSON.stringify(res.user));
+      showAdminUI();
     } catch (e) {
       btn.disabled = false; btn.innerText = 'লগইন করুন';
-      alert('সার্ভার কানেকশন এরর! Code.gs আপডেট করে New Version-এ Deploy করুন।');
+      alert('সার্ভার কানেকশন এরর!');
     }
   }
 
@@ -277,14 +333,16 @@
     const todayRoute = data.routes.find(r => r.date === today);
     document.getElementById('admTodayKM').innerText = (todayRoute ? todayRoute.totalKM : '0') + ' কি.মি.';
 
-    document.getElementById('admVisitBody').innerHTML = data.visits.map(v => `
+    document.getElementById('admVisitBody').innerHTML = data.visits.map(v => {
+      const safeShop = String(v.shop || '').replace(/'/g, "\\'");
+      return `
       <tr>
         <td>${v.date}<br><small>${v.time}</small></td>
         <td><strong>${v.shop}</strong><br>${v.address}</td>
         <td>${v.prop}<br><strong>${v.mobile}</strong><br><a href="tel:${v.mobile}" class="btn btn-success btn-sm" style="margin-top:4px;">📞 Call</a></td>
         <td>${v.remarks}<br><small style="color:#2563eb;">ফলো-আপ: ${v.followUp || '--'}</small></td>
         <td>
-          ${v.photo ? `<a href="${v.photo}" target="_blank" class="btn btn-primary btn-sm">🖼️ HD ছবি</a>` : ''}
+          ${v.photo ? `<button type="button" class="btn btn-primary btn-sm" onclick="openPhotoPopup('${v.photo}', '${safeShop} -${v.prop}')">🖼️ HD ছবি</button>` : ''}
           ${v.gps ? `<a href="https://www.google.com/maps?q=${v.gps}" target="_blank" class="btn btn-warning btn-sm">📍 ম্যাপ পিন</a>` : ''}
         </td>
         <td><span class="badge ${v.status === 'Verified' ? 'b-green' : 'b-red'}">${v.status}</span></td>
@@ -293,7 +351,7 @@
           <button class="btn btn-danger btn-sm" onclick="deleteVisitRecord('${v.id}')">🗑️ Delete</button>
         </td>
       </tr>
-    `).join('');
+    `}).join('');
 
     document.getElementById('admConvBody').innerHTML = data.conveyances.map(c => {
       let bClass = c.status === 'Approved' ? 'b-green' : (c.status === 'Pending' ? 'b-yellow' : 'b-red');
@@ -333,8 +391,8 @@
     document.getElementById('admAttBody').innerHTML = data.attendance.map(a => `
       <tr>
         <td><strong>${a.date}</strong></td>
-        <td>${a.startTime} ${a.startGPS ? `<a href="https://www.google.com/maps?q=${a.startGPS}" target="_blank">📍</a>` : ''}</td>
-        <td>${a.endTime || '--'} ${a.endGPS ? `<a href="https://www.google.com/maps?q=${a.endGPS}" target="_blank">📍</a>` : ''}</td>
+        <td>${a.startTime} ${a.startGPS ? `<a href="https://www.google.com/maps?q=${a.startGPS}" target="_blank" class="btn btn-warning btn-sm" style="padding:2px 6px;">📍 ম্যাপ</a>` : ''}</td>
+        <td>${a.endTime || '--'} ${a.endGPS ? `<a href="https://www.google.com/maps?q=${a.endGPS}" target="_blank" class="btn btn-warning btn-sm" style="padding:2px 6px;">📍 ম্যাপ</a>` : ''}</td>
         <td>${a.hours} ঘণ্টা</td>
         <td><span class="badge b-yellow">${a.status}</span></td>
         <td>

@@ -3,222 +3,344 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Employee Portal - Field Force Tracker</title>
+  <title>Field Officer App</title>
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Hind Siliguri', sans-serif; }
-    body { background: #f1f5f9; color: #1e293b; font-size: 14.5px; }
+    :root {
+      --primary: #4f46e5;
+      --success: #10b981;
+      --danger: #ef4444;
+      --bg: #f3f4f6;
+      --text: #1f2937;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Hind Siliguri', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background: var(--bg); color: var(--text); font-size: 15px; padding-bottom: 80px; }
     .hidden { display: none !important; }
-    .login-wrap { max-width: 400px; margin: 70px auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border-top: 6px solid #0284c7; }
-    .login-wrap h2 { text-align: center; color: #0f172a; margin-bottom: 20px; }
-    .topbar { background: #0284c7; color: #fff; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-    .container { max-width: 1000px; margin: 20px auto; padding: 0 12px; }
-    .nav-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
-    .tab-btn { background: #fff; border: 1px solid #cbd5e1; padding: 9px 15px; border-radius: 8px; font-weight: 600; cursor: pointer; color: #334155; }
-    .tab-btn.active { background: #0284c7; color: #fff; border-color: #0284c7; }
-    .card { background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); margin-bottom: 18px; border: 1px solid #e2e8f0; }
-    .card h4 { font-size: 17px; margin-bottom: 14px; color: #0f172a; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; }
-    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-bottom: 18px; }
-    .stat-box { background: #fff; padding: 15px; border-radius: 10px; border-left: 5px solid #0284c7; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-    .stat-box span { font-size: 13px; color: #64748b; display: block; }
-    .stat-box strong { font-size: 22px; color: #0f172a; }
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; font-weight: 600; margin-bottom: 5px; color: #334155; }
-    .form-control { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
-    .btn { padding: 10px 18px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; text-decoration: none; display: inline-block; }
-    .btn-primary { background: #0284c7; color: #fff; }
-    .btn-success { background: #16a34a; color: #fff; }
-    .btn-danger { background: #dc2626; color: #fff; }
-    .btn-sm { padding: 5px 10px; font-size: 12.5px; }
-    .btn:disabled { background: #94a3b8 !important; cursor: not-allowed; }
-    .target-banner { background: #e0f2fe; border-left: 5px solid #0284c7; padding: 12px 16px; border-radius: 6px; margin-bottom: 18px; color: #0369a1; font-weight: 600; }
-    .table-responsive { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-    table th, table td { border: 1px solid #cbd5e1; padding: 9px 10px; text-align: left; }
-    table th { background: #f8fafc; font-weight: 700; }
-    .badge { padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
-    .b-green { background: #dcfce7; color: #166534; }
+
+    /* Modern Login Screen */
+    .login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%); margin-bottom: -80px; }
+    .login-card { width: 100%; max-width: 390px; background: #fff; padding: 32px 26px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); text-align: center; }
+    .login-icon { width: 68px; height: 68px; background: #eef2ff; color: var(--primary); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 32px; margin-bottom: 12px; }
+    .login-card h2 { font-size: 23px; color: #111827; margin-bottom: 4px; }
+    .login-card p.sub { font-size: 13.5px; color: #6b7280; margin-bottom: 22px; }
+
+    /* App Header */
+    .app-header { background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); color: #fff; padding: 18px 18px 26px; border-radius: 0 0 24px 24px; box-shadow: 0 4px 15px rgba(79,70,229,0.25); }
+    .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .user-info h3 { font-size: 18px; font-weight: 700; }
+    .user-info span { font-size: 12.5px; opacity: 0.9; display: block; }
+    .header-actions { display: flex; gap: 8px; }
+    .icon-btn { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 6px 12px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
+
+    .route-pill { background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); padding: 10px 14px; border-radius: 12px; font-size: 13.5px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+    .container { max-width: 600px; margin: -14px auto 0; padding: 0 14px; }
+
+    /* Stats & Duty Card */
+    .duty-card { background: #fff; border-radius: 16px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 14px; border: 1px solid #e5e7eb; }
+    .duty-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .duty-head span { font-size: 13px; color: #6b7280; font-weight: 600; }
+    .status-pill { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; background: #eef2ff; color: var(--primary); }
+    .duty-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .stat-mini { background: #fff; padding: 14px; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 12px; border: 1px solid #e5e7eb; }
+    .stat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; background: #eef2ff; color: var(--primary); }
+    .stat-mini small { font-size: 12px; color: #6b7280; display: block; }
+    .stat-mini strong { font-size: 19px; color: #111827; }
+
+    /* Content Cards & Inputs */
+    .app-card { background: #fff; border-radius: 18px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); margin-bottom: 16px; border: 1px solid #e5e7eb; }
+    .app-card h4 { font-size: 17px; color: #111827; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #f3f4f6; padding-bottom: 10px; }
+
+    .input-box { margin-bottom: 14px; text-align: left; }
+    .input-box label { display: block; font-size: 13.5px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+    .field { width: 100%; padding: 12px 14px; border: 1.5px solid #d1d5db; border-radius: 12px; font-size: 14.5px; background: #f9fafb; outline: none; }
+    .field:focus { border-color: var(--primary); background: #fff; }
+
+    /* Camera Upload Box */
+    .camera-box { border: 2px dashed #818cf8; background: #eef2ff; border-radius: 14px; padding: 18px; text-align: center; cursor: pointer; position: relative; }
+    .camera-box input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .camera-box .cam-title { font-weight: 700; color: var(--primary); font-size: 15px; display: block; margin-top: 4px; }
+    .camera-box small { color: #6b7280; font-size: 12px; }
+    #photoPreview { max-height: 140px; border-radius: 10px; margin-top: 10px; display: none; margin-left: auto; margin-right: auto; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+
+    /* Verify Checkbox */
+    .verify-box { background: #f8fafc; border: 1.5px solid #cbd5e1; padding: 13px; border-radius: 12px; margin: 16px 0; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+    .verify-box input { width: 22px; height: 22px; accent-color: var(--primary); cursor: pointer; flex-shrink: 0; }
+
+    /* Buttons */
+    .btn { width: 100%; padding: 13px 18px; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn:disabled { background: #cbd5e1 !important; color: #64748b !important; cursor: not-allowed; }
+
+    /* History Cards */
+    .item-card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+    .item-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+    .item-title { font-weight: 700; font-size: 15.5px; color: #111827; }
+    .item-sub { font-size: 13px; color: #4b5563; margin-bottom: 4px; }
+    .badge { padding: 3px 9px; border-radius: 20px; font-size: 11.5px; font-weight: 700; display: inline-block; }
+    .b-green { background: #d1fae5; color: #065f46; }
     .b-red { background: #fee2e2; color: #991b1b; }
-    .b-yellow { background: #fef9c3; color: #854d0e; }
-    .check-wrap { background: #f8fafc; border: 1px solid #cbd5e1; padding: 12px; border-radius: 6px; margin: 14px 0; display: flex; align-items: center; gap: 10px; cursor: pointer; }
-    .check-wrap input { width: 18px; height: 18px; }
+    .b-yellow { background: #fef3c7; color: #92400e; }
+
+    .pop-photo-btn { background: #eef2ff; color: #4f46e5; border: 1px solid #c7d2fe; padding: 4px 10px; border-radius: 8px; font-size: 12.5px; font-weight: 700; cursor: pointer; }
+
+    /* Bottom Navigation */
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #e5e7eb; display: grid; grid-template-columns: repeat(4, 1fr); padding: 6px 8px; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 999; max-width: 600px; margin: 0 auto; border-radius: 18px 18px 0 0; }
+    .nav-item { background: none; border: none; padding: 6px 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; color: #6b7280; font-size: 11.5px; font-weight: 600; cursor: pointer; border-radius: 10px; }
+    .nav-item span.ico { font-size: 20px; }
+    .nav-item.active { color: var(--primary); background: #eef2ff; font-weight: 700; }
+
+    /* ==================== IMAGE POPUP MODAL ==================== */
+    .img-modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(5px); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 15px; }
+    .img-modal-box { position: relative; max-width: 95vw; max-height: 90vh; background: #fff; padding: 12px; border-radius: 16px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); text-align: center; }
+    .img-modal-box img { max-width: 100%; max-height: 76vh; border-radius: 10px; object-fit: contain; display: block; margin: 0 auto; }
+    .img-modal-close { position: absolute; top: -14px; right: -14px; width: 38px; height: 38px; border-radius: 50%; background: #ef4444; color: #fff; border: 3px solid #fff; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
+    .img-modal-caption { margin-top: 8px; font-size: 14px; font-weight: 700; color: #1e293b; }
   </style>
 </head>
 <body>
 
-<div id="loginView" class="login-wrap">
-  <h2>👤 কর্মচারী লগইন</h2>
-  <div class="form-group">
-    <label>ইউজারনেম (Username)</label>
-    <input type="text" id="loginUser" class="form-control" placeholder="যেমন: emp1">
+<!-- ==================== IMAGE POPUP MODAL ==================== -->
+<div id="photoPopupModal" class="img-modal-overlay hidden" onclick="closePhotoPopup(event)">
+  <div class="img-modal-box" onclick="event.stopPropagation()">
+    <button class="img-modal-close" onclick="closePhotoPopup()">✕</button>
+    <img id="popupModalImg" src="" alt="Visit HD Photo">
+    <div id="popupModalCaption" class="img-modal-caption"></div>
   </div>
-  <div class="form-group">
-    <label>পাসওয়ার্ড (Password)</label>
-    <input type="password" id="loginPass" class="form-control" placeholder="পাসওয়ার্ড দিন">
-  </div>
-  <button id="btnLogin" class="btn btn-primary" style="width:100%;" onclick="handleLogin()">লগইন করুন</button>
-  <p id="loginMsg" style="color:#dc2626; margin-top:10px; text-align:center; font-weight:600;"></p>
 </div>
 
+<!-- ==================== LOGIN VIEW ==================== -->
+<div id="loginView" class="login-screen">
+  <div class="login-card">
+    <div class="login-icon">📍</div>
+    <h2>ফিল্ড ফোর্স পোর্টাল</h2>
+    <p class="sub">আপনার আইডি ও পাসওয়ার্ড দিয়ে প্রবেশ করুন</p>
+    <div class="input-box">
+      <label>ইউজারনেম (Username)</label>
+      <input type="text" id="loginUser" class="field" placeholder="যেমন: emp1">
+    </div>
+    <div class="input-box">
+      <label>পাসওয়ার্ড (Password)</label>
+      <input type="password" id="loginPass" class="field" placeholder="••••••••">
+    </div>
+    <button id="btnLogin" class="btn btn-primary" onclick="handleLogin()">লগইন করুন ➔</button>
+    <p id="loginMsg" style="color:#ef4444; margin-top:12px; font-weight:600; font-size:13.5px;"></p>
+  </div>
+</div>
+
+<!-- ==================== EMPLOYEE APP PANEL ==================== -->
 <div id="empPanel" class="hidden">
-  <div class="topbar">
-    <h3>👤 কর্মচারী পোর্টাল (<span id="empNameTitle"></span>)</h3>
-    <div>
-      <button class="btn btn-success btn-sm" onclick="loadEmployeeDashboard()">🔄 রিফ্রেশ</button>
-      <button class="btn btn-danger btn-sm" onclick="location.reload()">লগআউট</button>
+  <div class="app-header">
+    <div class="header-top">
+      <div class="user-info">
+        <span id="currentDateText">আজকের ড্যাশবোর্ড</span>
+        <h3>👋 <span id="empNameTitle">ফিল্ড অফিসার</span></h3>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" onclick="loadEmployeeDashboard()">🔄 রিফ্রেশ</button>
+        <button class="icon-btn" style="background:rgba(239,68,68,0.85);" onclick="logoutEmp()">লগআউট</button>
+      </div>
+    </div>
+    <div class="route-pill">
+      <span>🎯</span>
+      <div id="empTargetBanner">আজকের রুট নির্দেশনা লোড হচ্ছে...</div>
     </div>
   </div>
 
   <div class="container">
-    <div id="empTargetBanner" class="target-banner">📌 আজকের রুট নির্দেশনা লোড হচ্ছে...</div>
+    <div class="duty-card">
+      <div class="duty-head">
+        <span>⏰ ডিউটি টাইম: ৯:০০ AM - ৭:০০ PM</span>
+        <span id="empAttStatus" class="status-pill">লোড হচ্ছে...</span>
+      </div>
+      <p style="font-size:12.5px; color:#6b7280; margin-bottom:12px;">
+        শুরু: <strong id="empStartTime" style="color:#111827;">--</strong> &nbsp;|&nbsp; শেষ: <strong id="empEndTime" style="color:#111827;">--</strong>
+      </p>
+      <div class="duty-btns">
+        <button id="btnStartDuty" class="btn btn-success" style="padding:10px;" onclick="triggerAttendance('START')">🟢 Start Duty</button>
+        <button id="btnEndDuty" class="btn btn-danger" style="padding:10px;" onclick="triggerAttendance('END')">🔴 End Duty</button>
+      </div>
+    </div>
 
-    <div class="card">
-      <h4>⏰ প্রতিদিনের ডিজিটাল হাজিরা (সকাল ৯:০০ - সন্ধ্যা ৭:০০)</h4>
-      <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;">
+    <div class="stats-row">
+      <div class="stat-mini">
+        <div class="stat-icon">🏪</div>
         <div>
-          <p>আজকের স্ট্যাটাস: <strong id="empAttStatus">লোড হচ্ছে...</strong></p>
-          <p style="font-size:13px; color:#64748b;">শুরু: <span id="empStartTime">--</span> | শেষ: <span id="empEndTime">--</span></p>
+          <small>আজকের ভিজিট</small>
+          <strong id="empTodayVisitCount">0 টি</strong>
         </div>
-        <div style="display:flex; gap:10px;">
-          <button id="btnStartDuty" class="btn btn-success" onclick="triggerAttendance('START')">🟢 Start Duty (সকাল ৯টা)</button>
-          <button id="btnEndDuty" class="btn btn-danger" onclick="triggerAttendance('END')">🔴 End Duty (সন্ধ্যা ৭টা)</button>
+      </div>
+      <div class="stat-mini">
+        <div class="stat-icon" style="background:#d1fae5; color:#059669;">🚌</div>
+        <div>
+          <small>আজকের খরচ বিল</small>
+          <strong id="empTodayConvAmount">0 ৳</strong>
         </div>
       </div>
     </div>
 
-    <div class="grid-2">
-      <div class="stat-box"><span>আজকের মোট ভিজিট সংখ্যা</span><strong id="empTodayVisitCount">0</strong></div>
-      <div class="stat-box" style="border-left-color:#16a34a;"><span>আজকের দাখিলকৃত কনভেন্স বিল</span><strong id="empTodayConvAmount">0 ৳</strong></div>
+    <div id="dutyLockNotice" class="app-card hidden" style="background:#fef2f2; border-color:#fca5a5; text-align:center;">
+      <div style="font-size:28px; margin-bottom:4px;">🔒</div>
+      <h4 style="justify-content:center; color:#991b1b; border:none; padding:0; margin-bottom:6px;">ফরম লক করা আছে!</h4>
+      <p style="font-size:13px; color:#b91c1c;">সকালের <strong>"Start Duty"</strong> বাটনে ক্লিক না করা পর্যন্ত অথবা ডিউটি শেষ হয়ে গেলে কোনো ভিজিট বা খরচ এন্ট্রি দেওয়া যাবে না।</p>
     </div>
 
-    <div class="nav-tabs">
-      <button class="tab-btn active" onclick="switchTab('tabCreateVisit', this)">➕ Create Daily Routine</button>
-      <button class="tab-btn" onclick="switchTab('tabAddConv', this)">🚌 Add Conveyance (খরচ)</button>
-      <button class="tab-btn" onclick="switchTab('tabViewVisits', this)">📋 View Daily Note</button>
-      <button class="tab-btn" onclick="switchTab('tabViewConv', this)">💰 View Conveyance</button>
-    </div>
-
-    <div id="dutyLockNotice" class="card hidden" style="background:#fef2f2; border-color:#f87171; color:#991b1b; text-align:center;">
-      <h4>🔒 ফরম লক করা আছে!</h4>
-      <p>সকালের <strong>"Start Duty"</strong> বাটনে ক্লিক করে হাজিরা না দেওয়া পর্যন্ত অথবা ডিউটি শেষ হয়ে গেলে আপনি কোনো ভিজিট বা খরচ এন্ট্রি দিতে পারবেন না।</p>
-    </div>
-
-    <div id="tabCreateVisit" class="card">
-      <h4>🏪 নতুন দোকান / পার্টি ভিজিট এন্ট্রি</h4>
-      <div class="grid-2">
-        <div class="form-group">
-          <label>১. ব্যবসায়ীর / দোকানের নাম *</label>
-          <input type="text" id="vShop" class="form-control" placeholder="দোকানের নাম">
-        </div>
-        <div class="form-group">
-          <label>২. প্রোপাইটারের নাম *</label>
-          <input type="text" id="vProp" class="form-control" placeholder="মালিকের নাম">
-        </div>
-        <div class="form-group">
-          <label>৩. প্রোপাইটারের মোবাইল নাম্বার *</label>
-          <input type="tel" id="vMobile" class="form-control" placeholder="01XXXXXXXXX">
-        </div>
-        <div class="form-group">
-          <label>৪. প্রোপাইটারের ঠিকানা / বাজার *</label>
-          <input type="text" id="vAddress" class="form-control" placeholder="বাজার বা এলাকার নাম">
-        </div>
-        <div class="form-group">
-          <label>৫. পরবর্তী ফলো-আপ তারিখ (ঐচ্ছিক)</label>
-          <input type="date" id="vFollowUp" class="form-control">
-        </div>
-        <div class="form-group">
-          <label>৬. সরাসরি ছবি তুলুন (Native HD Camera) *</label>
-          <input type="file" id="vPhoto" class="form-control" accept="image/*" capture="environment" onchange="compressImg(event)">
+    <!-- TAB 1: Create Visit -->
+    <div id="tabCreateVisit" class="app-card">
+      <h4>➕ নতুন দোকান / পার্টি ভিজিট</h4>
+      <div class="input-box">
+        <label>১. ব্যবসায়ীর / দোকানের নাম *</label>
+        <input type="text" id="vShop" class="field" placeholder="যেমন: বিসমিল্লাহ স্টোর">
+      </div>
+      <div class="input-box">
+        <label>২. প্রোপাইটারের নাম *</label>
+        <input type="text" id="vProp" class="field" placeholder="মালিকের নাম লিখুন">
+      </div>
+      <div class="input-box">
+        <label>৩. প্রোপাইটারের মোবাইল নাম্বার *</label>
+        <input type="tel" id="vMobile" class="field" placeholder="01XXXXXXXXX">
+      </div>
+      <div class="input-box">
+        <label>৪. প্রোপাইটারের ঠিকানা / বাজার *</label>
+        <input type="text" id="vAddress" class="field" placeholder="বাজার বা এলাকার নাম">
+      </div>
+      <div class="input-box">
+        <label>৫. পরবর্তী ফলো-আপ তারিখ (ঐচ্ছিক)</label>
+        <input type="date" id="vFollowUp" class="field">
+      </div>
+      <div class="input-box">
+        <label>৬. সরাসরি লাইভ ছবি তুলুন (HD Camera) *</label>
+        <div class="camera-box">
+          <div style="font-size:28px;">📸</div>
+          <span class="cam-title" id="camStatusText">ক্যামেরা ওপেন করতে এখানে ট্যাপ করুন</span>
+          <small>গ্যালারি লক করা আছে (সরাসরি ছবি তুলুন)</small>
+          <input type="file" id="vPhoto" accept="image/*" capture="environment" onchange="compressImg(event)">
+          <img id="photoPreview" alt="Preview">
         </div>
       </div>
-      <div class="form-group">
+      <div class="input-box">
         <label>৭. প্রোপাইটারের সঙ্গে আলোচনার মন্তব্য / নোট *</label>
-        <textarea id="vRemarks" class="form-control" rows="3" placeholder="কী কথা হলো বিস্তারিত লিখুন..."></textarea>
+        <textarea id="vRemarks" class="field" rows="3" placeholder="কী কথা হলো বা অর্ডার/কালেকশন নোট লিখুন..."></textarea>
       </div>
 
       <input type="hidden" id="hiddenVisitGPS" value="">
 
-      <label class="check-wrap">
+      <label class="verify-box">
         <input type="checkbox" id="chkVerifyVisit" onchange="verifyCheckbox(this)">
-        <span id="chkLabelText" style="font-weight:600;">আমি নিশ্চিত করছি যে উপরের সকল তথ্য সঠিক (টিক দিন)</span>
+        <span id="chkLabelText" style="font-weight:600; font-size:13.5px; color:#1e293b;">আমি নিশ্চিত করছি যে উপরের সকল তথ্য সঠিক (টিক দিন)</span>
       </label>
 
-      <button id="btnSubmitVisit" class="btn btn-primary" style="width:100%;" disabled onclick="submitVisitForm()">✅ ভিজিট রিপোর্ট সাবমিট করুন</button>
+      <button id="btnSubmitVisit" class="btn btn-primary" disabled onclick="submitVisitForm()">✅ ভিজিট রিপোর্ট সাবমিট করুন</button>
     </div>
 
-    <div id="tabAddConv" class="card hidden">
+    <!-- TAB 2: Add Conveyance -->
+    <div id="tabAddConv" class="app-card hidden">
       <h4>🚌 যাতায়াত খরচ (Conveyance) এন্ট্রি</h4>
-      <div class="grid-2">
-        <div class="form-group">
-          <label>কোথা থেকে (From) *</label>
-          <input type="text" id="cFrom" class="form-control" placeholder="শুরুর জায়গা">
-        </div>
-        <div class="form-group">
-          <label>কোথায় গেলেন (To) *</label>
-          <input type="text" id="cTo" class="form-control" placeholder="গন্তব্য">
-        </div>
-        <div class="form-group">
-          <label>যানবাহনের ধরন *</label>
-          <select id="cTransport" class="form-control">
-            <option value="মোটরসাইকেল তেল">মোটরসাইকেল তেল</option>
-            <option value="অটো / সিএনজি">অটো / সিএনজি</option>
-            <option value="বাস ভাড়া">বাস ভাড়া</option>
-            <option value="ভ্যান / রিকশা">ভ্যান / রিকশা</option>
-            <option value="অন্যান্য">অন্যান্য</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>খরচের পরিমাণ (টাকা) *</label>
-          <input type="number" id="cAmount" class="form-control" placeholder="যেমন: 120">
-        </div>
+      <div class="input-box">
+        <label>কোথা থেকে (From) *</label>
+        <input type="text" id="cFrom" class="field" placeholder="শুরুর স্থান">
       </div>
-      <button id="btnSubmitConv" class="btn btn-success" onclick="submitConvForm()">➕ খরচ সাবমিট করুন</button>
+      <div class="input-box">
+        <label>কোথায় গেলেন (To) *</label>
+        <input type="text" id="cTo" class="field" placeholder="গন্তব্য স্থান">
+      </div>
+      <div class="input-box">
+        <label>যানবাহনের ধরন *</label>
+        <select id="cTransport" class="field">
+          <option value="মোটরসাইকেল তেল">মোটরসাইকেল তেল</option>
+          <option value="অটো / সিএনজি">অটো / সিএনজি</option>
+          <option value="বাস ভাড়া">বাস ভাড়া</option>
+          <option value="ভ্যান / রিকশা">ভ্যান / রিকশা</option>
+          <option value="অন্যান্য">অন্যান্য</option>
+        </select>
+      </div>
+      <div class="input-box">
+        <label>খরচের পরিমাণ (টাকা) *</label>
+        <input type="number" id="cAmount" class="field" placeholder="যেমন: 150">
+      </div>
+      <button id="btnSubmitConv" class="btn btn-success" onclick="submitConvForm()">➕ খরচ বিল সাবমিট করুন</button>
     </div>
 
-    <div id="tabViewVisits" class="card hidden">
-      <h4>📋 আমার ভিজিট লিস্ট (শুধুমাত্র দেখার জন্য - ডিলিট বন্ধ)</h4>
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>তারিখ ও সময়</th>
-              <th>দোকান ও ঠিকানা</th>
-              <th>প্রোপাইটার ও মোবাইল</th>
-              <th>মন্তব্য ও ফলো-আপ</th>
-              <th>ছবি</th>
-              <th>স্ট্যাটাস</th>
-            </tr>
-          </thead>
-          <tbody id="empVisitTableBody"></tbody>
-        </table>
-      </div>
+    <!-- TAB 3: View Visits -->
+    <div id="tabViewVisits" class="app-card hidden">
+      <h4>📋 আমার ভিজিট লিস্ট (ডিলিট বন্ধ)</h4>
+      <div id="empVisitListContainer">লোড হচ্ছে...</div>
     </div>
 
-    <div id="tabViewConv" class="card hidden">
-      <h4>💰 আমার যাতায়াত খরচের তালিকা ও স্ট্যাটাস (ডিলিট বন্ধ)</h4>
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>তারিখ ও সময়</th>
-              <th>কোথা থেকে ➔ কোথায়</th>
-              <th>বাহন</th>
-              <th>টাকা</th>
-              <th>স্ট্যাটাস</th>
-              <th>অ্যাডমিন নোট (কারণ)</th>
-            </tr>
-          </thead>
-          <tbody id="empConvTableBody"></tbody>
-        </table>
-      </div>
+    <!-- TAB 4: View Conveyance -->
+    <div id="tabViewConv" class="app-card hidden">
+      <h4>💰 আমার খরচের তালিকা ও স্ট্যাটাস</h4>
+      <div id="empConvListContainer">লোড হচ্ছে...</div>
     </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-item active" onclick="switchTab('tabCreateVisit', this)">
+      <span class="ico">➕</span><span>ভিজিট এন্ট্রি</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('tabAddConv', this)">
+      <span class="ico">🚌</span><span>খরচ এন্ট্রি</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('tabViewVisits', this)">
+      <span class="ico">📋</span><span>ভিজিট লিস্ট</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('tabViewConv', this)">
+      <span class="ico">💰</span><span>খরচ রিপোর্ট</span>
+    </button>
   </div>
 </div>
 
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw45glhGRu_tySZHMyawnkKEGOYxQnw1bx9KH_oZrKf16Mp-retUddYUo9wg8j17hlF/exec";
+  const EMP_STORAGE_KEY = "field_force_emp_session_v1";
   let currentUser = null;
   let compressedPhotoBase64 = '';
+
+  // ছবি পপ-আপ (Lightbox) ফাংশন
+  function openPhotoPopup(url, title) {
+    if (!url) return;
+    let displayUrl = url;
+    const match = url.match(/id=([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) {
+      displayUrl = "https://drive.google.com/thumbnail?id=" + match[1] + "&sz=w1600";
+    }
+    document.getElementById('popupModalImg').src = displayUrl;
+    document.getElementById('popupModalCaption').innerText = title || 'ভিজিটের ছবি';
+    document.getElementById('photoPopupModal').classList.remove('hidden');
+  }
+
+  function closePhotoPopup() {
+    document.getElementById('photoPopupModal').classList.add('hidden');
+    document.getElementById('popupModalImg').src = '';
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const saved = localStorage.getItem(EMP_STORAGE_KEY);
+    if (saved) {
+      try {
+        currentUser = JSON.parse(saved);
+        showEmpDashboardUI();
+      } catch (e) {
+        localStorage.removeItem(EMP_STORAGE_KEY);
+      }
+    }
+  });
+
+  function showEmpDashboardUI() {
+    document.getElementById('loginView').classList.add('hidden');
+    document.getElementById('empPanel').classList.remove('hidden');
+    document.getElementById('empNameTitle').innerText = currentUser.fullName;
+    loadEmployeeDashboard();
+  }
+
+  function logoutEmp() {
+    if (!confirm('আপনি কি লগআউট করতে চান?')) return;
+    localStorage.removeItem(EMP_STORAGE_KEY);
+    location.reload();
+  }
 
   async function callAPI(payload) {
     const res = await fetch(SCRIPT_URL, {
@@ -233,23 +355,21 @@
     const p = document.getElementById('loginPass').value.trim();
     if (!u || !p) return alert('ইউজারনেম এবং পাসওয়ার্ড দিন!');
     const btn = document.getElementById('btnLogin');
-    btn.disabled = true; btn.innerText = 'লগইন হচ্ছে...';
+    btn.disabled = true; btn.innerText = 'যাচাই হচ্ছে...';
 
     try {
       const res = await callAPI({ action: 'login', username: u, password: p });
-      btn.disabled = false; btn.innerText = 'লগইন করুন';
+      btn.disabled = false; btn.innerText = 'লগইন করুন ➔';
       if (!res.success) {
         document.getElementById('loginMsg').innerText = res.message;
         return;
       }
       currentUser = res.user;
-      document.getElementById('loginView').classList.add('hidden');
-      document.getElementById('empPanel').classList.remove('hidden');
-      document.getElementById('empNameTitle').innerText = currentUser.fullName;
-      loadEmployeeDashboard();
+      localStorage.setItem(EMP_STORAGE_KEY, JSON.stringify(currentUser));
+      showEmpDashboardUI();
     } catch (e) {
-      btn.disabled = false; btn.innerText = 'লগইন করুন';
-      alert('সার্ভার কানেকশন এরর! স্ক্রিপ্টটি New Version-এ Deploy করা হয়েছে কি না চেক করুন।');
+      btn.disabled = false; btn.innerText = 'লগইন করুন ➔';
+      alert('সার্ভার কানেকশন এরর!');
     }
   }
 
@@ -264,8 +384,9 @@
 
   async function loadEmployeeDashboard() {
     const data = await callAPI({ action: 'getEmpData', username: currentUser.username });
-    document.getElementById('empTargetBanner').innerText = '📌 ' + (data.assignedRoute || 'আজকের রুট নির্দেশনা।');
-    document.getElementById('empTodayVisitCount').innerText = data.todayVisitCount;
+    document.getElementById('currentDateText').innerText = 'তারিখ: ' + data.today;
+    document.getElementById('empTargetBanner').innerText = data.assignedRoute || 'আজকের রুট নির্দেশনা।';
+    document.getElementById('empTodayVisitCount').innerText = data.todayVisitCount + ' টি';
     document.getElementById('empTodayConvAmount').innerText = data.todayConvTotal + ' ৳';
 
     const att = data.attendance;
@@ -280,30 +401,47 @@
     document.getElementById('dutyLockNotice').classList.toggle('hidden', canWork);
     document.getElementById('btnSubmitConv').disabled = !canWork;
 
-    document.getElementById('empVisitTableBody').innerHTML = data.visits.map(v => `
-      <tr>
-        <td>${v.date}<br><small>${v.time}</small></td>
-        <td><strong>${v.shop}</strong><br>${v.address}</td>
-        <td>${v.prop}<br>${v.mobile}</td>
-        <td>${v.remarks}<br><small style="color:#0284c7;">ফলো-আপ: ${v.followUp || '--'}</small></td>
-        <td>${v.photo ? `<a href="${v.photo}" target="_blank" class="btn btn-primary btn-sm">HD ছবি</a>` : '--'}</td>
-        <td><span class="badge ${v.status === 'Verified' ? 'b-green' : 'b-red'}">${v.status}</span></td>
-      </tr>
-    `).join('');
+    const vWrap = document.getElementById('empVisitListContainer');
+    vWrap.innerHTML = data.visits.length ? data.visits.map(v => {
+      const safeShop = String(v.shop || '').replace(/'/g, "\\'");
+      return `
+      <div class="item-card">
+        <div class="item-top">
+          <div>
+            <div class="item-title">🏪 ${v.shop}</div>
+            <div class="item-sub">📍 ${v.address} | 👤 ${v.prop} (${v.mobile})</div>
+          </div>
+          <span class="badge ${v.status === 'Verified' ? 'b-green' : 'b-red'}">${v.status}</span>
+        </div>
+        <p style="font-size:13.5px; color:#1f2937; background:#fff; padding:8px; border-radius:8px; border:1px solid #e5e7eb; margin:6px 0;">
+          💬 ${v.remarks}
+        </p>
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:#6b7280; margin-top:6px;">
+          <span>🕒 ${v.date} (${v.time}) ${v.followUp ? ' | 📅 ফলো-আপ: '+v.followUp : ''}</span>
+          ${v.photo ? `<button type="button" class="pop-photo-btn" onclick="openPhotoPopup('${v.photo}', '${safeShop}')">🖼️ ছবি দেখুন</button>` : ''}
+        </div>
+      </div>
+    `}).join('') : '<p style="text-align:center; color:#6b7280;">এখনো কোনো ভিজিট এন্ট্রি দেওয়া হয়নি।</p>';
 
-    document.getElementById('empConvTableBody').innerHTML = data.conveyances.map(c => {
+    const cWrap = document.getElementById('empConvListContainer');
+    cWrap.innerHTML = data.conveyances.length ? data.conveyances.map(c => {
       let bClass = c.status === 'Approved' ? 'b-green' : (c.status === 'Pending' ? 'b-yellow' : 'b-red');
       return `
-        <tr>
-          <td>${c.date}<br><small>${c.time}</small></td>
-          <td>${c.from} ➔ ${c.to}</td>
-          <td>${c.transport}</td>
-          <td><strong>${c.amount} ৳</strong></td>
-          <td><span class="badge ${bClass}">${c.status}</span></td>
-          <td style="color:#dc2626; font-weight:600;">${c.note || '--'}</td>
-        </tr>
+        <div class="item-card">
+          <div class="item-top">
+            <div>
+              <div class="item-title">🚌 ${c.from} ➔ ${c.to}</div>
+              <div class="item-sub">${c.transport} | 🕒 ${c.date} (${c.time})</div>
+            </div>
+            <div style="text-align:right;">
+              <strong style="font-size:16px; color:#111827; display:block;">${c.amount} ৳</strong>
+              <span class="badge ${bClass}">${c.status}</span>
+            </div>
+          </div>
+          ${c.note ? `<div style="font-size:12.5px; color:#dc2626; font-weight:600; margin-top:6px; background:#fef2f2; padding:6px 10px; border-radius:8px;">📝 অ্যাডমিন নোট: ${c.note}</div>` : ''}
+        </div>
       `;
-    }).join('');
+    }).join('') : '<p style="text-align:center; color:#6b7280;">এখনো কোনো খরচের বিল দেওয়া হয়নি।</p>';
   }
 
   function triggerAttendance(type) {
@@ -320,6 +458,7 @@
   function compressImg(event) {
     const file = event.target.files[0];
     if (!file) return;
+    document.getElementById('camStatusText').innerText = 'ছবি প্রসেস হচ্ছে...';
     const reader = new FileReader();
     reader.onload = e => {
       const img = new Image();
@@ -331,6 +470,10 @@
         canvas.width = w; canvas.height = h;
         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
         compressedPhotoBase64 = canvas.toDataURL('image/jpeg', 0.85);
+        const prev = document.getElementById('photoPreview');
+        prev.src = compressedPhotoBase64;
+        prev.style.display = 'block';
+        document.getElementById('camStatusText').innerText = '✔ HD ছবি যুক্ত হয়েছে (পরিবর্তন করতে ট্যাপ করুন)';
       };
       img.src = e.target.result;
     };
@@ -382,8 +525,11 @@
     });
 
     alert(res.message);
-    ['vShop', 'vProp', 'vMobile', 'vAddress', 'vRemarks', 'vPhoto'].forEach(id => document.getElementById(id).value = '');
+    ['vShop', 'vProp', 'vMobile', 'vAddress', 'vRemarks', 'vPhoto', 'vFollowUp'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('chkVerifyVisit').checked = false;
+    document.getElementById('photoPreview').style.display = 'none';
+    document.getElementById('camStatusText').innerText = 'ক্যামেরা ওপেন করতে এখানে ট্যাপ করুন';
+    document.getElementById('chkLabelText').innerText = 'আমি নিশ্চিত করছি যে উপরের সকল তথ্য সঠিক (টিক দিন)';
     compressedPhotoBase64 = '';
     btn.innerText = '✅ ভিজিট রিপোর্ট সাবমিট করুন';
     loadEmployeeDashboard();
@@ -401,15 +547,16 @@
     const res = await callAPI({ action: 'submitConv', payload: { username: currentUser.username, fromLoc, toLoc, transport, amount } });
     alert(res.message);
     ['cFrom', 'cTo', 'cAmount'].forEach(id => document.getElementById(id).value = '');
-    btn.disabled = false; btn.innerText = '➕ খরচ সাবমিট করুন';
+    btn.disabled = false; btn.innerText = '➕ খরচ বিল সাবমিট করুন';
     loadEmployeeDashboard();
   }
 
   function switchTab(tabId, btnEl) {
     ['tabCreateVisit', 'tabAddConv', 'tabViewVisits', 'tabViewConv'].forEach(id => document.getElementById(id).classList.add('hidden'));
     document.getElementById(tabId).classList.remove('hidden');
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
     btnEl.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 </script>
 </body>
