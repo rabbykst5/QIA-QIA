@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Field Officer App</title>
+  <title>Field Officer Portal & Registration</title>
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -17,11 +17,12 @@
     body { background: var(--bg); color: var(--text); font-size: 15px; padding-bottom: 85px; }
     .hidden { display: none !important; }
 
-    .login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%); margin-bottom: -85px; }
-    .login-card { width: 100%; max-width: 390px; background: #fff; padding: 32px 26px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); text-align: center; }
-    .login-icon { width: 68px; height: 68px; background: #eef2ff; color: var(--primary); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 32px; margin-bottom: 12px; }
-    .login-card h2 { font-size: 23px; color: #111827; margin-bottom: 4px; }
-    .login-card p.sub { font-size: 13.5px; color: #6b7280; margin-bottom: 22px; }
+    /* Auth Screens */
+    .auth-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%); margin-bottom: -85px; overflow-y: auto; }
+    .auth-card { width: 100%; max-width: 440px; background: #fff; padding: 30px 24px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); text-align: center; margin: 20px 0; }
+    .auth-icon { width: 60px; height: 60px; background: #eef2ff; color: var(--primary); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 10px; }
+    .auth-card h2 { font-size: 22px; color: #111827; margin-bottom: 4px; }
+    .auth-card p.sub { font-size: 13px; color: #6b7280; margin-bottom: 18px; }
 
     .app-header { background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); color: #fff; padding: 18px 18px 26px; border-radius: 0 0 24px 24px; box-shadow: 0 4px 15px rgba(79,70,229,0.25); }
     .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
@@ -39,8 +40,8 @@
     .status-pill { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; background: #eef2ff; color: var(--primary); }
     .duty-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-    .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-    .stat-mini { background: #fff; padding: 14px; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 12px; border: 1px solid #e5e7eb; }
+    .stats-row { display: flex; justify-content: center; margin-bottom: 16px; }
+    .stat-mini { background: #fff; padding: 14px 24px; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 12px; border: 1px solid #e5e7eb; width: 100%; }
     .stat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; background: #eef2ff; color: var(--primary); }
     .stat-mini small { font-size: 12px; color: #6b7280; display: block; }
     .stat-mini strong { font-size: 19px; color: #111827; }
@@ -48,9 +49,9 @@
     .app-card { background: #fff; border-radius: 18px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); margin-bottom: 16px; border: 1px solid #e5e7eb; }
     .app-card h4 { font-size: 17px; color: #111827; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #f3f4f6; padding-bottom: 10px; }
 
-    .input-box { margin-bottom: 14px; text-align: left; }
-    .input-box label { display: block; font-size: 13.5px; font-weight: 600; color: #374151; margin-bottom: 6px; }
-    .field { width: 100%; padding: 12px 14px; border: 1.5px solid #d1d5db; border-radius: 12px; font-size: 14.5px; background: #f9fafb; outline: none; }
+    .input-box { margin-bottom: 12px; text-align: left; }
+    .input-box label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 4px; }
+    .field { width: 100%; padding: 10px 12px; border: 1.5px solid #d1d5db; border-radius: 10px; font-size: 14px; background: #f9fafb; outline: none; }
     .field:focus { border-color: var(--primary); background: #fff; }
     .field:disabled { background: #e5e7eb; color: #9ca3af; cursor: not-allowed; }
 
@@ -58,12 +59,12 @@
     .camera-box input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
     .camera-box .cam-title { font-weight: 700; color: var(--primary); font-size: 15px; display: block; margin-top: 4px; }
     .camera-box small { color: #6b7280; font-size: 12px; }
-    #photoPreview { max-height: 140px; border-radius: 10px; margin-top: 10px; display: none; margin-left: auto; margin-right: auto; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    #photoPreview, #regPhotoPreview { max-height: 120px; border-radius: 8px; margin-top: 8px; display: none; margin-left: auto; margin-right: auto; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
 
     .verify-box { background: #f8fafc; border: 1.5px solid #cbd5e1; padding: 13px; border-radius: 12px; margin: 16px 0; display: flex; align-items: center; gap: 12px; cursor: pointer; }
     .verify-box input { width: 22px; height: 22px; accent-color: var(--primary); cursor: pointer; flex-shrink: 0; }
 
-    .btn { width: 100%; padding: 13px 18px; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; }
+    .btn { width: 100%; padding: 12px 18px; border: none; border-radius: 12px; font-weight: 700; font-size: 14.5px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; }
     .btn-primary { background: var(--primary); color: #fff; }
     .btn-success { background: var(--success); color: #fff; }
     .btn-danger { background: var(--danger); color: #fff; }
@@ -76,20 +77,18 @@
     .badge { padding: 3px 9px; border-radius: 20px; font-size: 11.5px; font-weight: 700; display: inline-block; }
     .b-green { background: #d1fae5; color: #065f46; }
     .b-red { background: #fee2e2; color: #991b1b; }
-    .b-yellow { background: #fef3c7; color: #92400e; }
 
     .pop-photo-btn { background: #eef2ff; color: #4f46e5; border: 1px solid #c7d2fe; padding: 4px 10px; border-radius: 8px; font-size: 12.5px; font-weight: 700; cursor: pointer; }
 
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #e5e7eb; display: grid; grid-template-columns: repeat(4, 1fr); padding: 6px 8px; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 999; max-width: 600px; margin: 0 auto; border-radius: 18px 18px 0 0; }
-    .nav-item { background: none; border: none; padding: 6px 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; color: #6b7280; font-size: 11.5px; font-weight: 600; cursor: pointer; border-radius: 10px; }
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #e5e7eb; display: grid; grid-template-columns: repeat(2, 1fr); padding: 6px 12px; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 999; max-width: 600px; margin: 0 auto; border-radius: 18px 18px 0 0; }
+    .nav-item { background: none; border: none; padding: 8px; display: flex; flex-direction: column; align-items: center; gap: 2px; color: #6b7280; font-size: 12px; font-weight: 600; cursor: pointer; border-radius: 10px; }
     .nav-item span.ico { font-size: 20px; }
     .nav-item.active { color: var(--primary); background: #eef2ff; font-weight: 700; }
 
     .img-modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(5px); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 15px; }
     .img-modal-box { position: relative; max-width: 95vw; max-height: 90vh; background: #fff; padding: 12px; border-radius: 16px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); text-align: center; }
     .img-modal-box img { max-width: 100%; max-height: 76vh; border-radius: 10px; object-fit: contain; display: block; margin: 0 auto; }
-    .img-modal-close { position: absolute; top: -14px; right: -14px; width: 38px; height: 38px; border-radius: 50%; background: #ef4444; color: #fff; border: 3px solid #fff; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
-    .img-modal-caption { margin-top: 8px; font-size: 14px; font-weight: 700; color: #1e293b; }
+    .img-modal-close { position: absolute; top: -14px; right: -14px; width: 38px; height: 38px; border-radius: 50%; background: #ef4444; color: #fff; border: 3px solid #fff; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; }
   </style>
 </head>
 <body>
@@ -97,17 +96,17 @@
 <div id="photoPopupModal" class="img-modal-overlay hidden" onclick="closePhotoPopup()">
   <div class="img-modal-box" onclick="event.stopPropagation()">
     <button class="img-modal-close" onclick="closePhotoPopup()">✕</button>
-    <img id="popupModalImg" src="" alt="Visit HD Photo">
-    <div id="popupModalCaption" class="img-modal-caption"></div>
+    <img id="popupModalImg" src="" alt="Visit Photo">
+    <div id="popupModalCaption" style="margin-top:8px; font-weight:700;"></div>
   </div>
 </div>
 
 <!-- LOGIN VIEW -->
-<div id="loginView" class="login-screen">
-  <div class="login-card">
-    <div class="login-icon">📍</div>
-    <h2>ফিল্ড ফোর্স পোর্টাল</h2>
-    <p class="sub">আপনার আইডি ও পাসওয়ার্ড দিয়ে প্রবেশ করুন</p>
+<div id="loginView" class="auth-screen">
+  <div class="auth-card">
+    <div class="auth-icon">📍</div>
+    <h2>ফিল্ড অফিসার পোর্টাল</h2>
+    <p class="sub">লগইন করুন অথবা নতুন অ্যাকাউন্ট রেজিস্টার করুন</p>
     <form onsubmit="event.preventDefault(); handleLogin();">
       <div class="input-box">
         <label>ইউজারনেম (Username)</label>
@@ -117,9 +116,48 @@
         <label>পাসওয়ার্ড (Password)</label>
         <input type="password" id="loginPass" class="field" placeholder="••••••••" required>
       </div>
-      <button type="submit" id="btnLogin" class="btn btn-primary">লগইন করুন ➔</button>
+      <button type="submit" id="btnLogin" class="btn btn-primary" style="margin-bottom:10px;">লগইন করুন ➔</button>
     </form>
-    <p id="loginMsg" style="color:#ef4444; margin-top:12px; font-weight:600; font-size:13.5px;"></p>
+    <button type="button" class="btn" style="background:#eef2ff; color:var(--primary); font-size:13.5px;" onclick="showRegisterView()">নতুন কর্মচারী রেজিস্ট্রেশন (Account Create)</button>
+    <p id="loginMsg" style="color:#ef4444; margin-top:10px; font-weight:600; font-size:13px;"></p>
+  </div>
+</div>
+
+<!-- REGISTRATION VIEW (NID Mandatory) -->
+<div id="registerView" class="auth-screen hidden">
+  <div class="auth-card" style="max-width: 480px; text-align: left;">
+    <div style="text-align: center; margin-bottom: 12px;">
+      <div class="auth-icon" style="margin-bottom:4px;">📝</div>
+      <h2>নতুন কর্মচারী রেজিস্ট্রেশন</h2>
+      <p class="sub" style="margin-bottom:12px;">NID কার্ড নম্বর বাধ্যতামূলক</p>
+    </div>
+
+    <form onsubmit="event.preventDefault(); handleRegister();">
+      <div style="text-align: center; margin-bottom: 12px;">
+        <div style="width: 100px; height: 110px; border: 2px dashed #cbd5e1; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; background: #f8fafc; overflow: hidden; margin-bottom: 4px;">
+          <span style="font-size: 26px; color: #94a3b8;">📷</span>
+        </div>
+        <input type="file" id="regPhotoFile" accept="image/*" style="font-size: 11px; display:block; margin: 0 auto;" onchange="compressRegPhoto(event)">
+      </div>
+
+      <div class="input-box"><label>ইউজারনেম (Login ID) *</label><input type="text" id="regUser" class="field" placeholder="যেমন: emp2" required></div>
+      <div class="input-box"><label>পাসওয়ার্ড *</label><input type="text" id="regPass" class="field" placeholder="পাসওয়ার্ড দিন" required></div>
+      <div class="input-box"><label>পূর্ণ নাম (Full Name) *</label><input type="text" id="regFullName" class="field" placeholder="আপনার নাম" required></div>
+      <div class="input-box"><label>পিতার নাম</label><input type="text" id="regFatherName" class="field" placeholder="পিতার নাম"></div>
+      <div class="input-box"><label>মাতার নাম</label><input type="text" id="regMotherName" class="field" placeholder="মাতার নাম"></div>
+      <div class="input-box"><label>মোবাইল নাম্বার</label><input type="tel" id="regMobile" class="field" placeholder="01XXXXXXXXX"></div>
+      <div class="input-box"><label>পরিবারের সদস্য সংখ্যা</label><input type="number" id="regFamily" class="field" placeholder="সদস্য সংখ্যা"></div>
+      <div class="input-box"><label>এনআইডি কার্ড নম্বর (NID) * <span style="color:red;">(বাধ্যতামূলক)</span></label><input type="text" id="regNid" class="field" placeholder="18-digit NID No" required></div>
+      <div class="input-box"><label>ড্রাইভিং লাইসেন্স নম্বর</label><input type="text" id="regLicence" class="field" placeholder="Licence No (যদি থাকে)"></div>
+      <div class="input-box"><label>গ্রাম / পাড়া</label><input type="text" id="regVillage" class="field" placeholder="গ্রাম"></div>
+      <div class="input-box"><label>ডাকঘর</label><input type="text" id="regPost" class="field" placeholder="ডাকঘর"></div>
+      <div class="input-box"><label>উপজেলা</label><input type="text" id="regUpzila" class="field" placeholder="উপজেলা"></div>
+      <div class="input-box"><label>জেলা</label><input type="text" id="regZila" class="field" placeholder="জেলা"></div>
+
+      <button type="submit" id="btnRegister" class="btn btn-success" style="margin-top: 10px;">✅ একাউন্ট রেজিস্টার করুন</button>
+    </form>
+    <button type="button" class="btn" style="background:#f1f5f9; color:#334155; margin-top: 8px;" onclick="showLoginView()">← লোগইন পেজে ফিরে যান</button>
+    <p id="regMsg" style="color:#ef4444; margin-top:8px; font-weight:600; font-size:13px; text-align:center;"></p>
   </div>
 </div>
 
@@ -132,13 +170,13 @@
         <h3>👋 <span id="empNameTitle">ফিল্ড অফিসার</span></h3>
       </div>
       <div class="header-actions">
-        <button class="icon-btn" onclick="loadEmployeeDashboard()">🔄 রিফ্রেশ</button>
+        <button class="icon-btn" onclick="loadEmployeeDashboard()">🔄</button>
         <button class="icon-btn" style="background:rgba(239,68,68,0.85);" onclick="logoutEmp()">লগআউট</button>
       </div>
     </div>
     <div class="route-pill">
       <span>🎯</span>
-      <div id="empTargetBanner">আজকের অটো রুট লোড হচ্ছে...</div>
+      <div id="empTargetBanner">আজকের রুট লোড হচ্ছে...</div>
     </div>
   </div>
 
@@ -161,23 +199,16 @@
       <div class="stat-mini">
         <div class="stat-icon">🏪</div>
         <div>
-          <small>আজকের ভিজিট</small>
+          <small>আজকের মোট ভিজিট সংখ্যা</small>
           <strong id="empTodayVisitCount">0 টি</strong>
-        </div>
-      </div>
-      <div class="stat-mini">
-        <div class="stat-icon" style="background:#d1fae5; color:#059669;">🚌</div>
-        <div>
-          <small>আজকের খরচ বিল</small>
-          <strong id="empTodayConvAmount">0 ৳</strong>
         </div>
       </div>
     </div>
 
     <div id="dutyLockNotice" class="app-card hidden" style="background:#fef2f2; border-color:#fca5a5; text-align:center;">
       <div style="font-size:28px; margin-bottom:4px;">🔒</div>
-      <h4 id="lockNoticeTitle" style="justify-content:center; color:#991b1b; border:none; padding:0; margin-bottom:6px;">ফরম লক করা আছে!</h4>
-      <p id="lockNoticeDesc" style="font-size:13px; color:#b91c1c;">উপরে থাকা সবুজ <strong>"🟢 Start Duty"</strong> বাটনে ক্লিক করলেই সাথে সাথে ভিজিট ও খরচের সব ফরম খুলে যাবে।</p>
+      <h4 style="justify-content:center; color:#991b1b; border:none; padding:0; margin-bottom:6px;">ফরম লক করা আছে!</h4>
+      <p id="lockNoticeDesc" style="font-size:13px; color:#b91c1c;">উপরে থাকা সবুজ <strong>"🟢 Start Duty"</strong> বাটনে ক্লিক করলেই সাথে সাথে ভিজিট ফরম খুলে যাবে।</p>
     </div>
 
     <!-- TAB 1: Create Visit -->
@@ -235,53 +266,17 @@
 
         <label class="verify-box">
           <input type="checkbox" id="chkVerifyVisit" onchange="verifyCheckbox(this)">
-          <span id="chkLabelText" style="font-weight:600; font-size:13.5px; color:#1e293b;">আমি নিশ্চিত করছি যে উপরের সকল তথ্য সঠিক (টিক দিন)</span>
+          <span id="chkLabelText" style="font-weight:600; font-size:13.5px; color:#1e293b;">📍 GPS লোকেশন যাচাই করে নিশ্চিত করুন (টিক দিন)</span>
         </label>
 
         <button id="btnSubmitVisit" type="button" class="btn btn-primary" disabled onclick="submitVisitForm()">✅ ভিজিট রিপোর্ট সাবমিট করুন</button>
       </fieldset>
     </div>
 
-    <!-- TAB 2: Add Conveyance -->
-    <div id="tabAddConv" class="app-card hidden">
-      <h4>🚌 যাতায়াত খরচ (Conveyance) এন্ট্রি</h4>
-      <fieldset id="convFormFieldset" style="border:none;">
-        <div class="input-box">
-          <label>কোথা থেকে (From) *</label>
-          <input type="text" id="cFrom" class="field" placeholder="শুরুর স্থান">
-        </div>
-        <div class="input-box">
-          <label>কোথায় গেলেন (To) *</label>
-          <input type="text" id="cTo" class="field" placeholder="গন্তব্য স্থান">
-        </div>
-        <div class="input-box">
-          <label>যানবাহনের ধরন *</label>
-          <select id="cTransport" class="field">
-            <option value="মোটরসাইকেল তেল">মোটরসাইকেল তেল</option>
-            <option value="অটো / সিএনজি">অটো / সিএনজি</option>
-            <option value="বাস ভাড়া">বাস ভাড়া</option>
-            <option value="ভ্যান / রিকশা">ভ্যান / রিকশা</option>
-            <option value="অন্যান্য">অন্যান্য</option>
-          </select>
-        </div>
-        <div class="input-box">
-          <label>খরচের পরিমাণ (টাকা) *</label>
-          <input type="number" id="cAmount" class="field" placeholder="যেমন: 150">
-        </div>
-        <button id="btnSubmitConv" type="button" class="btn btn-success" onclick="submitConvForm()">➕ খরচ বিল সাবমিট করুন</button>
-      </fieldset>
-    </div>
-
-    <!-- TAB 3: View Visits -->
+    <!-- TAB 2: View Visits -->
     <div id="tabViewVisits" class="app-card hidden">
       <h4>📋 আমার ভিজিট লিস্ট (ডিলিট বন্ধ)</h4>
       <div id="empVisitListContainer">লোড হচ্ছে...</div>
-    </div>
-
-    <!-- TAB 4: View Conveyance -->
-    <div id="tabViewConv" class="app-card hidden">
-      <h4>💰 আমার খরচের তালিকা ও স্ট্যাটাস</h4>
-      <div id="empConvListContainer">লোড হচ্ছে...</div>
     </div>
   </div>
 
@@ -289,14 +284,8 @@
     <button class="nav-item active" onclick="switchTab('tabCreateVisit', this)">
       <span class="ico">➕</span><span>ভিজিট এন্ট্রি</span>
     </button>
-    <button class="nav-item" onclick="switchTab('tabAddConv', this)">
-      <span class="ico">🚌</span><span>খরচ এন্ট্রি</span>
-    </button>
     <button class="nav-item" onclick="switchTab('tabViewVisits', this)">
       <span class="ico">📋</span><span>ভিজিট লিস্ট</span>
-    </button>
-    <button class="nav-item" onclick="switchTab('tabViewConv', this)">
-      <span class="ico">💰</span><span>খরচ রিপোর্ট</span>
     </button>
   </div>
 </div>
@@ -305,66 +294,91 @@
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw45glhGRu_tySZHMyawnkKEGOYxQnw1bx9KH_oZrKf16Mp-retUddYUo9wg8j17hlF/exec";
   const EMP_STORAGE_KEY = "field_force_emp_session_v1";
   const EMP_CACHE_KEY = "field_force_emp_data_cache_v1";
-  const GPS_MEM_KEY = "field_force_last_gps_v1";
 
   let currentUser = null;
   let compressedPhotoBase64 = '';
+  let compressedRegPhotoBase64 = '';
   let isDutyActiveNow = false;
-  let liveGPS = sessionStorage.getItem(GPS_MEM_KEY) || '';
-  let gpsWatchId = null;
 
-  function initSilentLocationTracker() {
-    if (window.location.protocol === 'file:') {
-      fetchSilentIPLocation();
-      return;
-    }
-    if (!navigator.geolocation) {
-      fetchSilentIPLocation();
-      return;
-    }
-    if (gpsWatchId !== null) return;
-    gpsWatchId = navigator.geolocation.watchPosition(
-      pos => {
-        liveGPS = pos.coords.latitude.toFixed(6) + ',' + pos.coords.longitude.toFixed(6);
-        sessionStorage.setItem(GPS_MEM_KEY, liveGPS);
-      },
-      err => { fetchSilentIPLocation(); },
-      { enableHighAccuracy: true, maximumAge: 60000, timeout: 10000 }
-    );
+  function showRegisterView() {
+    document.getElementById('loginView').classList.add('hidden');
+    document.getElementById('registerView').classList.remove('hidden');
   }
 
-  async function fetchSilentIPLocation() {
-    if (liveGPS) return;
+  function showLoginView() {
+    document.getElementById('registerView').classList.add('hidden');
+    document.getElementById('loginView').classList.remove('hidden');
+  }
+
+  function compressRegPhoto(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_W = 500;
+        let w = img.width, h = img.height;
+        if (w > MAX_W) { h = Math.round(h * (MAX_W / w)); w = MAX_W; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        compressedRegPhotoBase64 = canvas.toDataURL('image/jpeg', 0.85);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function handleRegister() {
+    const username = document.getElementById('regUser').value.trim();
+    const password = document.getElementById('regPass').value.trim();
+    const fullName = document.getElementById('regFullName').value.trim();
+    const nid = document.getElementById('regNid').value.trim();
+
+    if (!username || !password || !fullName || !nid) {
+      return alert('ইউজারনেম, পাসওয়ার্ড, নাম এবং NID কার্ড নম্বর বাধ্যতামূলক!');
+    }
+
+    const payload = {
+      username, password, fullName, nid,
+      fatherName: document.getElementById('regFatherName').value.trim(),
+      motherName: document.getElementById('regMotherName').value.trim(),
+      mobile: document.getElementById('regMobile').value.trim(),
+      familyMembers: document.getElementById('regFamily').value.trim(),
+      drivingLicence: document.getElementById('regLicence').value.trim(),
+      village: document.getElementById('regVillage').value.trim(),
+      post: document.getElementById('regPost').value.trim(),
+      upzila: document.getElementById('regUpzila').value.trim(),
+      zila: document.getElementById('regZila').value.trim(),
+      profilePhoto: compressedRegPhotoBase64,
+      assignedRoute: JSON.stringify({ sat: '', sun: '', mon: '', tue: '', wed: '', thu: '', fri: '', special: '' })
+    };
+
+    const btn = document.getElementById('btnRegister');
+    btn.disabled = true; btn.innerText = 'রেজিস্ট্রেশন হচ্ছে...';
+
     try {
-      const r = await fetch('https://ipapi.co/json/');
-      const j = await r.json();
-      if (j && j.latitude && j.longitude) {
-        liveGPS = Number(j.latitude).toFixed(6) + ',' + Number(j.longitude).toFixed(6);
-        sessionStorage.setItem(GPS_MEM_KEY, liveGPS);
+      const res = await callAPI({ action: 'addNewEmp', payload });
+      btn.disabled = false; btn.innerText = '✅ একাউন্ট রেজিস্টার করুন';
+      if (!res.success) {
+        document.getElementById('regMsg').innerText = res.message;
         return;
       }
-    } catch (e) {}
-    liveGPS = '23.901300,89.120400';
-    sessionStorage.setItem(GPS_MEM_KEY, liveGPS);
+      alert('সফলভাবে রেজিস্ট্রেশন সম্পন্ন হয়েছে! এখন লগইন করুন।');
+      showLoginView();
+    } catch (e) {
+      btn.disabled = false; btn.innerText = '✅ একাউন্ট রেজিস্টার করুন';
+      alert('রেজিস্ট্রেশন এরর!');
+    }
   }
 
-  function fetchGPS(callback) {
-    if (liveGPS) { callback(liveGPS); return; }
-    if (window.location.protocol === 'file:') {
-      fetchSilentIPLocation().then(() => callback(liveGPS || '23.901300,89.120400'));
-      return;
-    }
+  function getMandatoryGPS(callback) {
+    if (!navigator.geolocation) { alert('GPS সাপোর্ট করে না!'); callback(null); return; }
     navigator.geolocation.getCurrentPosition(
-      pos => {
-        liveGPS = pos.coords.latitude.toFixed(6) + ',' + pos.coords.longitude.toFixed(6);
-        sessionStorage.setItem(GPS_MEM_KEY, liveGPS);
-        callback(liveGPS);
-      },
-      err => {
-        alert('⚠️ আপনার ফোনের Location / GPS বন্ধ করা আছে! অনুগ্রহ করে লোকেশন অন করুন।');
-        callback(null);
-      },
-      { enableHighAccuracy: true, timeout: 6000, maximumAge: 120000 }
+      pos => callback(pos.coords.latitude.toFixed(6) + ',' + pos.coords.longitude.toFixed(6)),
+      err => { alert('⚠️ GPS লোকেশন পাওয়া যায়নি! দয়া করে ফোনের Location/GPS অন করুন।'); callback(null); },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
   }
 
@@ -378,10 +392,7 @@
     document.getElementById('photoPopupModal').classList.remove('hidden');
   }
 
-  function closePhotoPopup() {
-    document.getElementById('photoPopupModal').classList.add('hidden');
-    document.getElementById('popupModalImg').src = '';
-  }
+  function closePhotoPopup() { document.getElementById('photoPopupModal').classList.add('hidden'); }
 
   function resolveTodayAutoRoute(rawRouteStr) {
     if (!rawRouteStr) return 'আজকের রুট: নির্ধারিত রুট অনুযায়ী ভিজিট করুন';
@@ -399,7 +410,6 @@
   }
 
   window.addEventListener('DOMContentLoaded', () => {
-    initSilentLocationTracker();
     const saved = localStorage.getItem(EMP_STORAGE_KEY);
     if (saved) {
       try {
@@ -411,6 +421,7 @@
 
   function showEmpDashboardUI() {
     document.getElementById('loginView').classList.add('hidden');
+    document.getElementById('registerView').classList.add('hidden');
     document.getElementById('empPanel').classList.remove('hidden');
     document.getElementById('empNameTitle').innerText = currentUser.fullName;
     const cachedData = localStorage.getItem(EMP_CACHE_KEY + "_" + currentUser.username);
@@ -457,7 +468,6 @@
     document.getElementById('currentDateText').innerText = 'তারিখ: ' + data.today;
     document.getElementById('empTargetBanner').innerText = resolveTodayAutoRoute(data.assignedRoute);
     document.getElementById('empTodayVisitCount').innerText = (data.todayVisitCount || 0) + ' টি';
-    document.getElementById('empTodayConvAmount').innerText = (data.todayConvTotal || 0) + ' ৳';
 
     const att = data.attendance;
     const startBtn = document.getElementById('btnStartDuty');
@@ -485,10 +495,10 @@
     }
 
     document.getElementById('visitFormFieldset').disabled = !isDutyActiveNow;
-    document.getElementById('convFormFieldset').disabled = !isDutyActiveNow;
-    document.getElementById('btnSubmitConv').disabled = !isDutyActiveNow;
 
-    document.getElementById('empVisitListContainer').innerHTML = (data.visits && data.visits.length) ? data.visits.map(v => `
+    document.getElementById('empVisitListContainer').innerHTML = (data.visits && data.visits.length) ? data.visits.map(v => {
+      const safeShop = String(v.shop || '').replace(/'/g, "\\'");
+      return `
       <div class="item-card">
         <div class="item-top">
           <div><div class="item-title">🏪 ${v.shop}</div><div class="item-sub">📍 ${v.address} | 👤 ${v.prop} (${v.mobile})</div></div>
@@ -497,20 +507,10 @@
         <p style="font-size:13.5px; background:#fff; padding:8px; border-radius:8px; border:1px solid #e5e7eb; margin:6px 0;">💬 ${v.remarks}</p>
         <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:#6b7280;">
           <span>🕒 ${v.date} (${v.time})</span>
-          ${v.photo ? `<button type="button" class="pop-photo-btn" onclick="openPhotoPopup('${v.photo}', '${v.shop}')">🖼️ ছবি</button>` : ''}
+          ${v.photo ? `<button type="button" class="pop-photo-btn" onclick="openPhotoPopup('${v.photo}', '${safeShop}')">🖼️ ছবি</button>` : ''}
         </div>
       </div>
-    `).join('') : '<p style="text-align:center; color:#6b7280;">কোনো ভিজিট নেই।</p>';
-
-    document.getElementById('empConvListContainer').innerHTML = (data.conveyances && data.conveyances.length) ? data.conveyances.map(c => `
-      <div class="item-card">
-        <div class="item-top">
-          <div><div class="item-title">🚌 ${c.from} ➔ ${c.to}</div><div class="item-sub">${c.transport} | ${c.date}</div></div>
-          <div style="text-align:right;"><strong style="font-size:16px;">${c.amount} ৳</strong><br><span class="badge ${c.status==='Approved'?'b-green':'b-yellow'}">${c.status}</span></div>
-        </div>
-        ${c.note ? `<div style="font-size:12.5px; color:#dc2626; margin-top:4px;">নোট: ${c.note}</div>` : ''}
-      </div>
-    `).join('') : '<p style="text-align:center; color:#6b7280;">কোনো খরচ নেই।</p>';
+    `}).join('') : '<p style="text-align:center; color:#6b7280;">কোনো ভিজিট নেই।</p>';
   }
 
   async function loadEmployeeDashboard() {
@@ -523,12 +523,17 @@
 
   function triggerAttendance(type) {
     if (type === 'END' && !confirm('ছুটি নিতে চান?')) return;
-    fetchGPS(async gps => {
-      if (!gps) return;
-      if (type === 'START') isDutyActiveNow = true;
-      const res = await callAPI({ action: 'markAtt', username: currentUser.username, type, gps });
-      alert(res.message);
-      loadEmployeeDashboard();
+    const btn = type === 'START' ? document.getElementById('btnStartDuty') : document.getElementById('btnEndDuty');
+    btn.disabled = true; btn.innerText = 'GPS লোকেশন নিচ্ছে...';
+
+    getMandatoryGPS(async gps => {
+      if (!gps) { loadEmployeeDashboard(); return; }
+      try {
+        if (type === 'START') isDutyActiveNow = true;
+        const res = await callAPI({ action: 'markAtt', username: currentUser.username, type, gps });
+        alert(res.message);
+        loadEmployeeDashboard();
+      } catch (err) { alert('নেটওয়ার্ক এরর!'); loadEmployeeDashboard(); }
     });
   }
 
@@ -558,14 +563,25 @@
   function verifyCheckbox(chk) {
     if (!isDutyActiveNow) { chk.checked = false; return alert('আগে ডিউটি চালু করুন!'); }
     const submitBtn = document.getElementById('btnSubmitVisit');
+    const lbl = document.getElementById('chkLabelText');
+
     if (chk.checked) {
-      fetchGPS(gps => {
+      lbl.innerText = '⏳ লাইভ GPS লোকেশন চেক করা হচ্ছে...';
+      getMandatoryGPS(gps => {
+        if (!gps) {
+          chk.checked = false;
+          lbl.innerText = '📍 GPS লোকেশন যাচাই করে নিশ্চিত করুন (টিক দিন)';
+          submitBtn.disabled = true;
+          return;
+        }
         document.getElementById('hiddenVisitGPS').value = gps;
+        lbl.innerText = '✔ GPS লোকেশন সফলভাবে ভেরিফাই হয়েছে!';
         submitBtn.disabled = false;
       });
     } else {
       document.getElementById('hiddenVisitGPS').value = '';
       submitBtn.disabled = true;
+      lbl.innerText = '📍 GPS লোকেশন যাচাই করে নিশ্চিত করুন (টিক দিন)';
     }
   }
 
@@ -578,9 +594,10 @@
     const rawAddr = document.getElementById('vAddress').value.trim();
     const remarks = document.getElementById('vRemarks').value.trim();
     const followUp = document.getElementById('vFollowUp').value;
-    const gps = document.getElementById('hiddenVisitGPS').value || liveGPS || '23.901300,89.120400';
+    const gps = document.getElementById('hiddenVisitGPS').value;
 
     if (!shop || !prop || !mobile || !rawAddr || !remarks || !compressedPhotoBase64) return alert('সবগুলো ঘর পূরণ করুন!');
+    if (!gps) return alert('GPS লোকেশন বাধ্যতামূলক!');
 
     const btn = document.getElementById('btnSubmitVisit');
     btn.disabled = true; btn.innerText = 'সাবমিট হচ্ছে...';
@@ -594,27 +611,14 @@
     ['vShop', 'vProp', 'vMobile', 'vAddress', 'vRemarks', 'vPhoto', 'vFollowUp'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('chkVerifyVisit').checked = false;
     document.getElementById('photoPreview').style.display = 'none';
+    document.getElementById('chkLabelText').innerText = '📍 GPS লোকেশন যাচাই করে নিশ্চিত করুন (টিক দিন)';
     compressedPhotoBase64 = '';
     btn.innerText = '✅ ভিজিট রিপোর্ট সাবমিট করুন';
     loadEmployeeDashboard();
   }
 
-  async function submitConvForm() {
-    if (!isDutyActiveNow) return;
-    const fromLoc = document.getElementById('cFrom').value.trim();
-    const toLoc = document.getElementById('cTo').value.trim();
-    const transport = document.getElementById('cTransport').value;
-    const amount = document.getElementById('cAmount').value;
-    if (!fromLoc || !toLoc || !amount) return alert('সবগুলো ঘর পূরণ করুন!');
-
-    const res = await callAPI({ action: 'submitConv', payload: { username: currentUser.username, fromLoc, toLoc, transport, amount } });
-    alert(res.message);
-    ['cFrom', 'cTo', 'cAmount'].forEach(id => document.getElementById(id).value = '');
-    loadEmployeeDashboard();
-  }
-
   function switchTab(tabId, btnEl) {
-    ['tabCreateVisit', 'tabAddConv', 'tabViewVisits', 'tabViewConv'].forEach(id => document.getElementById(id).classList.add('hidden'));
+    ['tabCreateVisit', 'tabViewVisits'].forEach(id => document.getElementById(id).classList.add('hidden'));
     document.getElementById(tabId).classList.remove('hidden');
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
     btnEl.classList.add('active');
