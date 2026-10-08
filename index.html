@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Field Officer Portal & Registration</title>
+  <title>Field Officer Portal</title>
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -17,7 +17,6 @@
     body { background: var(--bg); color: var(--text); font-size: 15px; padding-bottom: 85px; }
     .hidden { display: none !important; }
 
-    /* Auth Screens */
     .auth-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%); margin-bottom: -85px; overflow-y: auto; }
     .auth-card { width: 100%; max-width: 440px; background: #fff; padding: 30px 24px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); text-align: center; margin: 20px 0; }
     .auth-icon { width: 60px; height: 60px; background: #eef2ff; color: var(--primary); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 10px; }
@@ -59,10 +58,8 @@
     .camera-box input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
     .camera-box .cam-title { font-weight: 700; color: var(--primary); font-size: 15px; display: block; margin-top: 4px; }
     .camera-box small { color: #6b7280; font-size: 12px; }
-    #photoPreview, #regPhotoPreview { max-height: 120px; border-radius: 8px; margin-top: 8px; display: none; margin-left: auto; margin-right: auto; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
-
-    .verify-box { background: #f8fafc; border: 1.5px solid #cbd5e1; padding: 13px; border-radius: 12px; margin: 16px 0; display: flex; align-items: center; gap: 12px; cursor: pointer; }
-    .verify-box input { width: 22px; height: 22px; accent-color: var(--primary); cursor: pointer; flex-shrink: 0; }
+    #photoPreview { max-height: 120px; border-radius: 8px; margin-top: 8px; display: none; margin-left: auto; margin-right: auto; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    #gpsStatusText { font-size: 12.5px; font-weight: 700; color: #059669; margin-top: 6px; display: block; }
 
     .btn { width: 100%; padding: 12px 18px; border: none; border-radius: 12px; font-weight: 700; font-size: 14.5px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; }
     .btn-primary { background: var(--primary); color: #fff; }
@@ -101,7 +98,7 @@
   </div>
 </div>
 
-<!-- LOGIN VIEW -->
+<!-- LOGIN -->
 <div id="loginView" class="auth-screen">
   <div class="auth-card">
     <div class="auth-icon">📍</div>
@@ -118,12 +115,12 @@
       </div>
       <button type="submit" id="btnLogin" class="btn btn-primary" style="margin-bottom:10px;">লগইন করুন ➔</button>
     </form>
-    <button type="button" class="btn" style="background:#eef2ff; color:var(--primary); font-size:13.5px;" onclick="showRegisterView()">নতুন কর্মচারী রেজিস্ট্রেশন (Account Create)</button>
+    <button type="button" class="btn" style="background:#eef2ff; color:var(--primary); font-size:13.5px;" onclick="showRegisterView()">নতুন কর্মচারী রেজিস্ট্রেশন</button>
     <p id="loginMsg" style="color:#ef4444; margin-top:10px; font-weight:600; font-size:13px;"></p>
   </div>
 </div>
 
-<!-- REGISTRATION VIEW (NID Mandatory) -->
+<!-- REGISTRATION -->
 <div id="registerView" class="auth-screen hidden">
   <div class="auth-card" style="max-width: 480px; text-align: left;">
     <div style="text-align: center; margin-bottom: 12px;">
@@ -134,7 +131,7 @@
 
     <form onsubmit="event.preventDefault(); handleRegister();">
       <div style="text-align: center; margin-bottom: 12px;">
-        <div style="width: 100px; height: 110px; border: 2px dashed #cbd5e1; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; background: #f8fafc; overflow: hidden; margin-bottom: 4px;">
+        <div style="width: 100px; height: 120px; border: 2px dashed #cbd5e1; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; background: #f8fafc; overflow: hidden; margin-bottom: 4px;" id="regPhotoBox">
           <span style="font-size: 26px; color: #94a3b8;">📷</span>
         </div>
         <input type="file" id="regPhotoFile" accept="image/*" style="font-size: 11px; display:block; margin: 0 auto;" onchange="compressRegPhoto(event)">
@@ -147,8 +144,8 @@
       <div class="input-box"><label>মাতার নাম</label><input type="text" id="regMotherName" class="field" placeholder="মাতার নাম"></div>
       <div class="input-box"><label>মোবাইল নাম্বার</label><input type="tel" id="regMobile" class="field" placeholder="01XXXXXXXXX"></div>
       <div class="input-box"><label>পরিবারের সদস্য সংখ্যা</label><input type="number" id="regFamily" class="field" placeholder="সদস্য সংখ্যা"></div>
-      <div class="input-box"><label>এনআইডি কার্ড নম্বর (NID) * <span style="color:red;">(বাধ্যতামূলক)</span></label><input type="text" id="regNid" class="field" placeholder="18-digit NID No" required></div>
-      <div class="input-box"><label>ড্রাইভিং লাইসেন্স নম্বর</label><input type="text" id="regLicence" class="field" placeholder="Licence No (যদি থাকে)"></div>
+      <div class="input-box"><label>এনআইডি কার্ড নম্বর (NID) *</label><input type="text" id="regNid" class="field" placeholder="NID No" required></div>
+      <div class="input-box"><label>ড্রাইভিং লাইসেন্স নম্বর</label><input type="text" id="regLicence" class="field" placeholder="Licence No"></div>
       <div class="input-box"><label>গ্রাম / পাড়া</label><input type="text" id="regVillage" class="field" placeholder="গ্রাম"></div>
       <div class="input-box"><label>ডাকঘর</label><input type="text" id="regPost" class="field" placeholder="ডাকঘর"></div>
       <div class="input-box"><label>উপজেলা</label><input type="text" id="regUpzila" class="field" placeholder="উপজেলা"></div>
@@ -170,7 +167,7 @@
         <h3>👋 <span id="empNameTitle">ফিল্ড অফিসার</span></h3>
       </div>
       <div class="header-actions">
-        <button class="icon-btn" onclick="loadEmployeeDashboard()">🔄</button>
+        <button class="icon-btn" onclick="loadEmployeeDashboard()">🔄 রিফ্রেশ</button>
         <button class="icon-btn" style="background:rgba(239,68,68,0.85);" onclick="logoutEmp()">লগআউট</button>
       </div>
     </div>
@@ -248,14 +245,15 @@
           <input type="date" id="vFollowUp" class="field">
         </div>
         <div class="input-box">
-          <label>৭. সরাসরি লাইভ ছবি তুলুন (HD Camera) *</label>
-          <div class="camera-box">
+          <label>৭. সরাসরি লাইভ ছবি তুলুন (HD Camera & GPS) *</label>
+          <div class="camera-box" onclick="capturePhotoAndGPS()">
             <div style="font-size:28px;">📸</div>
-            <span class="cam-title" id="camStatusText">ক্যামেরা ওপেন করতে এখানে ট্যাপ করুন</span>
-            <small>গ্যালারি লক করা আছে (সরাসরি ছবি তুলুন)</small>
+            <span class="cam-title" id="camStatusText">ক্যামেরা ও GPS চালু করতে ট্যাপ করুন</span>
+            <small>ছবির ঠিক নিচে GPS লোকেশন যুক্ত হবে</small>
             <input type="file" id="vPhoto" accept="image/*" capture="environment" onchange="compressImg(event)">
             <img id="photoPreview" alt="Preview">
           </div>
+          <span id="gpsStatusText"></span>
         </div>
         <div class="input-box">
           <label>৮. প্রোপাইটারের সঙ্গে আলোচনার মন্তব্য / নোট *</label>
@@ -264,18 +262,13 @@
 
         <input type="hidden" id="hiddenVisitGPS" value="">
 
-        <label class="verify-box">
-          <input type="checkbox" id="chkVerifyVisit" onchange="verifyCheckbox(this)">
-          <span id="chkLabelText" style="font-weight:600; font-size:13.5px; color:#1e293b;">📍 GPS লোকেশন যাচাই করে নিশ্চিত করুন (টিক দিন)</span>
-        </label>
-
-        <button id="btnSubmitVisit" type="button" class="btn btn-primary" disabled onclick="submitVisitForm()">✅ ভিজিট রিপোর্ট সাবমিট করুন</button>
+        <button id="btnSubmitVisit" type="button" class="btn btn-primary" onclick="submitVisitForm()">✅ ভিজিট রিপোর্ট সাবমিট করুন</button>
       </fieldset>
     </div>
 
     <!-- TAB 2: View Visits -->
     <div id="tabViewVisits" class="app-card hidden">
-      <h4>📋 আমার ভিজিট লিস্ট (ডিলিট বন্ধ)</h4>
+      <h4>📋 আমার ভিজিট লিস্ট</h4>
       <div id="empVisitListContainer">লোড হচ্ছে...</div>
     </div>
   </div>
@@ -293,11 +286,11 @@
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw45glhGRu_tySZHMyawnkKEGOYxQnw1bx9KH_oZrKf16Mp-retUddYUo9wg8j17hlF/exec";
   const EMP_STORAGE_KEY = "field_force_emp_session_v1";
-  const EMP_CACHE_KEY = "field_force_emp_data_cache_v1";
 
   let currentUser = null;
   let compressedPhotoBase64 = '';
   let compressedRegPhotoBase64 = '';
+  let currentVisitGPS = '';
   let isDutyActiveNow = false;
 
   function showRegisterView() {
@@ -324,6 +317,7 @@
         canvas.width = w; canvas.height = h;
         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
         compressedRegPhotoBase64 = canvas.toDataURL('image/jpeg', 0.85);
+        document.getElementById('regPhotoBox').innerHTML = `<img src="${compressedRegPhotoBase64}" style="width:100%; height:100%; object-fit:cover;">`;
       };
       img.src = e.target.result;
     };
@@ -373,11 +367,24 @@
     }
   }
 
-  function getMandatoryGPS(callback) {
-    if (!navigator.geolocation) { alert('GPS সাপোর্ট করে না!'); callback(null); return; }
+  // ভিজিটের সময় বাধ্যতামূলকভাবে GPS নেওয়ার ফাংশন
+  function capturePhotoAndGPS() {
+    if (!navigator.geolocation) {
+      alert('আপনার ডিভাইসে GPS সাপোর্ট করে না!');
+      return;
+    }
+    document.getElementById('camStatusText').innerText = '⏳ GPS লোকেশন ফিক্স করা হচ্ছে...';
     navigator.geolocation.getCurrentPosition(
-      pos => callback(pos.coords.latitude.toFixed(6) + ',' + pos.coords.longitude.toFixed(6)),
-      err => { alert('⚠️ GPS লোকেশন পাওয়া যায়নি! দয়া করে ফোনের Location/GPS অন করুন।'); callback(null); },
+      pos => {
+        currentVisitGPS = pos.coords.latitude.toFixed(6) + ',' + pos.coords.longitude.toFixed(6);
+        document.getElementById('hiddenVisitGPS').value = currentVisitGPS;
+        document.getElementById('gpsStatusText').innerText = `📍 GPS: ${currentVisitGPS}`;
+        document.getElementById('camStatusText').innerText = '✔ GPS কনফার্ম! ছবি তুলতে ট্যাপ করুন';
+      },
+      err => {
+        alert('⚠️ GPS লোকেশন পাওয়া যায়নি! দয়া করে ফোনের Location/GPS অন করুন।');
+        document.getElementById('camStatusText').innerText = '❌ GPS অন করুন';
+      },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
   }
@@ -424,8 +431,6 @@
     document.getElementById('registerView').classList.add('hidden');
     document.getElementById('empPanel').classList.remove('hidden');
     document.getElementById('empNameTitle').innerText = currentUser.fullName;
-    const cachedData = localStorage.getItem(EMP_CACHE_KEY + "_" + currentUser.username);
-    if (cachedData) { try { renderDashboardState(JSON.parse(cachedData)); } catch (e) {} }
     loadEmployeeDashboard();
   }
 
@@ -506,35 +511,35 @@
         </div>
         <p style="font-size:13.5px; background:#fff; padding:8px; border-radius:8px; border:1px solid #e5e7eb; margin:6px 0;">💬 ${v.remarks}</p>
         <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:#6b7280;">
-          <span>🕒 ${v.date} (${v.time})</span>
-          ${v.photo ? `<button type="button" class="pop-photo-btn" onclick="openPhotoPopup('${v.photo}', '${safeShop}')">🖼️ ছবি</button>` : ''}
+          <span>🕒 ${v.date} (${v.time})</span>${v.photo ? `<button type="button" class="pop-photo-btn" onclick="openPhotoPopup('${v.photo}', '${safeShop}')">🖼️ ছবি</button>` : ''}
         </div>
       </div>
     `}).join('') : '<p style="text-align:center; color:#6b7280;">কোনো ভিজিট নেই।</p>';
   }
 
   async function loadEmployeeDashboard() {
+    if (!currentUser) return;
     try {
       const data = await callAPI({ action: 'getEmpData', username: currentUser.username });
-      localStorage.setItem(EMP_CACHE_KEY + "_" + currentUser.username, JSON.stringify(data));
       renderDashboardState(data);
-    } catch (e) {}
+    } catch (e) {
+      alert('ডেটা রিফ্রেশ করতে সমস্যা হয়েছে!');
+    }
   }
 
-  function triggerAttendance(type) {
+  async function triggerAttendance(type) {
     if (type === 'END' && !confirm('ছুটি নিতে চান?')) return;
-    const btn = type === 'START' ? document.getElementById('btnStartDuty') : document.getElementById('btnEndDuty');
-    btn.disabled = true; btn.innerText = 'GPS লোকেশন নিচ্ছে...';
-
-    getMandatoryGPS(async gps => {
-      if (!gps) { loadEmployeeDashboard(); return; }
+    navigator.geolocation.getCurrentPosition(async pos => {
+      const gps = pos.coords.latitude.toFixed(6) + ',' + pos.coords.longitude.toFixed(6);
       try {
         if (type === 'START') isDutyActiveNow = true;
         const res = await callAPI({ action: 'markAtt', username: currentUser.username, type, gps });
         alert(res.message);
         loadEmployeeDashboard();
-      } catch (err) { alert('নেটওয়ার্ক এরর!'); loadEmployeeDashboard(); }
-    });
+      } catch (err) { alert('নেটওয়ার্ক এরর!'); }
+    }, err => {
+      alert('ডিউটি শুরু করতে GPS লোকেশন অন করুন!');
+    }, { enableHighAccuracy: true });
   }
 
   function compressImg(event) {
@@ -553,36 +558,10 @@
         compressedPhotoBase64 = canvas.toDataURL('image/jpeg', 0.85);
         const prev = document.getElementById('photoPreview');
         prev.src = compressedPhotoBase64; prev.style.display = 'block';
-        document.getElementById('camStatusText').innerText = '✔ ছবি যুক্ত হয়েছে';
       };
       img.src = e.target.result;
     };
     reader.readAsDataURL(file);
-  }
-
-  function verifyCheckbox(chk) {
-    if (!isDutyActiveNow) { chk.checked = false; return alert('আগে ডিউটি চালু করুন!'); }
-    const submitBtn = document.getElementById('btnSubmitVisit');
-    const lbl = document.getElementById('chkLabelText');
-
-    if (chk.checked) {
-      lbl.innerText = '⏳ লাইভ GPS লোকেশন চেক করা হচ্ছে...';
-      getMandatoryGPS(gps => {
-        if (!gps) {
-          chk.checked = false;
-          lbl.innerText = '📍 GPS লোকেশন যাচাই করে নিশ্চিত করুন (টিক দিন)';
-          submitBtn.disabled = true;
-          return;
-        }
-        document.getElementById('hiddenVisitGPS').value = gps;
-        lbl.innerText = '✔ GPS লোকেশন সফলভাবে ভেরিফাই হয়েছে!';
-        submitBtn.disabled = false;
-      });
-    } else {
-      document.getElementById('hiddenVisitGPS').value = '';
-      submitBtn.disabled = true;
-      lbl.innerText = '📍 GPS লোকেশন যাচাই করে নিশ্চিত করুন (টিক দিন)';
-    }
   }
 
   async function submitVisitForm() {
@@ -597,22 +576,24 @@
     const gps = document.getElementById('hiddenVisitGPS').value;
 
     if (!shop || !prop || !mobile || !rawAddr || !remarks || !compressedPhotoBase64) return alert('সবগুলো ঘর পূরণ করুন!');
-    if (!gps) return alert('GPS লোকেশন বাধ্যতামূলক!');
+    if (!gps) return alert('GPS লোকেশন বাধ্যতামূলক! দয়া করে ক্যামেরা বক্সে ট্যাপ করে GPS ফিক্স করুন।');
 
     const btn = document.getElementById('btnSubmitVisit');
     btn.disabled = true; btn.innerText = 'সাবমিট হচ্ছে...';
 
     const res = await callAPI({
       action: 'submitVisit',
-      payload: { username: currentUser.username, shopName: shop, proprietor: prop, mobile, address: `[${zone}] ${rawAddr}`, remarks, followUp, imageBase64: compressedPhotoBase64, gps }
+      payload: { username: currentUser.username, shopName: shop, proprietor: prop, mobile, address: `[${zone}]${rawAddr}`, remarks, followUp, imageBase64: compressedPhotoBase64, gps }
     });
 
     alert(res.message);
     ['vShop', 'vProp', 'vMobile', 'vAddress', 'vRemarks', 'vPhoto', 'vFollowUp'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('chkVerifyVisit').checked = false;
     document.getElementById('photoPreview').style.display = 'none';
-    document.getElementById('chkLabelText').innerText = '📍 GPS লোকেশন যাচাই করে নিশ্চিত করুন (টিক দিন)';
+    document.getElementById('hiddenVisitGPS').value = '';
+    document.getElementById('gpsStatusText').innerText = '';
+    document.getElementById('camStatusText').innerText = 'ক্যামেরা ও GPS চালু করতে ট্যাপ করুন';
     compressedPhotoBase64 = '';
+    btn.disabled = false;
     btn.innerText = '✅ ভিজিট রিপোর্ট সাবমিট করুন';
     loadEmployeeDashboard();
   }

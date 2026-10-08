@@ -88,11 +88,10 @@
   </div>
 </div>
 
-<!-- EMPLOYEE FULL PROFILE VIEW MODAL -->
 <div id="profileModal" class="img-modal-overlay hidden" onclick="closeProfileModal()">
   <div class="img-modal-box" onclick="event.stopPropagation()" style="max-width: 480px; width: 100%; text-align: left;">
     <button class="img-modal-close" onclick="closeProfileModal()">✕</button>
-    <h3 style="margin-bottom: 14px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">👤 কর্মচারীর পূর্ণ প্রফাইল বিবরণী</h3>
+    <h3 style="margin-bottom: 14px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">👤 Kormocarir Purna Profile Biboroni</h3>
     <div id="profileDetailsContent" style="max-height: 70vh; overflow-y: auto; font-size: 13.5px; line-height: 1.6;"></div>
   </div>
 </div>
@@ -101,8 +100,8 @@
   <div class="map-modal-box" onclick="event.stopPropagation()">
     <button class="img-modal-close" onclick="closeAdminMapPopup()">✕</button>
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
-      <h4 id="adminMapTitle" style="margin:0; font-size:16px; color:var(--text-dark);">🗺️ সারাদিনের সম্পূর্ণ ভিজিট রুট ম্যাপ</h4>
-      <a id="gmapFullRouteBtn" href="#" target="_blank" class="btn btn-warning btn-sm">📍 Google Maps-এ ফুল রুট ↗</a>
+      <h4 id="adminMapTitle" style="margin:0; font-size:16px; color:var(--text-dark);">🗺️ Map View</h4>
+      <a id="gmapFullRouteBtn" href="#" target="_blank" class="btn btn-warning btn-sm">📍 Google Maps ↗</a>
     </div>
     <div id="adminLeafletMap"></div>
   </div>
@@ -112,18 +111,18 @@
 <div id="loginView" class="login-wrapper">
   <div class="login-box">
     <div style="font-size: 36px; margin-bottom: 8px;">🛡️</div>
-    <h2>অ্যাডমিন পোর্টাল</h2>
-    <p>কন্ট্রোল রুমে প্রবেশ করতে লগইন করুন</p>
+    <h2>Admin Portal</h2>
+    <p>Control Room Login</p>
     <form onsubmit="event.preventDefault(); handleAdminLogin();">
       <div class="form-group" style="text-align: left;">
-        <label>ইউজারনেম</label>
+        <label>Username</label>
         <input type="text" id="loginUser" class="form-control" placeholder="admin" required>
       </div>
       <div class="form-group" style="text-align: left;">
-        <label>পাসওয়ার্ড</label>
+        <label>Password</label>
         <input type="password" id="loginPass" class="form-control" placeholder="••••••••" required>
       </div>
-      <button type="submit" id="btnLogin" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px;">লগইন করুন</button>
+      <button type="submit" id="btnLogin" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px;">Login</button>
     </form>
     <p id="loginMsg" style="color: var(--danger); margin-top: 10px; font-weight: 600; font-size: 13px;"></p>
   </div>
@@ -139,18 +138,18 @@
       <div style="display: flex; gap: 8px; align-items: center; flex-wrap:wrap;">
         <input type="date" id="filterDateInput" class="form-control" style="width: 140px; padding: 5px 8px; font-size: 13px; background:#1e293b; color:#fff; border-color:#334155;" onchange="renderAdminDataTables()">
         <select id="filterEmpSelect" class="form-control" style="width: 150px; padding: 5px 8px; font-size: 13px; background:#1e293b; color:#fff; border-color:#334155;" onchange="renderAdminDataTables()">
-          <option value="ALL">সকল কর্মচারী</option>
+          <option value="ALL">Sokol Kormocari</option>
         </select>
-        <button class="btn btn-primary btn-sm" onclick="loadAdminData()">🔄</button>
-        <button class="btn btn-danger btn-sm" onclick="logoutAdmin()">লগআউট</button>
+        <button id="refreshBtn" class="btn btn-primary btn-sm" onclick="loadAdminData()">🔄 Refresh</button>
+        <button class="btn btn-danger btn-sm" onclick="logoutAdmin()">Logout</button>
       </div>
     </div>
 
     <div class="header-nav-tabs">
-      <button class="menu-item active" onclick="switchAdmTab('admTabVisits', this)"><span>🏪</span> <span>ভিজিট ভেরিফিকেশন</span></button>
-      <button class="menu-item" onclick="switchAdmTab('admTabAtt', this)"><span>⏰</span> <span>হাজিরা কন্ট্রোল</span></button>
-      <button class="menu-item" onclick="switchAdmTab('admTabEmpList', this)"><span>👥</span> <span>কর্মচারী প্রোফাইল লিস্ট</span></button>
-      <button class="menu-item" onclick="switchAdmTab('admTabRoutes', this)"><span>📅</span> <span>সাপ্তাহিক রুটিন</span></button>
+      <button class="menu-item active" onclick="switchAdmTab('admTabVisits', this)"><span>🏪</span> <span>Visit Verification</span></button>
+      <button class="menu-item" onclick="switchAdmTab('admTabAtt', this)"><span>⏰</span> <span>Attendance Control</span></button>
+      <button class="menu-item" onclick="switchAdmTab('admTabEmpList', this)"><span>👥</span> <span>Employee Profile List</span></button>
+      <button class="menu-item" onclick="switchAdmTab('admTabRoutes', this)"><span>📅</span> <span>Weekly Routine</span></button>
     </div>
   </div>
 
@@ -159,75 +158,75 @@
       <div class="stats-grid no-print">
         <div class="stat-card">
           <div class="stat-icon">⏰</div>
-          <div class="stat-info"><span>ডিউটি স্ট্যাটাস</span><strong id="admTodayStatus" style="font-size: 14px;">--</strong></div>
+          <div class="stat-info"><span>Duty Status</span><strong id="admTodayStatus" style="font-size: 14px;">--</strong></div>
         </div>
         <div class="stat-card green">
           <div class="stat-icon">🏪</div>
-          <div class="stat-info"><span>সিলেক্টেড দিনে মোট ভিজিট</span><strong id="admTodayVisits">0 টি</strong></div>
+          <div class="stat-info"><span>Total Visits (Selected Date)</span><strong id="admTodayVisits">0 Ti</strong></div>
         </div>
       </div>
 
       <!-- TAB 1: VISITS -->
       <div id="admTabVisits" class="panel-card">
         <div class="panel-header">
-          <span>🏪 কর্মচারীর দোকান ভিজিট ও ছবি ভেরিফিকেশন</span>
-          <button type="button" class="btn btn-primary btn-sm" onclick="openDayRouteMapModal()">🗺️ সারাদিনের ফুল রুট ম্যাপ দেখুন</button>
+          <span>🏪 Shop Visits & Verification</span>
+          <button type="button" class="btn btn-primary btn-sm" onclick="openDayRouteMapModal()">🗺️ Full Route Map View</button>
         </div>
         <div class="table-responsive">
           <table>
-            <thead><tr><th>তারিখ ও সময়</th><th>কর্মচারী</th><th>দোকান ও ঠিকানা</th><th>মালিক ও কল</th><th>নোট</th><th>ছবি ও একক ম্যাপ</th><th>স্ট্যাটাস</th><th>অ্যাকশন</th></tr></thead>
+            <thead><tr><th>Date & Time</th><th>Employee</th><th>Shop & Address</th><th>Proprietor & Call</th><th>Remarks</th><th>Photo & Map</th><th>Status</th><th>Action</th></tr></thead>
             <tbody id="admVisitBody"></tbody>
           </table>
         </div>
       </div>
 
-      <!-- TAB 2: ATTENDANCE -->
+      <!-- TAB 2: ATTENDANCE (Start & End Map Buttons Added) -->
       <div id="admTabAtt" class="panel-card hidden">
-        <div class="panel-header"><span>⏰ হাজিরা কন্ট্রোল (Start / End Duty)</span></div>
+        <div class="panel-header"><span>⏰ Attendance Control & GPS Map View</span></div>
         <div class="table-responsive">
           <table>
-            <thead><tr><th>তারিখ</th><th>কর্মচারী</th><th>শুরু</th><th>শেষ</th><th>স্ট্যাটাস</th><th>অ্যাকশন</th></tr></thead>
+            <thead><tr><th>Date</th><th>Employee</th><th>Start Duty (GPS Map)</th><th>End Duty (GPS Map)</th><th>Status</th><th>Action</th></tr></thead>
             <tbody id="admAttBody"></tbody>
           </table>
         </div>
       </div>
 
-      <!-- TAB 3: EMPLOYEE PROFILE DIRECTORY -->
+      <!-- TAB 3: EMPLOYEE LIST -->
       <div id="admTabEmpList" class="panel-card hidden">
         <div class="panel-header">
-          <span>👥 নিবন্ধিত কর্মচারী তালিকা ও প্রফাইল ম্যানেজমেন্ট</span>
-          <button class="btn btn-success btn-sm" onclick="openEmpEditModal()">➕ নতুন কর্মচারী যোগ করুন</button>
+          <span>👥 Registered Employee List</span>
+          <button class="btn btn-success btn-sm" onclick="openEmpEditModal()">➕ Add New Employee</button>
         </div>
         <div class="table-responsive">
           <table>
-            <thead><tr><th>প্রফাইল ছবি</th><th>নাম ও ইউজারনেম</th><th>মোবাইল নম্বর</th><th>NID নম্বর</th><th>জেলা / উপজেলা</th><th>স্ট্যাটাস</th><th>অ্যাকশন</th></tr></thead>
+            <thead><tr><th>Photo</th><th>Name & Username</th><th>Mobile</th><th>NID</th><th>District / Upzila</th><th>Status</th><th>Action</th></tr></thead>
             <tbody id="admEmpTableBody"></tbody>
           </table>
         </div>
       </div>
 
-      <!-- TAB 4: WEEKLY ROUTINE PLANNER -->
+      <!-- TAB 4: ROUTE PLANNER -->
       <div id="admTabRoutes" class="panel-card hidden">
-        <div class="panel-header"><span>📅 সাপ্তাহিক ফিক্সড রুটিন ম্যানেজমেন্ট</span></div>
+        <div class="panel-header"><span>📅 Weekly Routine Management</span></div>
         
         <div style="margin-bottom: 16px;">
-          <label style="font-weight:700; margin-bottom:5px; display:block; font-size:13px;">কর্মচারী সিলেক্ট করুন:</label>
+          <label style="font-weight:700; margin-bottom:5px; display:block; font-size:13px;">Select Employee:</label>
           <select id="selectEmpForRoute" class="form-control" style="max-width:300px;" onchange="fillRouteFields()">
-            <option value="">-- কর্মচারী নির্বাচন করুন --</option>
+            <option value="">-- Select Employee --</option>
           </select>
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 20px;">
-          <div class="form-group"><label>শনিবার (Saturday)</label><input type="text" id="rt_sat" class="form-control"></div>
-          <div class="form-group"><label>রবিবার (Sunday)</label><input type="text" id="rt_sun" class="form-control"></div>
-          <div class="form-group"><label>সোমবার (Monday)</label><input type="text" id="rt_mon" class="form-control"></div>
-          <div class="form-group"><label>মঙ্গলবার (Tuesday)</label><input type="text" id="rt_tue" class="form-control"></div>
-          <div class="form-group"><label>বুধবার (Wednesday)</label><input type="text" id="rt_wed" class="form-control"></div>
-          <div class="form-group"><label>বৃহস্পতিবার (Thursday)</label><input type="text" id="rt_thu" class="form-control"></div>
-          <div class="form-group"><label>শুক্রবার (Friday)</label><input type="text" id="rt_fri" class="form-control"></div>
-          <div class="form-group" style="background:#fffbeb; padding:8px; border-radius:8px;"><label style="color:#b45309;">⚡ স্পেশাল রুট</label><input type="text" id="rt_special" class="form-control"></div>
+          <div class="form-group"><label>Saturday</label><input type="text" id="rt_sat" class="form-control"></div>
+          <div class="form-group"><label>Sunday</label><input type="text" id="rt_sun" class="form-control"></div>
+          <div class="form-group"><label>Monday</label><input type="text" id="rt_mon" class="form-control"></div>
+          <div class="form-group"><label>Tuesday</label><input type="text" id="rt_tue" class="form-control"></div>
+          <div class="form-group"><label>Wednesday</label><input type="text" id="rt_wed" class="form-control"></div>
+          <div class="form-group"><label>Thursday</label><input type="text" id="rt_thu" class="form-control"></div>
+          <div class="form-group"><label>Friday</label><input type="text" id="rt_fri" class="form-control"></div>
+          <div class="form-group" style="background:#fffbeb; padding:8px; border-radius:8px;"><label style="color:#b45309;">⚡ Special Route</label><input type="text" id="rt_special" class="form-control"></div>
         </div>
-        <button class="btn btn-primary" onclick="saveWeeklyRoute()">💾 সাপ্তাহিক রুটিন সেভ করুন</button>
+        <button class="btn btn-primary" onclick="saveWeeklyRoute()">💾 Save Weekly Routine</button>
       </div>
 
     </div>
@@ -238,7 +237,7 @@
 <div id="empEditModal" class="img-modal-overlay hidden" onclick="closeEmpEditModal()">
   <div class="img-modal-box" onclick="event.stopPropagation()" style="max-width: 550px; width: 100%; text-align: left;">
     <button class="img-modal-close" onclick="closeEmpEditModal()">✕</button>
-    <h3 id="empModalTitle" style="margin-bottom: 14px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">➕ নতুন কর্মচারী যোগ করুন</h3>
+    <h3 id="empModalTitle" style="margin-bottom: 14px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">➕ Add Employee</h3>
     
     <div style="max-height: 70vh; overflow-y: auto; padding-right: 5px;">
       <div style="text-align: center; margin-bottom: 12px;">
@@ -249,22 +248,22 @@
       </div>
 
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
-        <div class="form-group"><label>ইউজারনেম (ID) *</label><input type="text" id="mUser" class="form-control" placeholder="emp2"></div>
-        <div class="form-group"><label>পাসওয়ার্ড *</label><input type="text" id="mPass" class="form-control" placeholder="পাসওয়ার্ড"></div>
-        <div class="form-group"><label>পূর্ণ নাম *</label><input type="text" id="mFullName" class="form-control" placeholder="নাম"></div>
-        <div class="form-group"><label>পিতার নাম</label><input type="text" id="mFatherName" class="form-control" placeholder="পিতার নাম"></div>
-        <div class="form-group"><label>মাতার নাম</label><input type="text" id="mMotherName" class="form-control" placeholder="মাতার নাম"></div>
-        <div class="form-group"><label>মোবাইল নাম্বার</label><input type="tel" id="mMobile" class="form-control" placeholder="01XXXXXXXXX"></div>
-        <div class="form-group"><label>পরিবারের সদস্য সংখ্যা</label><input type="number" id="mFamily" class="form-control" placeholder="সংখ্যা"></div>
-        <div class="form-group"><label>NID কার্ড নম্বর *</label><input type="text" id="mNid" class="form-control" placeholder="NID No" required></div>
-        <div class="form-group"><label>ড্রাইভিং লাইসেন্স</label><input type="text" id="mLicence" class="form-control" placeholder="Licence No"></div>
-        <div class="form-group"><label>গ্রাম</label><input type="text" id="mVillage" class="form-control" placeholder="গ্রাম"></div>
-        <div class="form-group"><label>ডাকঘর</label><input type="text" id="mPost" class="form-control" placeholder="ডাকঘর"></div>
-        <div class="form-group"><label>উপজেলা</label><input type="text" id="mUpzila" class="form-control" placeholder="উপজেলা"></div>
-        <div class="form-group"><label>জেলা</label><input type="text" id="mZila" class="form-control" placeholder="জেলা"></div>
-        <div class="form-group"><label>স্ট্যাটাস</label><select id="mStatus" class="form-control"><option value="Active">Active</option><option value="Blocked">Blocked</option></select></div>
+        <div class="form-group"><label>Username (ID) *</label><input type="text" id="mUser" class="form-control" placeholder="emp2"></div>
+        <div class="form-group"><label>Password *</label><input type="text" id="mPass" class="form-control" placeholder="Password"></div>
+        <div class="form-group"><label>Full Name *</label><input type="text" id="mFullName" class="form-control" placeholder="Name"></div>
+        <div class="form-group"><label>Father Name</label><input type="text" id="mFatherName" class="form-control" placeholder="Father Name"></div>
+        <div class="form-group"><label>Mother Name</label><input type="text" id="mMotherName" class="form-control" placeholder="Mother Name"></div>
+        <div class="form-group"><label>Mobile Number</label><input type="tel" id="mMobile" class="form-control" placeholder="01XXXXXXXXX"></div>
+        <div class="form-group"><label>Family Members</label><input type="number" id="mFamily" class="form-control" placeholder="Members"></div>
+        <div class="form-group"><label>NID Card *</label><input type="text" id="mNid" class="form-control" placeholder="NID No" required></div>
+        <div class="form-group"><label>Driving Licence</label><input type="text" id="mLicence" class="form-control" placeholder="Licence No"></div>
+        <div class="form-group"><label>Village</label><input type="text" id="mVillage" class="form-control" placeholder="Village"></div>
+        <div class="form-group"><label>Post Office</label><input type="text" id="mPost" class="form-control" placeholder="Post Office"></div>
+        <div class="form-group"><label>Upzila</label><input type="text" id="mUpzila" class="form-control" placeholder="Upzila"></div>
+        <div class="form-group"><label>Zila</label><input type="text" id="mZila" class="form-control" placeholder="Zila"></div>
+        <div class="form-group"><label>Status</label><select id="mStatus" class="form-control"><option value="Active">Active</option><option value="Blocked">Blocked</option></select></div>
       </div>
-      <button class="btn btn-primary" style="width:100%; margin-top:14px;" onclick="saveEmpModalData()">💾 সংরক্ষণ করুন</button>
+      <button class="btn btn-primary" style="width:100%; margin-top:14px;" onclick="saveEmpModalData()">💾 Save Info</button>
     </div>
   </div>
 </div>
@@ -283,40 +282,114 @@
     const match = url.match(/id=([a-zA-Z0-9_-]+)/);
     if (match && match[1]) displayUrl = "https://drive.google.com/thumbnail?id=" + match[1] + "&sz=w1600";
     document.getElementById('popupModalImg').src = displayUrl;
-    document.getElementById('popupModalCaption').innerText = title || 'ছবি';
+    document.getElementById('popupModalCaption').innerText = title || 'Photo';
     document.getElementById('photoPopupModal').classList.remove('hidden');
   }
 
   function closePhotoPopup() { document.getElementById('photoPopupModal').classList.add('hidden'); }
   function closeProfileModal() { document.getElementById('profileModal').classList.add('hidden'); }
   function closeEmpEditModal() { document.getElementById('empEditModal').classList.add('hidden'); }
+  function closeAdminMapPopup() { document.getElementById('adminMapModal').classList.add('hidden'); }
 
   function viewEmployeeProfile(username) {
     if (!adminCache) return;
     const emp = adminCache.users.find(u => u.username === username);
-    if (!emp) return alert('কর্মচারী পাওয়া যায়নি!');
+    if (!emp) return alert('Employee not found!');
 
     const photoHtml = emp.profilePhoto ? `<img src="${emp.profilePhoto}" style="width:100px; height:120px; object-fit:cover; border-radius:8px; border:1px solid #cbd5e1; display:block; margin: 0 auto 12px auto;">` : `<div style="width:100px; height:120px; background:#f1f5f9; border-radius:8px; display:flex; align-items:center; justify-content:center; margin: 0 auto 12px auto; font-size:24px;">👤</div>`;
 
     document.getElementById('profileDetailsContent').innerHTML = `
       ${photoHtml}
-      <p><strong>পূর্ণ নাম:</strong> ${emp.fullName || '--'}</p>
-      <p><strong>ইউজারনেম (ID):</strong> ${emp.username}</p>
-      <p><strong>পিতার নাম:</strong> ${emp.fatherName || '--'}</p>
-      <p><strong>মাতার নাম:</strong> ${emp.motherName || '--'}</p>
-      <p><strong>মোবাইল নাম্বার:</strong> ${emp.mobile || '--'}</p>
-      <p><strong>পরিবারের সদস্য:</strong> ${emp.familyMembers || '--'}</p>
-      <p><strong>এনআইডি (NID):</strong> ${emp.nid || '--'}</p>
-      <p><strong>ড্রাইভিং লাইসেন্স:</strong> ${emp.drivingLicence || '--'}</p>
-      <p><strong>ঠিকানা:</strong> গ্রাম: ${emp.village || '--'}, ডাক: ${emp.post || '--'}, উপজেলা: ${emp.upzila || '--'}, জেলা: ${emp.zila || '--'}</p>
-      <p><strong>স্ট্যাটাস:</strong> <span class="badge ${emp.status==='Active'?'b-green':'b-red'}">${emp.status}</span></p>
+      <p><strong>Full Name:</strong> ${emp.fullName || '--'}</p>
+      <p><strong>Username (ID):</strong> ${emp.username}</p>
+      <p><strong>Father Name:</strong> ${emp.fatherName || '--'}</p>
+      <p><strong>Mother Name:</strong> ${emp.motherName || '--'}</p>
+      <p><strong>Mobile:</strong> ${emp.mobile || '--'}</p>
+      <p><strong>Family Members:</strong> ${emp.familyMembers || '--'}</p>
+      <p><strong>NID:</strong> ${emp.nid || '--'}</p>
+      <p><strong>Driving Licence:</strong> ${emp.drivingLicence || '--'}</p>
+      <p><strong>Address:</strong> Village: ${emp.village || '--'}, Post: ${emp.post || '--'}, Upzila: ${emp.upzila || '--'}, Zila: ${emp.zila || '--'}</p>
+      <p><strong>Status:</strong> <span class="badge ${emp.status==='Active'?'b-green':'b-red'}">${emp.status}</span></p>
     `;
     document.getElementById('profileModal').classList.remove('hidden');
   }
 
+  function openSingleMapPopup(gpsStr, title) {
+    if (!gpsStr || !gpsStr.includes(',')) return alert('GPS location not found!');
+    const [lat, lng] = gpsStr.split(',').map(Number);
+    if (isNaN(lat) || isNaN(lng)) return alert('Invalid GPS format!');
+
+    document.getElementById('adminMapTitle').innerText = `🗺️ Map View: ${title}`;
+    document.getElementById('adminMapModal').classList.remove('hidden');
+
+    setTimeout(() => {
+      if (!adminMap) {
+        adminMap = L.map('adminLeafletMap');
+        L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(adminMap);
+      }
+      adminMap.invalidateSize();
+      adminMap.setView([lat, lng], 17);
+
+      if (adminRouteLayer) adminMap.removeLayer(adminRouteLayer);
+      adminRouteLayer = L.layerGroup().addTo(adminMap);
+      L.marker([lat, lng]).addTo(adminRouteLayer).bindPopup(`<strong>${title}</strong><br>GPS: ${gpsStr}`).openPopup();
+    }, 150);
+  }
+
+  function openDayRouteMapModal() {
+    if (!adminCache) return;
+    const selectedDate = document.getElementById('filterDateInput').value;
+    const selectedEmp = document.getElementById('filterEmpSelect').value;
+
+    if (!selectedDate) return alert('Please select a specific date from the filter!');
+    if (selectedEmp === 'ALL') return alert('Please select a specific employee from the dropdown!');
+
+    const dayVisits = adminCache.visits.filter(v => v.date === selectedDate && v.username === selectedEmp && v.status !== 'Fake' && v.gps && v.gps.includes(',')).slice().reverse();
+
+    if (dayVisits.length === 0) {
+      return alert(`No GPS records found for date ${selectedDate}!`);
+    }
+
+    const empName = getEmpFullName(selectedEmp);
+    document.getElementById('adminMapTitle').innerText = `🗺️ Full Route Map (${selectedDate} — ${empName}) | Total Shops: ${dayVisits.length}`;
+    
+    const origin = dayVisits[0].gps;
+    const destination = dayVisits[dayVisits.length - 1].gps;
+    const waypoints = dayVisits.slice(1, -1).map(v => v.gps).join('|');
+    document.getElementById('gmapFullRouteBtn').href = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypoints?'&waypoints='+encodeURIComponent(waypoints):''}&travelmode=driving`;
+
+    document.getElementById('adminMapModal').classList.remove('hidden');
+
+    setTimeout(() => {
+      if (!adminMap) {
+        adminMap = L.map('adminLeafletMap');
+        L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(adminMap);
+      }
+      adminMap.invalidateSize();
+      if (adminRouteLayer) adminMap.removeLayer(adminRouteLayer);
+      adminRouteLayer = L.layerGroup().addTo(adminMap);
+
+      let latLngs = [];
+      dayVisits.forEach((v, i) => {
+        const [lat, lng] = v.gps.split(',').map(Number);
+        if (!isNaN(lat) && !isNaN(lng)) {
+          latLngs.push([lat, lng]);
+          L.marker([lat, lng]).addTo(adminRouteLayer).bindPopup(`<b>Shop #${i+1}: ${v.shop}</b><br>Time: ${v.time}<br>Proprietor: ${v.prop}`);
+        }
+      });
+
+      if (latLngs.length > 1) {
+        const polyline = L.polyline(latLngs, { color: '#2563eb', weight: 4, dashArray: '6, 6' }).addTo(adminRouteLayer);
+        adminMap.fitBounds(polyline.getBounds(), { padding: [50, 50] });
+      } else if (latLngs.length === 1) {
+        adminMap.setView(latLngs[0], 16);
+      }
+    }, 150);
+  }
+
   function openEmpEditModal(username = '') {
     if (username) {
-      document.getElementById('empModalTitle').innerText = '✏️ কর্মচারী প্রফাইল এডিট করুন';
+      document.getElementById('empModalTitle').innerText = '✏️ Edit Employee Profile';
       const emp = adminCache.users.find(u => u.username === username);
       if (emp) {
         document.getElementById('mUser').value = emp.username;
@@ -344,7 +417,7 @@
         }
       }
     } else {
-      document.getElementById('empModalTitle').innerText = '➕ নতুন কর্মচারী যোগ করুন';
+      document.getElementById('empModalTitle').innerText = '➕ Add Employee';
       document.getElementById('mUser').value = '';
       document.getElementById('mUser').disabled = false;
       document.getElementById('mPass').value = '';
@@ -393,7 +466,7 @@
     const fullName = document.getElementById('mFullName').value.trim();
     const nid = document.getElementById('mNid').value.trim();
 
-    if (!username || !password || !fullName || !nid) return alert('ইউজারনেম, পাসওয়ার্ড, নাম এবং NID বাধ্যতামূলক!');
+    if (!username || !password || !fullName || !nid) return alert('Username, Password, Full Name and NID are required!');
 
     const isExisting = adminCache.users.some(u => u.username === username);
     const actionType = isExisting ? 'updateUser' : 'addNewEmp';
@@ -438,7 +511,7 @@
 
   async function saveWeeklyRoute() {
     const username = document.getElementById('selectEmpForRoute').value;
-    if (!username) return alert('আগে একজন কর্মচারী সিলেক্ট করুন!');
+    if (!username) return alert('Please select an employee first!');
 
     const emp = adminCache.users.find(u => u.username === username);
     const weeklyRouteObj = {
@@ -474,7 +547,7 @@
   }
 
   function logoutAdmin() {
-    if (!confirm('লগআউট করতে চান?')) return;
+    if (!confirm('Logout?')) return;
     localStorage.removeItem(ADM_STORAGE_KEY);
     location.reload();
   }
@@ -487,22 +560,22 @@
   async function handleAdminLogin() {
     const u = document.getElementById('loginUser').value.trim();
     const p = document.getElementById('loginPass').value.trim();
-    if (!u || !p) return alert('ইউজারনেম এবং পাসওয়ার্ড দিন!');
+    if (!u || !p) return alert('Enter username and password!');
     const btn = document.getElementById('btnLogin');
-    btn.disabled = true; btn.innerText = 'যাচাই হচ্ছে...';
+    btn.disabled = true; btn.innerText = 'Checking...';
 
     try {
       const res = await callAPI({ action: 'login', username: u, password: p });
-      btn.disabled = false; btn.innerText = 'লগইন করুন';
+      btn.disabled = false; btn.innerText = 'Login';
       if (!res.success || res.user.role !== 'admin') {
-        document.getElementById('loginMsg').innerText = res.message || 'অ্যাডমিন এক্সেস নেই!';
+        document.getElementById('loginMsg').innerText = res.message || 'No admin access!';
         return;
       }
       localStorage.setItem(ADM_STORAGE_KEY, JSON.stringify(res.user));
       showAdminUI();
     } catch (e) {
-      btn.disabled = false; btn.innerText = 'লগইন করুন';
-      alert('কানেকশন এরর!');
+      btn.disabled = false; btn.innerText = 'Login';
+      alert('Connection error!');
     }
   }
 
@@ -515,43 +588,49 @@
   }
 
   async function loadAdminData() {
-    const data = await callAPI({ action: 'getAdminData' });
-    adminCache = data;
+    const btn = document.getElementById('refreshBtn');
+    if (btn) { btn.disabled = true; btn.innerText = '⏳ Load hocche, wait korun...'; }
 
-    const employees = data.users.filter(u => u.role === 'employee');
-    
-    // ফিল্টার ড্রপডাউন
-    const empSelect = document.getElementById('filterEmpSelect');
-    const currentSel = empSelect.value;
-    empSelect.innerHTML = `<option value="ALL">সকল কর্মচারী</option>` + employees.map(e => `<option value="${e.username}">${e.fullName}</option>`).join('');
-    if (currentSel) empSelect.value = currentSel;
+    try {
+      const data = await callAPI({ action: 'getAdminData' });
+      adminCache = data;
 
-    // রুটিনের জন্য কর্মচারী ড্রপডাউন
-    const routeSelect = document.getElementById('selectEmpForRoute');
-    const currentRouteSel = routeSelect.value;
-    routeSelect.innerHTML = `<option value="">-- কর্মচারী নির্বাচন করুন --</option>` + employees.map(e => `<option value="${e.username}">${e.fullName} (${e.username})</option>`).join('');
-    if (currentRouteSel) routeSelect.value = currentRouteSel;
+      const employees = data.users.filter(u => u.role === 'employee');
+      
+      const empSelect = document.getElementById('filterEmpSelect');
+      const currentSel = empSelect.value;
+      empSelect.innerHTML = `<option value="ALL">Sokol Kormocari</option>` + employees.map(e => `<option value="${e.username}">${e.fullName}</option>`).join('');
+      if (currentSel) empSelect.value = currentSel;
 
-    // কর্মচারী তালিকা টেবিল
-    document.getElementById('admEmpTableBody').innerHTML = employees.length ? employees.map(e => {
-      const pImg = e.profilePhoto ? `<img src="${e.profilePhoto}" style="width:36px; height:42px; object-fit:cover; border-radius:4px;">` : '👤';
-      return `<tr>
-        <td>${pImg}</td>
-        <td><strong>${e.fullName}</strong><br><small style="color:var(--text-muted);">${e.username}</small></td>
-        <td>${e.mobile || '--'}</td>
-        <td>${e.nid || '--'}</td>
-        <td>${e.zila || '--'} / ${e.upzila || '--'}</td>
-        <td><span class="badge ${e.status==='Active'?'b-green':'b-red'}">${e.status}</span></td>
-        <td>
-          <div style="display:flex; gap:4px;">
-            <button class="btn btn-primary btn-sm" onclick="viewEmployeeProfile('${e.username}')" style="padding:4px 8px;">👁️ প্রফাইল</button>
-            <button class="btn btn-warning btn-sm" onclick="openEmpEditModal('${e.username}')" style="padding:4px 8px;">✏️ এডিট</button>
-          </div>
-        </td>
-      </tr>`;
-    }).join('') : '<tr><td colspan="7" style="text-align:center;">কোনো কর্মচারী নেই</td></tr>';
+      const routeSelect = document.getElementById('selectEmpForRoute');
+      const currentRouteSel = routeSelect.value;
+      routeSelect.innerHTML = `<option value="">-- Select Employee --</option>` + employees.map(e => `<option value="${e.username}">${e.fullName} (${e.username})</option>`).join('');
+      if (currentRouteSel) routeSelect.value = currentRouteSel;
 
-    renderAdminDataTables();
+      document.getElementById('admEmpTableBody').innerHTML = employees.length ? employees.map(e => {
+        const pImg = e.profilePhoto ? `<img src="${e.profilePhoto}" style="width:36px; height:42px; object-fit:cover; border-radius:4px;">` : '👤';
+        return `<tr>
+          <td>${pImg}</td>
+          <td><strong>${e.fullName}</strong><br><small style="color:var(--text-muted);">${e.username}</small></td>
+          <td>${e.mobile || '--'}</td>
+          <td>${e.nid || '--'}</td>
+          <td>${e.zila || '--'} / ${e.upzila || '--'}</td>
+          <td><span class="badge ${e.status==='Active'?'b-green':'b-red'}">${e.status}</span></td>
+          <td>
+            <div style="display:flex; gap:4px;">
+              <button class="btn btn-primary btn-sm" onclick="viewEmployeeProfile('${e.username}')" style="padding:4px 8px;">👁️ Profile</button>
+              <button class="btn btn-warning btn-sm" onclick="openEmpEditModal('${e.username}')" style="padding:4px 8px;">✏️ Edit</button>
+            </div>
+          </td>
+        </tr>`;
+      }).join('') : '<tr><td colspan="7" style="text-align:center;">No employees found</td></tr>';
+
+      renderAdminDataTables();
+    } catch (e) {
+      alert('Error loading data!');
+    } finally {
+      if (btn) { btn.disabled = false; btn.innerText = '🔄 Refresh'; }
+    }
   }
 
   function renderAdminDataTables() {
@@ -563,8 +642,8 @@
     const filteredAtt = adminCache.attendance.filter(a => (!selectedDate || a.date === selectedDate) && (selectedEmp === 'ALL' || a.username === selectedEmp));
 
     const todayAtt = filteredAtt[0];
-    document.getElementById('admTodayStatus').innerText = todayAtt ? `${todayAtt.status} (${todayAtt.startTime})` : 'আজ শুরু করেনি';
-    document.getElementById('admTodayVisits').innerText = filteredVisits.filter(v => v.status !== 'Fake').length + ' টি';
+    document.getElementById('admTodayStatus').innerText = todayAtt ? `${todayAtt.status} (${todayAtt.startTime})` : 'Not started today';
+    document.getElementById('admTodayVisits').innerText = filteredVisits.filter(v => v.status !== 'Fake').length + ' Ti';
 
     document.getElementById('admVisitBody').innerHTML = filteredVisits.length ? filteredVisits.map(v => {
       const safeShop = String(v.shop || '').replace(/'/g, "\\'");
@@ -573,15 +652,15 @@
         <td>${v.date}<br><small>${v.time}</small></td>
         <td>
           <strong style="color:var(--primary);">${fullName}</strong><br>
-          <button type="button" class="btn btn-primary btn-sm" onclick="viewEmployeeProfile('${v.username}')" style="padding:1px 6px; font-size:11px; margin-top:2px;">👁️ প্রফাইল</button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="viewEmployeeProfile('${v.username}')" style="padding:1px 6px; font-size:11px; margin-top:2px;">👁️ Profile</button>
         </td>
         <td><strong>${v.shop}</strong><br><small>${v.address}</small></td>
-        <td>${v.prop}<br><strong>${v.mobile}</strong><br><a href="tel:${v.mobile}" class="btn btn-success btn-sm" style="padding:2px 6px; margin-top:3px;">📞 কল</a></td>
-        <td>${v.remarks}<br><small style="color:var(--primary);">ফলো-আপ: ${v.followUp || '--'}</small></td>
+        <td>${v.prop}<br><strong>${v.mobile}</strong><br><a href="tel:${v.mobile}" class="btn btn-success btn-sm" style="padding:2px 6px; margin-top:3px;">📞 Call</a></td>
+        <td>${v.remarks}<br><small style="color:var(--primary);">Follow-up: ${v.followUp || '--'}</small></td>
         <td>
           <div style="display:flex; gap:4px; flex-wrap:wrap;">
-            ${v.photo ? `<button type="button" class="btn btn-primary btn-sm" onclick="openPhotoPopup('${v.photo}', '${safeShop}')" style="padding:4px 6px;">🖼️ ছবি</button>` : ''}
-            ${v.gps ? `<button type="button" class="btn btn-warning btn-sm" onclick="openSingleMapPopup('${v.gps}', '${safeShop}')" style="padding:4px 6px;">📍 ম্যাপ</button>` : ''}
+            ${v.photo ? `<button type="button" class="btn btn-primary btn-sm" onclick="openPhotoPopup('${v.photo}', '${safeShop}')" style="padding:4px 6px;">🖼️ Photo</button>` : ''}
+            ${v.gps ? `<button type="button" class="btn btn-warning btn-sm" onclick="openSingleMapPopup('${v.gps}', '${safeShop}')" style="padding:4px 6px;">📍 Map</button>` : ''}
           </div>
         </td>
         <td><span class="badge ${v.status === 'Verified' ? 'b-green' : 'b-red'}">${v.status}</span></td>
@@ -592,24 +671,29 @@
           </div>
         </td>
       </tr>`;
-    }).join('') : '<tr><td colspan="8" style="text-align:center;">কোনো ভিজিট নেই</td></tr>';
+    }).join('') : '<tr><td colspan="8" style="text-align:center;">No visits found</td></tr>';
 
+    // Attendance Table with Start & End Map Buttons
     document.getElementById('admAttBody').innerHTML = filteredAtt.length ? filteredAtt.map(a => {
       const fullName = getEmpFullName(a.username);
+      const startMapBtn = a.startGPS && a.startGPS.includes(',') ? `<button class="btn btn-warning btn-sm" onclick="openSingleMapPopup('${a.startGPS}', '${fullName} - Start Duty')">📍 Start Map</button>` : '--';
+      const endMapBtn = a.endGPS && a.endGPS.includes(',') ? `<button class="btn btn-danger btn-sm" onclick="openSingleMapPopup('${a.endGPS}', '${fullName} - End Duty')">📍 End Map</button>` : '--';
+      
       return `<tr>
         <td><strong>${a.date}</strong></td>
         <td>
           <strong style="color:var(--primary);">${fullName}</strong><br>
-          <button type="button" class="btn btn-primary btn-sm" onclick="viewEmployeeProfile('${a.username}')" style="padding:1px 6px; font-size:11px; margin-top:2px;">👁️ প্রফাইল</button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="viewEmployeeProfile('${a.username}')" style="padding:1px 6px; font-size:11px; margin-top:2px;">👁️ Profile</button>
         </td>
-        <td>${a.startTime}</td><td>${a.endTime || '--'}</td>
+        <td>${a.startTime}<br>${startMapBtn}</td>
+        <td>${a.endTime || '--'}<br>${endMapBtn}</td>
         <td><span class="badge b-yellow">${a.status}</span></td>
         <td>
-          <button class="btn btn-warning btn-sm" onclick="adminForceEndAtt('${a.id}')" style="padding:2px 6px;">ফোর্স</button>
-          <button class="btn btn-danger btn-sm" onclick="adminDeleteAtt('${a.id}')" style="padding:2px 6px;">রিসেট</button>
+          <button class="btn btn-warning btn-sm" onclick="adminForceEndAtt('${a.id}')" style="padding:2px 6px;">Force</button>
+          <button class="btn btn-danger btn-sm" onclick="adminDeleteAtt('${a.id}')" style="padding:2px 6px;">Reset</button>
         </td>
       </tr>`;
-    }).join('') : '<tr><td colspan="6" style="text-align:center;">কোনো হাজিরা নেই</td></tr>';
+    }).join('') : '<tr><td colspan="6" style="text-align:center;">No attendance records found</td></tr>';
   }
 
   async function changeVisitStatus(id, status) {
@@ -618,7 +702,7 @@
   }
 
   async function deleteVisitRecord(id) {
-    if (!confirm('ডিলিট করতে চান?')) return;
+    if (!confirm('Delete record?')) return;
     await callAPI({ action: 'manageVisit', id, subAction: 'DELETE', status: '' });
     loadAdminData();
   }
@@ -629,7 +713,7 @@
   }
 
   async function adminDeleteAtt(id) {
-    if (!confirm('রিসেট করতে চান?')) return;
+    if (!confirm('Reset attendance?')) return;
     await callAPI({ action: 'manageAtt', id, subAction: 'DELETE', status: '' });
     loadAdminData();
   }
