@@ -94,7 +94,6 @@
 </head>
 <body>
 
-<!-- ==================== IMAGE POPUP MODAL ==================== -->
 <div id="photoPopupModal" class="img-modal-overlay hidden" onclick="closePhotoPopup()">
   <div class="img-modal-box" onclick="event.stopPropagation()">
     <button class="img-modal-close" onclick="closePhotoPopup()">✕</button>
@@ -103,26 +102,28 @@
   </div>
 </div>
 
-<!-- ==================== LOGIN VIEW ==================== -->
+<!-- LOGIN VIEW -->
 <div id="loginView" class="login-screen">
   <div class="login-card">
     <div class="login-icon">📍</div>
     <h2>ফিল্ড ফোর্স পোর্টাল</h2>
     <p class="sub">আপনার আইডি ও পাসওয়ার্ড দিয়ে প্রবেশ করুন</p>
-    <div class="input-box">
-      <label>ইউজারনেম (Username)</label>
-      <input type="text" id="loginUser" class="field" placeholder="যেমন: emp1">
-    </div>
-    <div class="input-box">
-      <label>পাসওয়ার্ড (Password)</label>
-      <input type="password" id="loginPass" class="field" placeholder="••••••••">
-    </div>
-    <button id="btnLogin" class="btn btn-primary" onclick="handleLogin()">লগইন করুন ➔</button>
+    <form onsubmit="event.preventDefault(); handleLogin();">
+      <div class="input-box">
+        <label>ইউজারনেম (Username)</label>
+        <input type="text" id="loginUser" class="field" placeholder="যেমন: emp1" required>
+      </div>
+      <div class="input-box">
+        <label>পাসওয়ার্ড (Password)</label>
+        <input type="password" id="loginPass" class="field" placeholder="••••••••" required>
+      </div>
+      <button type="submit" id="btnLogin" class="btn btn-primary">লগইন করুন ➔</button>
+    </form>
     <p id="loginMsg" style="color:#ef4444; margin-top:12px; font-weight:600; font-size:13.5px;"></p>
   </div>
 </div>
 
-<!-- ==================== EMPLOYEE APP PANEL ==================== -->
+<!-- EMPLOYEE APP PANEL -->
 <div id="empPanel" class="hidden">
   <div class="app-header">
     <div class="header-top">
@@ -304,18 +305,74 @@
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw45glhGRu_tySZHMyawnkKEGOYxQnw1bx9KH_oZrKf16Mp-retUddYUo9wg8j17hlF/exec";
   const EMP_STORAGE_KEY = "field_force_emp_session_v1";
   const EMP_CACHE_KEY = "field_force_emp_data_cache_v1";
+  const GPS_MEM_KEY = "field_force_last_gps_v1";
+
   let currentUser = null;
   let compressedPhotoBase64 = '';
   let isDutyActiveNow = false;
-  let lastKnownGPS = '';
+  let liveGPS = sessionStorage.getItem(GPS_MEM_KEY) || '';
+  let gpsWatchId = null;
+
+  function initSilentLocationTracker() {
+    if (window.location.protocol === 'file:') {
+      fetchSilentIPLocation();
+      return;
+    }
+    if (!navigator.geolocation) {
+      fetchSilentIPLocation();
+      return;
+    }
+    if (gpsWatchId !== null) return;
+    gpsWatchId = navigator.geolocation.watchPosition(
+      pos => {
+        liveGPS = pos.coords.latitude.toFixed(6) + ',' + pos.coords.longitude.toFixed(6);
+        sessionStorage.setItem(GPS_MEM_KEY, liveGPS);
+      },
+      err => { fetchSilentIPLocation(); },
+      { enableHighAccuracy: true, maximumAge: 60000, timeout: 10000 }
+    );
+  }
+
+  async function fetchSilentIPLocation() {
+    if (liveGPS) return;
+    try {
+      const r = await fetch('https://ipapi.co/json/');
+      const j = await r.json();
+      if (j && j.latitude && j.longitude) {
+        liveGPS = Number(j.latitude).toFixed(6) + ',' + Number(j.longitude).toFixed(6);
+        sessionStorage.setItem(GPS_MEM_KEY, liveGPS);
+        return;
+      }
+    } catch (e) {}
+    liveGPS = '23.901300,89.120400';
+    sessionStorage.setItem(GPS_MEM_KEY, liveGPS);
+  }
+
+  function fetchGPS(callback) {
+    if (liveGPS) { callback(liveGPS); return; }
+    if (window.location.protocol === 'file:') {
+      fetchSilentIPLocation().then(() => callback(liveGPS || '23.901300,89.120400'));
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        liveGPS = pos.coords.latitude.toFixed(6) + ',' + pos.coords.longitude.toFixed(6);
+        sessionStorage.setItem(GPS_MEM_KEY, liveGPS);
+        callback(liveGPS);
+      },
+      err => {
+        alert('⚠️ আপনার ফোনের Location / GPS বন্ধ করা আছে! অনুগ্রহ করে লোকেশন অন করুন।');
+        callback(null);
+      },
+      { enableHighAccuracy: true, timeout: 6000, maximumAge: 120000 }
+    );
+  }
 
   function openPhotoPopup(url, title) {
     if (!url) return;
     let displayUrl = url;
     const match = url.match(/id=([a-zA-Z0-9_-]+)/);
-    if (match && match[1]) {
-      displayUrl = "https://drive.google.com/thumbnail?id=" + match[1] + "&sz=w1600";
-    }
+    if (match && match[1]) displayUrl = "https://drive.google.com/thumbnail?id=" + match[1] + "&sz=w1600";
     document.getElementById('popupModalImg').src = displayUrl;
     document.getElementById('popupModalCaption').innerText = title || 'ভিজিটের ছবি';
     document.getElementById('photoPopupModal').classList.remove('hidden');
@@ -331,78 +388,24 @@
     try {
       const obj = JSON.parse(rawRouteStr);
       if (typeof obj === 'object' && obj !== null) {
-        if (obj.special && obj.special.trim() !== '') {
-          return '⚡ আজকের বিশেষ রুট: ' + obj.special;
-        }
+        if (obj.special && obj.special.trim() !== '') return '⚡ আজকের বিশেষ রুট: ' + obj.special;
         const dayKeys = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
         const dayNamesBN = ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'];
         const dIdx = new Date().getDay();
-        const todayRoute = obj[dayKeys[dIdx]];
-        return `আজ (${dayNamesBN[dIdx]})-এর রুট: ` + (todayRoute || 'নির্ধারিত এরিয়া ভিজিট');
+        return `আজ (${dayNamesBN[dIdx]})-এর রুট: ` + (obj[dayKeys[dIdx]] || 'নির্ধারিত এরিয়া ভিজিট');
       }
-    } catch (e) {
-      return rawRouteStr;
-    }
+    } catch (e) { return rawRouteStr; }
     return rawRouteStr;
   }
 
-  // সুপার-ফাস্ট লোকেশন ক্যাচার (মোবাইলে GPS, আর পিসিতে বা জিপিএস আটকালে ৩ সেকেন্ডে অটো লোকেশন নেবে)
-  function fetchGPS(callback) {
-    let finished = false;
-    const done = (coords) => {
-      if (finished) return;
-      finished = true;
-      lastKnownGPS = coords;
-      callback(coords);
-    };
-
-    // ৩.৫ সেকেন্ডের সেফটি টাইমার (যাতে পিসিতে কখনোই "লোকেশন নিচ্ছে..." লিখে আটকে না থাকে)
-    const timer = setTimeout(async () => {
-      if (finished) return;
-      if (lastKnownGPS) { done(lastKnownGPS); return; }
-      try {
-        const r = await fetch('https://ipapi.co/json/');
-        const j = await r.json();
-        if (j && j.latitude && j.longitude) {
-          done(Number(j.latitude).toFixed(6) + ',' + Number(j.longitude).toFixed(6));
-          return;
-        }
-      } catch (e) {}
-      // ডিফল্ট কুষ্টিয়া ব্যাকআপ পয়েন্ট (পিসি থেকে লোকাল টেস্টের জন্য)
-      done('23.901300,89.120400');
-    }, 3500);
-
-    if (!navigator.geolocation) return;
-
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        clearTimeout(timer);
-        done(pos.coords.latitude.toFixed(6) + ',' + pos.coords.longitude.toFixed(6));
-      },
-      err => {
-        // High Accuracy ফেল করলে দ্রুত সাধারণ লোকেশন নেবে
-        navigator.geolocation.getCurrentPosition(
-          pos2 => {
-            clearTimeout(timer);
-            done(pos2.coords.latitude.toFixed(6) + ',' + pos2.coords.longitude.toFixed(6));
-          },
-          err2 => {},
-          { enableHighAccuracy: false, timeout: 2000, maximumAge: 300000 }
-        );
-      },
-      { enableHighAccuracy: true, timeout: 2500, maximumAge: 60000 }
-    );
-  }
-
   window.addEventListener('DOMContentLoaded', () => {
+    initSilentLocationTracker();
     const saved = localStorage.getItem(EMP_STORAGE_KEY);
     if (saved) {
       try {
         currentUser = JSON.parse(saved);
         showEmpDashboardUI();
-      } catch (e) {
-        localStorage.removeItem(EMP_STORAGE_KEY);
-      }
+      } catch (e) { localStorage.removeItem(EMP_STORAGE_KEY); }
     }
   });
 
@@ -410,16 +413,13 @@
     document.getElementById('loginView').classList.add('hidden');
     document.getElementById('empPanel').classList.remove('hidden');
     document.getElementById('empNameTitle').innerText = currentUser.fullName;
-
     const cachedData = localStorage.getItem(EMP_CACHE_KEY + "_" + currentUser.username);
-    if (cachedData) {
-      try { renderDashboardState(JSON.parse(cachedData)); } catch (e) {}
-    }
+    if (cachedData) { try { renderDashboardState(JSON.parse(cachedData)); } catch (e) {} }
     loadEmployeeDashboard();
   }
 
   function logoutEmp() {
-    if (!confirm('আপনি কি লগআউট করতে চান?')) return;
+    if (!confirm('লগআউট করতে চান?')) return;
     localStorage.removeItem(EMP_STORAGE_KEY);
     location.reload();
   }
@@ -465,84 +465,52 @@
 
     document.getElementById('empAttStatus').innerText = att.status;
     document.getElementById('empStartTime').innerText = att.startTime || 'দেওয়া হয়নি';
-    document.getElementById('empEndTime').innerText = att.endTime || (att.started ? 'ডিউটি চলমান (Active)' : '--');
+    document.getElementById('empEndTime').innerText = att.endTime || (att.started ? 'চলমান' : '--');
 
     if (!att.started) {
-      startBtn.disabled = false;
-      startBtn.innerText = '🟢 Start Duty';
-      endBtn.disabled = true;
-      endBtn.innerText = '🔴 End Duty';
+      startBtn.disabled = false; startBtn.innerText = '🟢 Start Duty';
+      endBtn.disabled = true; endBtn.innerText = '🔴 End Duty';
       isDutyActiveNow = false;
-
       document.getElementById('dutyLockNotice').classList.remove('hidden');
-      document.getElementById('lockNoticeTitle').innerText = 'সকালের Start Duty দেওয়া হয়নি!';
-      document.getElementById('lockNoticeDesc').innerHTML = 'সকালে মাত্র একবার <strong>"🟢 Start Duty"</strong> বাটনে ক্লিক করলেই সারাদিনের জন্য ভিজিট ও খরচের সব ফরম অটোমেটিক খুলে যাবে।';
     } else if (att.started && !att.ended) {
-      startBtn.disabled = true;
-      startBtn.innerText = '✔ ডিউটি চলমান';
-      endBtn.disabled = false;
-      endBtn.innerText = '🔴 End Duty (ছুটি)';
+      startBtn.disabled = true; startBtn.innerText = '✔ ডিউটি চলমান';
+      endBtn.disabled = false; endBtn.innerText = '🔴 End Duty';
       isDutyActiveNow = true;
-
       document.getElementById('dutyLockNotice').classList.add('hidden');
     } else {
-      // যদি ভুল করে End হয়ে থাকে, তবুও Start বাটন খোলা রাখা হলো যাতে ক্লিক করলেই আবার ফরম আনলক হয়ে যায়!
-      startBtn.disabled = false;
-      startBtn.innerText = '🟢 পুনরায় ডিউটি চালু করুন';
-      endBtn.disabled = true;
-      endBtn.innerText = '✔ End সম্পন্ন';
+      startBtn.disabled = false; startBtn.innerText = '🟢 পুনরায় চালু করুন';
+      endBtn.disabled = true; endBtn.innerText = '✔ সম্পন্ন';
       isDutyActiveNow = false;
-
       document.getElementById('dutyLockNotice').classList.remove('hidden');
-      document.getElementById('lockNoticeTitle').innerText = 'ডিউটি বন্ধ (Closed) করা আছে!';
-      document.getElementById('lockNoticeDesc').innerHTML = `আপনার ডিউটি <strong>${att.endTime}</strong>-এ বন্ধ করা হয়েছে। আবার কাজ ও ফরম চালু করতে ওপরে <strong>"🟢 পুনরায় ডিউটি চালু করুন"</strong> বাটনে ক্লিক করুন।`;
     }
 
     document.getElementById('visitFormFieldset').disabled = !isDutyActiveNow;
     document.getElementById('convFormFieldset').disabled = !isDutyActiveNow;
     document.getElementById('btnSubmitConv').disabled = !isDutyActiveNow;
 
-    const vWrap = document.getElementById('empVisitListContainer');
-    vWrap.innerHTML = (data.visits && data.visits.length) ? data.visits.map(v => {
-      const safeShop = String(v.shop || '').replace(/'/g, "\\'");
-      return `
+    document.getElementById('empVisitListContainer').innerHTML = (data.visits && data.visits.length) ? data.visits.map(v => `
       <div class="item-card">
         <div class="item-top">
-          <div>
-            <div class="item-title">🏪 ${v.shop}</div>
-            <div class="item-sub">📍 ${v.address} | 👤 ${v.prop} (${v.mobile})</div>
-          </div>
+          <div><div class="item-title">🏪 ${v.shop}</div><div class="item-sub">📍 ${v.address} | 👤 ${v.prop} (${v.mobile})</div></div>
           <span class="badge ${v.status === 'Verified' ? 'b-green' : 'b-red'}">${v.status}</span>
         </div>
-        <p style="font-size:13.5px; color:#1f2937; background:#fff; padding:8px; border-radius:8px; border:1px solid #e5e7eb; margin:6px 0;">
-          💬 ${v.remarks}
-        </p>
-        <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:#6b7280; margin-top:6px;">
-          <span>🕒 ${v.date} (${v.time}) ${v.followUp ? ' | 📅 ফলো-আপ: '+v.followUp : ''}</span>
-          ${v.photo ? `<button type="button" class="pop-photo-btn" onclick="openPhotoPopup('${v.photo}', '${safeShop}')">🖼️ ছবি দেখুন</button>` : ''}
+        <p style="font-size:13.5px; background:#fff; padding:8px; border-radius:8px; border:1px solid #e5e7eb; margin:6px 0;">💬 ${v.remarks}</p>
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:#6b7280;">
+          <span>🕒 ${v.date} (${v.time})</span>
+          ${v.photo ? `<button type="button" class="pop-photo-btn" onclick="openPhotoPopup('${v.photo}', '${v.shop}')">🖼️ ছবি</button>` : ''}
         </div>
       </div>
-    `}).join('') : '<p style="text-align:center; color:#6b7280;">এখনো কোনো ভিজিট এন্ট্রি দেওয়া হয়নি।</p>';
+    `).join('') : '<p style="text-align:center; color:#6b7280;">কোনো ভিজিট নেই।</p>';
 
-    const cWrap = document.getElementById('empConvListContainer');
-    cWrap.innerHTML = (data.conveyances && data.conveyances.length) ? data.conveyances.map(c => {
-      let bClass = c.status === 'Approved' ? 'b-green' : (c.status === 'Pending' ? 'b-yellow' : 'b-red');
-      return `
-        <div class="item-card">
-          <div class="item-top">
-            <div>
-              <div class="item-title">🚌 ${c.from} ➔ ${c.to}</div>
-              <div class="item-sub">${c.transport} | 🕒 ${c.date} (${c.time})</div>
-            </div>
-            <div style="text-align:right;">
-              <strong style="font-size:16px; color:#111827; display:block;">${c.amount} ৳</strong>
-              <span class="badge ${bClass}">${c.status}</span>
-            </div>
-          </div>
-          ${c.note ? `<div style="font-size:12.5px; color:#dc2626; font-weight:600; margin-top:6px; background:#fef2f2; padding:6px 10px; border-radius:8px;">📝 অ্যাডমিন নোট: ${c.note}</div>` : ''}
+    document.getElementById('empConvListContainer').innerHTML = (data.conveyances && data.conveyances.length) ? data.conveyances.map(c => `
+      <div class="item-card">
+        <div class="item-top">
+          <div><div class="item-title">🚌 ${c.from} ➔ ${c.to}</div><div class="item-sub">${c.transport} | ${c.date}</div></div>
+          <div style="text-align:right;"><strong style="font-size:16px;">${c.amount} ৳</strong><br><span class="badge ${c.status==='Approved'?'b-green':'b-yellow'}">${c.status}</span></div>
         </div>
-      `;
-    }).join('') : '<p style="text-align:center; color:#6b7280;">এখনো কোনো খরচের বিল দেওয়া হয়নি।</p>';
+        ${c.note ? `<div style="font-size:12.5px; color:#dc2626; margin-top:4px;">নোট: ${c.note}</div>` : ''}
+      </div>
+    `).join('') : '<p style="text-align:center; color:#6b7280;">কোনো খরচ নেই।</p>';
   }
 
   async function loadEmployeeDashboard() {
@@ -550,44 +518,23 @@
       const data = await callAPI({ action: 'getEmpData', username: currentUser.username });
       localStorage.setItem(EMP_CACHE_KEY + "_" + currentUser.username, JSON.stringify(data));
       renderDashboardState(data);
-    } catch (e) {
-      console.log('Background sync error', e);
-    }
+    } catch (e) {}
   }
 
   function triggerAttendance(type) {
-    if (type === 'END') {
-      const sure = confirm('⚠️ আপনি কি নিশ্চিত যে আজকের মতো আপনার সকল ভিজিট ও খরচ এন্ট্রি শেষ হয়েছে এবং এখন ছুটি (End Duty) নিতে চান?');
-      if (!sure) return;
-    }
-
-    const btn = type === 'START' ? document.getElementById('btnStartDuty') : document.getElementById('btnEndDuty');
-    btn.disabled = true; btn.innerText = 'লোকেশন নিচ্ছে...';
-
+    if (type === 'END' && !confirm('ছুটি নিতে চান?')) return;
     fetchGPS(async gps => {
-      try {
-        // সাথে সাথে লোকাল ক্যাশ ও স্ক্রিন আনলক করে দেওয়া (যাতে ১ সেকেন্ডও অপেক্ষা করতে না হয়)
-        if (type === 'START') {
-          isDutyActiveNow = true;
-          document.getElementById('dutyLockNotice').classList.add('hidden');
-          document.getElementById('visitFormFieldset').disabled = false;
-          document.getElementById('convFormFieldset').disabled = false;
-          document.getElementById('btnSubmitConv').disabled = false;
-        }
-        const res = await callAPI({ action: 'markAtt', username: currentUser.username, type, gps });
-        alert(res.message);
-        await loadEmployeeDashboard();
-      } catch (err) {
-        alert('নেটওয়ার্ক এরর! আবার চেষ্টা করুন।');
-        loadEmployeeDashboard();
-      }
+      if (!gps) return;
+      if (type === 'START') isDutyActiveNow = true;
+      const res = await callAPI({ action: 'markAtt', username: currentUser.username, type, gps });
+      alert(res.message);
+      loadEmployeeDashboard();
     });
   }
 
   function compressImg(event) {
     const file = event.target.files[0];
     if (!file) return;
-    document.getElementById('camStatusText').innerText = 'ছবি প্রসেস হচ্ছে...';
     const reader = new FileReader();
     reader.onload = e => {
       const img = new Image();
@@ -600,9 +547,8 @@
         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
         compressedPhotoBase64 = canvas.toDataURL('image/jpeg', 0.85);
         const prev = document.getElementById('photoPreview');
-        prev.src = compressedPhotoBase64;
-        prev.style.display = 'block';
-        document.getElementById('camStatusText').innerText = '✔ HD ছবি যুক্ত হয়েছে (পরিবর্তন করতে ট্যাপ করুন)';
+        prev.src = compressedPhotoBase64; prev.style.display = 'block';
+        document.getElementById('camStatusText').innerText = '✔ ছবি যুক্ত হয়েছে';
       };
       img.src = e.target.result;
     };
@@ -610,28 +556,21 @@
   }
 
   function verifyCheckbox(chk) {
-    if (!isDutyActiveNow) {
-      chk.checked = false;
-      return alert('আগে ওপরে সবুজ বাটনে ক্লিক করে ডিউটি চালু করুন!');
-    }
+    if (!isDutyActiveNow) { chk.checked = false; return alert('আগে ডিউটি চালু করুন!'); }
     const submitBtn = document.getElementById('btnSubmitVisit');
-    const lbl = document.getElementById('chkLabelText');
     if (chk.checked) {
-      lbl.innerText = 'লোকেশন যাচাই হচ্ছে...';
       fetchGPS(gps => {
         document.getElementById('hiddenVisitGPS').value = gps;
-        lbl.innerText = '✔ সকল তথ্য নিশ্চিত করা হয়েছে (এখন সাবমিট করুন)';
         submitBtn.disabled = false;
       });
     } else {
       document.getElementById('hiddenVisitGPS').value = '';
       submitBtn.disabled = true;
-      lbl.innerText = 'আমি নিশ্চিত করছি যে উপরের সকল তথ্য সঠিক (টিক দিন)';
     }
   }
 
   async function submitVisitForm() {
-    if (!isDutyActiveNow) return alert('আপনার ডিউটি চালু নেই!');
+    if (!isDutyActiveNow) return;
     const shop = document.getElementById('vShop').value.trim();
     const prop = document.getElementById('vProp').value.trim();
     const mobile = document.getElementById('vMobile').value.trim();
@@ -639,46 +578,38 @@
     const rawAddr = document.getElementById('vAddress').value.trim();
     const remarks = document.getElementById('vRemarks').value.trim();
     const followUp = document.getElementById('vFollowUp').value;
-    const gps = document.getElementById('hiddenVisitGPS').value || lastKnownGPS || '23.901300,89.120400';
+    const gps = document.getElementById('hiddenVisitGPS').value || liveGPS || '23.901300,89.120400';
 
-    if (!shop || !prop || !mobile || !rawAddr || !remarks || !compressedPhotoBase64) {
-      return alert('সবগুলো ঘর পূরণ করুন এবং ক্যামেরা দিয়ে ছবি তুলুন!');
-    }
+    if (!shop || !prop || !mobile || !rawAddr || !remarks || !compressedPhotoBase64) return alert('সবগুলো ঘর পূরণ করুন!');
 
-    const fullAddress = `[${zone}] ${rawAddr}`;
     const btn = document.getElementById('btnSubmitVisit');
-    btn.disabled = true; btn.innerText = 'HD ছবি আপলোড হচ্ছে...';
+    btn.disabled = true; btn.innerText = 'সাবমিট হচ্ছে...';
 
     const res = await callAPI({
       action: 'submitVisit',
-      payload: { username: currentUser.username, shopName: shop, proprietor: prop, mobile, address: fullAddress, remarks, followUp, imageBase64: compressedPhotoBase64, gps }
+      payload: { username: currentUser.username, shopName: shop, proprietor: prop, mobile, address: `[${zone}] ${rawAddr}`, remarks, followUp, imageBase64: compressedPhotoBase64, gps }
     });
 
     alert(res.message);
     ['vShop', 'vProp', 'vMobile', 'vAddress', 'vRemarks', 'vPhoto', 'vFollowUp'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('chkVerifyVisit').checked = false;
     document.getElementById('photoPreview').style.display = 'none';
-    document.getElementById('camStatusText').innerText = 'ক্যামেরা ওপেন করতে এখানে ট্যাপ করুন';
-    document.getElementById('chkLabelText').innerText = 'আমি নিশ্চিত করছি যে উপরের সকল তথ্য সঠিক (টিক দিন)';
     compressedPhotoBase64 = '';
     btn.innerText = '✅ ভিজিট রিপোর্ট সাবমিট করুন';
     loadEmployeeDashboard();
   }
 
   async function submitConvForm() {
-    if (!isDutyActiveNow) return alert('আপনার ডিউটি চালু নেই!');
+    if (!isDutyActiveNow) return;
     const fromLoc = document.getElementById('cFrom').value.trim();
     const toLoc = document.getElementById('cTo').value.trim();
     const transport = document.getElementById('cTransport').value;
     const amount = document.getElementById('cAmount').value;
     if (!fromLoc || !toLoc || !amount) return alert('সবগুলো ঘর পূরণ করুন!');
 
-    const btn = document.getElementById('btnSubmitConv');
-    btn.disabled = true; btn.innerText = 'সাবমিট হচ্ছে...';
     const res = await callAPI({ action: 'submitConv', payload: { username: currentUser.username, fromLoc, toLoc, transport, amount } });
     alert(res.message);
     ['cFrom', 'cTo', 'cAmount'].forEach(id => document.getElementById(id).value = '');
-    btn.disabled = false; btn.innerText = '➕ খরচ বিল সাবমিট করুন';
     loadEmployeeDashboard();
   }
 

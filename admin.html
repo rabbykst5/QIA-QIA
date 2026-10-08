@@ -3,312 +3,243 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Master Admin Panel - Field Force Tracker</title>
+  <title>Master Admin Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
+    :root {
+      --bg-main: #f8fafc; --sidebar-bg: #0f172a; --sidebar-hover: #1e293b;
+      --primary: #2563eb; --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
+      --text-dark: #0f172a; --text-muted: #64748b; --border: #e2e8f0;
+    }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Hind Siliguri', sans-serif; }
-    body { background: #f1f5f9; color: #1e293b; font-size: 14.5px; }
+    body { background: var(--bg-main); color: var(--text-dark); font-size: 14.5px; display: flex; min-height: 100vh; }
     .hidden { display: none !important; }
-    .login-wrap { max-width: 400px; margin: 80px auto; background: #fff; padding: 32px; border-radius: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border-top: 6px solid #0f172a; }
-    .login-wrap h2 { text-align: center; color: #0f172a; margin-bottom: 20px; }
-    .topbar { background: #0f172a; color: #fff; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-    .container { max-width: 1250px; margin: 20px auto; padding: 0 12px; }
-    .nav-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
-    .tab-btn { background: #fff; border: 1px solid #cbd5e1; padding: 9px 15px; border-radius: 8px; font-weight: 600; cursor: pointer; color: #334155; }
-    .tab-btn.active { background: #2563eb; color: #fff; border-color: #2563eb; }
-    .card { background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); margin-bottom: 18px; border: 1px solid #e2e8f0; }
-    .card h4 { font-size: 17px; margin-bottom: 14px; color: #0f172a; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 18px; }
-    .stat-box { background: #fff; padding: 15px; border-radius: 10px; border-left: 5px solid #2563eb; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-    .stat-box span { font-size: 13px; color: #64748b; display: block; }
-    .stat-box strong { font-size: 21px; color: #0f172a; }
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; font-weight: 600; margin-bottom: 5px; }
-    .form-control { width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
-    .btn { padding: 9px 16px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; text-decoration: none; display: inline-block; }
-    .btn-primary { background: #2563eb; color: #fff; }
-    .btn-success { background: #16a34a; color: #fff; }
-    .btn-danger { background: #dc2626; color: #fff; }
-    .btn-warning { background: #d97706; color: #fff; }
-    .btn-sm { padding: 5px 10px; font-size: 12.5px; }
+
+    .login-wrapper { position: fixed; inset: 0; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
+    .login-box { width: 100%; max-width: 420px; background: #fff; padding: 36px 30px; border-radius: 20px; box-shadow: 0 25px 50px rgba(0,0,0,0.3); text-align: center; }
+    .login-box h2 { color: var(--text-dark); font-size: 24px; margin-bottom: 6px; }
+    .login-box p { color: var(--text-muted); font-size: 13.5px; margin-bottom: 24px; }
+
+    .sidebar { width: 260px; background: var(--sidebar-bg); color: #fff; position: fixed; top: 0; bottom: 0; left: 0; display: flex; flex-direction: column; z-index: 100; box-shadow: 4px 0 20px rgba(0,0,0,0.05); }
+    .sidebar-brand { padding: 22px 20px; font-size: 18px; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 10px; color: #60a5fa; }
+    .sidebar-menu { padding: 15px 12px; flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+    .menu-item { background: transparent; border: none; color: #94a3b8; text-align: left; padding: 11px 14px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.2s; width: 100%; }
+    .menu-item:hover { background: var(--sidebar-hover); color: #fff; }
+    .menu-item.active { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,0.35); }
+
+    .main-content { margin-left: 260px; flex-grow: 1; display: flex; flex-direction: column; min-width: 0; }
+    .topbar { background: #fff; height: 70px; padding: 0 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 90; }
+    .content-body { padding: 24px; max-width: 1400px; width: 100%; margin: 0 auto; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-bottom: 24px; }
+    .stat-card { background: #fff; padding: 20px; border-radius: 16px; border: 1px solid var(--border); display: flex; align-items: center; gap: 16px; position: relative; overflow: hidden; }
+    .stat-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--primary); }
+    .stat-card.green::before { background: var(--success); }
+    .stat-card.orange::before { background: var(--warning); }
+    .stat-icon { width: 50px; height: 50px; border-radius: 12px; background: #eff6ff; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .stat-card.green .stat-icon { background: #dcfce7; color: var(--success); }
+    .stat-card.orange .stat-icon { background: #fef3c7; color: var(--warning); }
+    .stat-info span { font-size: 13px; color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 2px; }
+    .stat-info strong { font-size: 22px; color: var(--text-dark); font-weight: 700; }
+
+    .panel-card { background: #fff; border-radius: 16px; border: 1px solid var(--border); padding: 22px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 24px; }
+    .panel-header { font-size: 17px; font-weight: 700; color: var(--text-dark); margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 13.5px; color: #334155; }
+    .form-control { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; outline: none; background: #f8fafc; }
+    .form-control:focus { border-color: var(--primary); background: #fff; }
+
+    .btn { padding: 9px 16px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 13.5px; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-warning { background: var(--warning); color: #fff; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 8px; }
+
     .table-responsive { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-    table th, table td { border: 1px solid #cbd5e1; padding: 9px 10px; text-align: left; vertical-align: middle; }
-    table th { background: #f8fafc; font-weight: 700; }
-    .badge { padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; display: inline-block; }
+    table th, table td { border-bottom: 1px solid var(--border); padding: 12px 14px; text-align: left; vertical-align: middle; }
+    table th { background: #f8fafc; font-weight: 700; color: #334155; }
+
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-block; }
     .b-green { background: #dcfce7; color: #166534; }
     .b-red { background: #fee2e2; color: #991b1b; }
     .b-yellow { background: #fef9c3; color: #854d0e; }
 
-    /* Modals */
-    .img-modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(5px); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 20px; }
-    .img-modal-box { position: relative; max-width: 90vw; max-height: 90vh; background: #fff; padding: 14px; border-radius: 14px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); text-align: center; }
-    .img-modal-box img { max-width: 100%; max-height: 78vh; border-radius: 8px; object-fit: contain; display: block; margin: 0 auto; }
-    .img-modal-close { position: absolute; top: -14px; right: -14px; width: 38px; height: 38px; border-radius: 50%; background: #dc2626; color: #fff; border: 3px solid #fff; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-    .img-modal-caption { margin-top: 10px; font-size: 15px; font-weight: 700; color: #0f172a; }
-
-    .map-modal-box { position: relative; width: 95vw; max-width: 950px; background: #fff; padding: 16px; border-radius: 14px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
-    #routeLeafletMap { width: 100%; height: 70vh; border-radius: 10px; border: 2px solid #cbd5e1; z-index: 1; }
-    .map-legend { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px; }
-    .pin-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; background: #f1f5f9; padding: 4px 10px; border-radius: 20px; }
-    .custom-pin { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; color: #fff; font-weight: 700; font-size: 13px; border: 2px solid #fff; box-shadow: 0 3px 8px rgba(0,0,0,0.4); }
-
-    .day-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 12px; border-radius: 8px; }
-    .day-box label { color: #1e40af; font-size: 13.5px; }
-
-    @media print {
-      .topbar, .nav-tabs, .no-print { display: none !important; }
-      body { background: #fff; }
-      .card { box-shadow: none; border: 1px solid #000; }
-    }
+    .img-modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(5px); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .img-modal-box { position: relative; max-width: 90vw; max-height: 90vh; background: #fff; padding: 14px; border-radius: 16px; text-align: center; }
+    .img-modal-box img { max-width: 100%; max-height: 78vh; border-radius: 10px; display: block; margin: 0 auto; }
+    .img-modal-close { position: absolute; top: -14px; right: -14px; width: 38px; height: 38px; border-radius: 50%; background: var(--danger); color: #fff; border: 3px solid #fff; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .map-modal-box { position: relative; width: 95vw; max-width: 950px; background: #fff; padding: 18px; border-radius: 16px; }
+    #routeLeafletMap { width: 100%; height: 70vh; border-radius: 12px; border: 2px solid var(--border); z-index: 1; }
   </style>
 </head>
 <body>
 
-<!-- ==================== 1. IMAGE POPUP MODAL ==================== -->
 <div id="photoPopupModal" class="img-modal-overlay hidden" onclick="closePhotoPopup()">
   <div class="img-modal-box" onclick="event.stopPropagation()">
     <button class="img-modal-close" onclick="closePhotoPopup()">✕</button>
-    <img id="popupModalImg" src="" alt="Visit HD Photo">
-    <div id="popupModalCaption" class="img-modal-caption"></div>
+    <img id="popupModalImg" src="" alt="Visit Photo">
+    <div id="popupModalCaption" style="margin-top:10px; font-weight:700;"></div>
   </div>
 </div>
 
-<!-- ==================== 2. INTERACTIVE ROUTE MAP POPUP MODAL ==================== -->
 <div id="routeMapModal" class="img-modal-overlay hidden" onclick="closeRouteMapPopup()">
   <div class="map-modal-box" onclick="event.stopPropagation()">
     <button class="img-modal-close" onclick="closeRouteMapPopup()">✕</button>
-    <div class="map-legend">
-      <div>
-        <h4 id="routeMapTitle" style="margin:0; font-size:17px; color:#0f172a;">🗺️ কর্মচারীর সারাদিনের রুট ম্যাপ</h4>
-        <div style="margin-top:4px; display:flex; gap:8px; flex-wrap:wrap;">
-          <span class="pin-badge"><span style="color:#16a34a;">🟢 S</span> = শুরু (Start)</span>
-          <span class="pin-badge"><span style="color:#2563eb;">🔵 1, 2, 3..</span> = দোকান ভিজিট</span>
-          <span class="pin-badge"><span style="color:#dc2626;">🔴 E</span> = শেষ (End)</span>
-        </div>
-      </div>
-      <a id="gmapFullRouteBtn" href="#" target="_blank" class="btn btn-warning btn-sm">📍 Google Maps-এ ফুল রুট ওপেন করুন ↗</a>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h4 id="routeMapTitle" style="margin:0;">🗺️ রুট ম্যাপ</h4>
+      <a id="gmapFullRouteBtn" href="#" target="_blank" class="btn btn-warning btn-sm">📍 Google Maps ↗</a>
     </div>
     <div id="routeLeafletMap"></div>
   </div>
 </div>
 
-<!-- ==================== LOGIN VIEW ==================== -->
-<div id="loginView" class="login-wrap">
-  <h2>🛡️ অ্যাডমিন লগইন</h2>
-  <div class="form-group">
-    <label>অ্যাডমিন ইউজারনেম</label>
-    <input type="text" id="loginUser" class="form-control" placeholder="admin">
+<!-- LOGIN -->
+<div id="loginView" class="login-wrapper">
+  <div class="login-box">
+    <div style="font-size: 40px; margin-bottom: 10px;">🛡️</div>
+    <h2>অ্যাডমিন পোর্টাল</h2>
+    <p>মাস্টার কন্ট্রোল রুমে প্রবেশ করতে লগইন করুন</p>
+    <form onsubmit="event.preventDefault(); handleAdminLogin();">
+      <div class="form-group" style="text-align: left;">
+        <label>ইউজারনেম</label>
+        <input type="text" id="loginUser" class="form-control" placeholder="admin" required>
+      </div>
+      <div class="form-group" style="text-align: left;">
+        <label>পাসওয়ার্ড</label>
+        <input type="password" id="loginPass" class="form-control" placeholder="••••••••" required>
+      </div>
+      <button type="submit" id="btnLogin" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px;">লগইন করুন</button>
+    </form>
+    <p id="loginMsg" style="color: var(--danger); margin-top: 12px; font-weight: 600; font-size: 13.5px;"></p>
   </div>
-  <div class="form-group">
-    <label>পাসওয়ার্ড</label>
-    <input type="password" id="loginPass" class="form-control" placeholder="পাসওয়ার্ড দিন">
-  </div>
-  <button id="btnLogin" class="btn btn-primary" style="width:100%;" onclick="handleAdminLogin()">লগইন করুন</button>
-  <p id="loginMsg" style="color:#dc2626; margin-top:10px; text-align:center; font-weight:600;"></p>
 </div>
 
-<!-- ==================== ADMIN PANEL ==================== -->
-<div id="adminPanel" class="hidden">
-  <div class="topbar">
-    <h3>🛡️ মাস্টার অ্যাডমিন প্যানেল (A to Z কন্ট্রোল রুম)</h3>
-    <div>
-      <button class="btn btn-primary btn-sm" onclick="loadAdminData()">🔄 রিফ্রেশ ডাটা</button>
-      <button class="btn btn-danger btn-sm" onclick="logoutAdmin()">লগআউট</button>
+<!-- ADMIN PANEL -->
+<div id="adminPanel" class="hidden" style="display: flex; width: 100%;">
+  <div class="sidebar no-print">
+    <div class="sidebar-brand"><span>🛡️</span> <span>Field Admin</span></div>
+    <div class="sidebar-menu">
+      <button class="menu-item active" onclick="switchAdmTab('admTabVisits', this)"><span>🏪</span> <span>ভিজিট ভেরিফিকেশন</span></button>
+      <button class="menu-item" onclick="switchAdmTab('admTabConv', this)"><span>💳</span> <span>কনভেন্স বিল কন্ট্রোল</span></button>
+      <button class="menu-item" onclick="switchAdmTab('admTabRoutes', this)"><span>🗺️</span> <span>রুট ও কি.মি. সামারি</span></button>
+      <button class="menu-item" onclick="switchAdmTab('admTabAtt', this)"><span>⏰</span> <span>হাজিরা কন্ট্রোল</span></button>
+      <button class="menu-item" onclick="switchAdmTab('admTabSalary', this)"><span>📄</span> <span>মাসিক স্যালারি শিট</span></button>
+      <button class="menu-item" onclick="switchAdmTab('admTabSettings', this)"><span>⚙️</span> <span>সাপ্তাহিক রুট ও সেটিংস</span></button>
     </div>
   </div>
 
-  <div class="container">
-    <div class="grid-3 no-print">
-      <div class="stat-box"><span>আজকের ডিউটি স্ট্যাটাস</span><strong id="admTodayStatus">--</strong></div>
-      <div class="stat-box" style="border-left-color:#16a34a;"><span>আজকের মোট দোকান ভিজিট</span><strong id="admTodayVisits">0</strong></div>
-      <div class="stat-box" style="border-left-color:#d97706;"><span>আজকের মোট ভ্রমণ (Total KM)</span><strong id="admTodayKM">0 কি.মি.</strong></div>
-    </div>
-
-    <div class="nav-tabs no-print">
-      <button class="tab-btn active" onclick="switchAdmTab('admTabVisits', this)">🏪 ভিজিট ও ছবি ভেরিফিকেশন</button>
-      <button class="tab-btn" onclick="switchAdmTab('admTabConv', this)">💳 কনভেন্স বিল (Approve/Reject)</button>
-      <button class="tab-btn" onclick="switchAdmTab('admTabRoutes', this)">🗺️ রুট ও কিলোমিটার সামারি (ম্যাপসহ)</button>
-      <button class="tab-btn" onclick="switchAdmTab('admTabAtt', this)">⏰ হাজিরা কন্ট্রোল</button>
-      <button class="tab-btn" onclick="switchAdmTab('admTabSalary', this)">📄 মাসিক স্যালারি শিট (PDF)</button>
-      <button class="tab-btn" onclick="switchAdmTab('admTabSettings', this)">⚙️ সাপ্তাহিক অটো রুটিন ও পাসওয়ার্ড</button>
-    </div>
-
-    <!-- Tab 1: Visits -->
-    <div id="admTabVisits" class="card">
-      <h4>🏪 কর্মচারীর দোকান ভিজিট ভেরিফিকেশন, ১-ক্লিক কল ও ডিলিট</h4>
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>তারিখ ও সময়</th>
-              <th>দোকান ও ঠিকানা (রুট)</th>
-              <th>প্রোপাইটার ও ১-ক্লিক কল</th>
-              <th>মন্তব্য ও ফলো-আপ</th>
-              <th>HD ছবি (পপ-আপ) ও ম্যাপ</th>
-              <th>স্ট্যাটাস</th>
-              <th>অ্যাকশন</th>
-            </tr>
-          </thead>
-          <tbody id="admVisitBody"></tbody>
-        </table>
+  <div class="main-content">
+    <div class="topbar no-print">
+      <h3 style="font-size: 18px; font-weight: 700;">ড্যাশবোর্ড কন্ট্রোল রুম</h3>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <button class="btn btn-primary btn-sm" onclick="loadAdminData()">🔄 রিফ্রেশ</button>
+        <button class="btn btn-danger btn-sm" onclick="logoutAdmin()">লগআউট</button>
       </div>
     </div>
 
-    <!-- Tab 2: Conveyance -->
-    <div id="admTabConv" class="card hidden">
-      <h4>💳 যাতায়াত খরচ (Conveyance) অনুমোদন / বাতিল এবং কারণ নোট</h4>
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>তারিখ</th>
-              <th>কোথা থেকে ➔ কোথায় (বাহন)</th>
-              <th>টাকার পরিমাণ</th>
-              <th>বর্তমান স্ট্যাটাস</th>
-              <th>স্ট্যাটাস পরিবর্তন ও কারণ নোট (Admin Note)</th>
-            </tr>
-          </thead>
-          <tbody id="admConvBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Tab 3: Route Summary + Map -->
-    <div id="admTabRoutes" class="card hidden">
-      <h4>🗺️ অটোমেটিক রুট ও কিলোমিটার সামারি (ক্লিক করলেই লাইভ রুট ম্যাপ দেখা যাবে)</h4>
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>১. তারিখ</th>
-              <th>২. শুরুর স্থান ও সময়</th>
-              <th>৩. কোথায় কোথায় দাঁড়ালো</th>
-              <th>৪. কোথা থেকে কোথায় গেছে (ধাপ ও কি.মি.)</th>
-              <th>৫. শেষ স্থান ও সময়</th>
-              <th>৬. মোট দূরত্ব (Total KM)</th>
-              <th>৭. লাইভ রুট ম্যাপ ভিউ</th>
-            </tr>
-          </thead>
-          <tbody id="admRouteBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Tab 4: Attendance -->
-    <div id="admTabAtt" class="card hidden">
-      <h4>⏰ প্রতিদিনের হাজিরা (Attendance) সংশোধন ও ফোর্স ক্লোজ</h4>
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>তারিখ</th>
-              <th>Start Time ও ম্যাপ</th>
-              <th>End Time ও ম্যাপ</th>
-              <th>মোট ঘণ্টা</th>
-              <th>স্ট্যাটাস</th>
-              <th>অ্যাডমিন কন্ট্রোল</th>
-            </tr>
-          </thead>
-          <tbody id="admAttBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Tab 5: Salary Sheet -->
-    <div id="admTabSalary" class="card hidden">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;" class="no-print">
-        <div>
-          <label style="font-weight:700;">মাস নির্বাচন করুন: </label>
-          <input type="month" id="salaryMonthPicker" class="form-control" style="display:inline-block; width:180px;" onchange="generateSalarySheet()">
+    <div class="content-body">
+      <div class="stats-grid no-print">
+        <div class="stat-card">
+          <div class="stat-icon">⏰</div>
+          <div class="stat-info"><span>ডিউটি স্ট্যাটাস</span><strong id="admTodayStatus" style="font-size: 15px;">--</strong></div>
         </div>
-        <button class="btn btn-primary" onclick="window.print()">🖨️ Print / Save PDF</button>
+        <div class="stat-card green">
+          <div class="stat-icon">🏪</div>
+          <div class="stat-info"><span>দোকান ভিজিট</span><strong id="admTodayVisits">0 টি</strong></div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-icon">🚗</div>
+          <div class="stat-info"><span>মোট ভ্রমণ</span><strong id="admTodayKM">0 কি.মি.</strong></div>
+        </div>
       </div>
 
-      <div id="printableSalaryArea">
-        <h3 style="text-align:center; margin-bottom:4px;">মাসিক হাজিরা, পারফরম্যান্স ও স্যালারি শিট</h3>
-        <p style="text-align:center; color:#64748b; margin-bottom:15px;" id="salSubHeader"></p>
-        <div class="grid-3" id="salSummaryBoxes"></div>
+      <div id="admTabVisits" class="panel-card">
+        <div class="panel-header">🏪 কর্মচারীর দোকান ভিজিট ও ছবি ভেরিফিকেশন</div>
         <div class="table-responsive">
           <table>
-            <thead>
-              <tr>
-                <th>তারিখ</th>
-                <th>হাজিরা সময় (In - Out)</th>
-                <th>কাজের ঘণ্টা</th>
-                <th>হাজিরা স্ট্যাটাস</th>
-                <th>মোট ভিজিট</th>
-                <th>মোট কি.মি.</th>
-                <th>অনুমোদিত কনভেন্স (Approved)</th>
-              </tr>
-            </thead>
-            <tbody id="salTableBody"></tbody>
+            <thead><tr><th>তারিখ ও সময়</th><th>দোকান ও ঠিকানা</th><th>প্রোপাইটার ও কল</th><th>মন্তব্য ও ফলো-আপ</th><th>HD ছবি ও ম্যাপ</th><th>স্ট্যাটাস</th><th>অ্যাকশন</th></tr></thead>
+            <tbody id="admVisitBody"></tbody>
           </table>
         </div>
       </div>
-    </div>
 
-    <!-- Tab 6: Auto Weekly Route Plan & Account Settings -->
-    <div id="admTabSettings" class="card hidden">
-      <h4>📅 সাপ্তাহিক ফিক্সড রুট প্ল্যান (মাত্র ১ বার সেট করলে প্রতিদিন বার অনুযায়ী অটোমেটিক চেঞ্জ হবে)</h4>
-      <p style="font-size:13px; color:#64748b; margin-bottom:14px;">প্রতিদিন রুট লেখার দরকার নেই। নিচে ৭ দিনের রুট একবার লিখে সেভ করে রাখুন, সিস্টেম প্রতিদিন বার অনুযায়ী কর্মচারীকে অটোমেটিক রুট দেখিয়ে দেবে:</p>
-      
-      <div class="grid-3" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
-        <div class="form-group day-box">
-          <label>শনিবার (Saturday)</label>
-          <input type="text" id="rt_sat" class="form-control" placeholder="যেমন: কুষ্টিয়া সদর ও ভাদালিয়া বাজার">
-        </div>
-        <div class="form-group day-box">
-          <label>রবিবার (Sunday)</label>
-          <input type="text" id="rt_sun" class="form-control" placeholder="যেমন: কুমারখালী ও খোকসা">
-        </div>
-        <div class="form-group day-box">
-          <label>সোমবার (Monday)</label>
-          <input type="text" id="rt_mon" class="form-control" placeholder="যেমন: মেহেরপুর ও গাংনী">
-        </div>
-        <div class="form-group day-box">
-          <label>মঙ্গলবার (Tuesday)</label>
-          <input type="text" id="rt_tue" class="form-control" placeholder="যেমন: চুয়াডাঙ্গা ও আলমডাঙ্গা">
-        </div>
-        <div class="form-group day-box">
-          <label>বুধবার (Wednesday)</label>
-          <input type="text" id="rt_wed" class="form-control" placeholder="যেমন: ভেড়ামারা ও মিরপুর">
-        </div>
-        <div class="form-group day-box">
-          <label>বৃহস্পতিবার (Thursday)</label>
-          <input type="text" id="rt_thu" class="form-control" placeholder="যেমন: ঝিনাইদহ ও শৈলকুপা">
-        </div>
-        <div class="form-group day-box">
-          <label>শুক্রবার (Friday - ছুটি/অন্যান্য)</label>
-          <input type="text" id="rt_fri" class="form-control" placeholder="যেমন: সাপ্তাহিক ছুটি / বিশেষ ভিজিট">
-        </div>
-        <div class="form-group day-box" style="background:#fffbeb; border-color:#fde68a;">
-          <label style="color:#b45309;">⚡ আজকের জরুরি স্পেশাল নির্দেশনা (ঐচ্ছিক)</label>
-          <input type="text" id="rt_special" class="form-control" placeholder="খালি রাখলে উপরের সাপ্তাহিক অটো রুটিন চলবে">
+      <div id="admTabConv" class="panel-card hidden">
+        <div class="panel-header">💳 যাতায়াত খরচ (Conveyance) অনুমোদন ও কারণ নোট</div>
+        <div class="table-responsive">
+          <table>
+            <thead><tr><th>তারিখ</th><th>কোথা থেকে ➔ কোথায়</th><th>টাকা</th><th>স্ট্যাটাস</th><th>কন্ট্রোল ও নোট</th></tr></thead>
+            <tbody id="admConvBody"></tbody>
+          </table>
         </div>
       </div>
 
-      <h4 style="margin-top:20px;">🔐 কর্মচারীর একাউন্ট, স্যালারি ও পাসওয়ার্ড কন্ট্রোল</h4>
-      <div class="grid-3">
-        <div class="form-group">
-          <label>কর্মচারীর পাসওয়ার্ড</label>
-          <input type="text" id="setPass" class="form-control">
-        </div>
-        <div class="form-group">
-          <label>মাসিক মূল বেতন (Basic Salary ৳)</label>
-          <input type="number" id="setSalary" class="form-control">
-        </div>
-        <div class="form-group">
-          <label>একাউন্ট স্ট্যাটাস</label>
-          <select id="setStatus" class="form-control">
-            <option value="Active">Active (সচল)</option>
-            <option value="Blocked">Blocked (ব্লক/বন্ধ)</option>
-          </select>
+      <div id="admTabRoutes" class="panel-card hidden">
+        <div class="panel-header">🗺️ অটোমেটিক রুট ও কিলোমিটার সামারি</div>
+        <div class="table-responsive">
+          <table>
+            <thead><tr><th>তারিখ</th><th>শুরু</th><th>স্টপেজ</th><th>দূরত্ব</th><th>শেষ</th><th>মোট কি.মি.</th><th>ম্যাপ</th></tr></thead>
+            <tbody id="admRouteBody"></tbody>
+          </table>
         </div>
       </div>
-      <button class="btn btn-primary" onclick="saveEmployeeSettings()">💾 সাপ্তাহিক রুটিন ও সেটিংস সেভ করুন</button>
+
+      <div id="admTabAtt" class="panel-card hidden">
+        <div class="panel-header">⏰ হাজিরা কন্ট্রোল</div>
+        <div class="table-responsive">
+          <table>
+            <thead><tr><th>তারিখ</th><th>শুরু</th><th>শেষ</th><th>ঘণ্টা</th><th>স্ট্যাটাস</th><th>অ্যাকশন</th></tr></thead>
+            <tbody id="admAttBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="admTabSalary" class="panel-card hidden">
+        <div class="panel-header no-print">
+          <span>📄 মাসিক স্যালারি ও পারফরম্যান্স শিট</span>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="month" id="salaryMonthPicker" class="form-control" style="width: 150px; padding: 6px;" onchange="generateSalarySheet()">
+            <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Print PDF</button>
+          </div>
+        </div>
+        <div id="printableSalaryArea">
+          <h3 style="text-align: center; margin-bottom: 4px; font-size: 18px;">মাসিক হাজিরা ও স্যালারি শিট</h3>
+          <p style="text-align: center; color: var(--text-muted); margin-bottom: 16px; font-size: 13.5px;" id="salSubHeader"></p>
+          <div class="stats-grid" id="salSummaryBoxes"></div>
+          <div class="table-responsive">
+            <table>
+              <thead><tr><th>তারিখ</th><th>হাজিরা সময়</th><th>ঘণ্টা</th><th>স্ট্যাটাস</th><th>ভিজিট</th><th>কি.মি.</th><th>বিল</th></tr></thead>
+              <tbody id="salTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="admTabSettings" class="panel-card hidden">
+        <div class="panel-header">📅 সাপ্তাহিক রুট প্ল্যান ও সেটিংস</div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 20px;">
+          <div class="form-group"><label>শনিবার</label><input type="text" id="rt_sat" class="form-control"></div>
+          <div class="form-group"><label>রবিবার</label><input type="text" id="rt_sun" class="form-control"></div>
+          <div class="form-group"><label>সোমবার</label><input type="text" id="rt_mon" class="form-control"></div>
+          <div class="form-group"><label>মঙ্গলবার</label><input type="text" id="rt_tue" class="form-control"></div>
+          <div class="form-group"><label>বুধবার</label><input type="text" id="rt_wed" class="form-control"></div>
+          <div class="form-group"><label>বৃহস্পতিবার</label><input type="text" id="rt_thu" class="form-control"></div>
+          <div class="form-group"><label>শুক্রবার</label><input type="text" id="rt_fri" class="form-control"></div>
+          <div class="form-group" style="background:#fffbeb; padding:8px; border-radius:8px;"><label style="color:#b45309;">⚡ স্পেশাল রুট</label><input type="text" id="rt_special" class="form-control"></div>
+        </div>
+        <div class="panel-header">🔐 একাউন্ট কন্ট্রোল</div>
+        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 16px;">
+          <div class="form-group"><label>পাসওয়ার্ড</label><input type="text" id="setPass" class="form-control"></div>
+          <div class="form-group"><label>মূল বেতন</label><input type="number" id="setSalary" class="form-control"></div>
+          <div class="form-group"><label>স্ট্যাটাস</label><select id="setStatus" class="form-control"><option value="Active">Active</option><option value="Blocked">Blocked</option></select></div>
+        </div>
+        <button class="btn btn-primary" onclick="saveEmployeeSettings()">💾 সেভ করুন</button>
+      </div>
+
     </div>
   </div>
 </div>
@@ -324,131 +255,68 @@
     if (!url) return;
     let displayUrl = url;
     const match = url.match(/id=([a-zA-Z0-9_-]+)/);
-    if (match && match[1]) {
-      displayUrl = "https://drive.google.com/thumbnail?id=" + match[1] + "&sz=w1600";
-    }
+    if (match && match[1]) displayUrl = "https://drive.google.com/thumbnail?id=" + match[1] + "&sz=w1600";
     document.getElementById('popupModalImg').src = displayUrl;
-    document.getElementById('popupModalCaption').innerText = title || 'ভিজিটের ছবি';
+    document.getElementById('popupModalCaption').innerText = title || 'ছবি';
+    document.getElementById('routeMapModal').classList.add('hidden');
     document.getElementById('photoPopupModal').classList.remove('hidden');
   }
 
-  function closePhotoPopup() {
-    document.getElementById('photoPopupModal').classList.add('hidden');
-    document.getElementById('popupModalImg').src = '';
-  }
+  function closePhotoPopup() { document.getElementById('photoPopupModal').classList.add('hidden'); }
 
   function getRoutePointsForDate(dateStr, username) {
     if (!adminCache) return [];
     let pts = [];
     const att = adminCache.attendance.find(a => a.date === dateStr && (!username || a.username === username));
-    if (att && att.startGPS && att.startGPS.includes(',')) {
-      pts.push({ type: 'START', badge: 'S', color: '#16a34a', title: 'শুরু (Start Duty)', time: att.startTime, info: 'সকালের হাজিরা পয়েন্ট', gps: att.startGPS.trim() });
-    }
-
-    const dayVisits = adminCache.visits
-      .filter(v => v.date === dateStr && (!username || v.username === username) && v.status !== 'Fake' && v.gps && v.gps.includes(','))
-      .slice()
-      .reverse();
-
-    dayVisits.forEach((v, idx) => {
-      pts.push({
-        type: 'VISIT', badge: String(idx + 1), color: '#2563eb',
-        title: `ভিজিট #${idx + 1}: ${v.shop}`, time: v.time,
-        info: `প্রোপাইটার: ${v.prop} (${v.mobile})<br>ঠিকানা: ${v.address}<br>নোট: ${v.remarks}`,
-        gps: v.gps.trim()
-      });
+    if (att && att.startGPS && att.startGPS.includes(',')) pts.push({ badge: 'S', color: '#16a34a', title: 'শুরু', time: att.startTime, info: 'হাজিরা', gps: att.startGPS.trim() });
+    adminCache.visits.filter(v => v.date === dateStr && (!username || v.username === username) && v.status !== 'Fake' && v.gps && v.gps.includes(',')).slice().reverse().forEach((v, idx) => {
+      pts.push({ badge: String(idx + 1), color: '#2563eb', title: `ভিজিট #${idx + 1}: ${v.shop}`, time: v.time, info: `${v.prop} (${v.mobile})`, gps: v.gps.trim() });
     });
-
-    if (att && att.endGPS && att.endGPS.includes(',')) {
-      pts.push({ type: 'END', badge: 'E', color: '#dc2626', title: 'শেষ (End Duty)', time: att.endTime, info: 'সন্ধ্যার ছুটি পয়েন্ট', gps: att.endGPS.trim() });
-    }
+    if (att && att.endGPS && att.endGPS.includes(',')) pts.push({ badge: 'E', color: '#dc2626', title: 'শেষ', time: att.endTime, info: 'ছুটি', gps: att.endGPS.trim() });
     return pts;
   }
 
   function buildGoogleMapsRouteURL(pts) {
     if (!pts || pts.length === 0) return '#';
-    if (pts.length === 1) return `https://www.google.com/maps?q=${pts[0].gps}`;
-    const origin = pts[0].gps;
-    const destination = pts[pts.length - 1].gps;
-    const waypoints = pts.slice(1, -1).map(p => p.gps).join('|');
-    return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypoints ? '&waypoints=' + encodeURIComponent(waypoints) : ''}&travelmode=driving`;
+    return `https://www.google.com/maps?q=${pts[0].gps}`;
   }
 
-  // পিসিতে বা লোকাল ফাইলে ১০০% আনব্লকড Google Maps ও Satellite View ইঞ্জিন
   function openRouteMapPopup(dateStr, username, totalKM) {
     const pts = getRoutePointsForDate(dateStr, username);
-    if (pts.length === 0) {
-      return alert('এই তারিখে ম্যাপে দেখানোর মতো কোনো GPS লোকেশন রেকর্ড পাওয়া যায়নি!');
-    }
-
-    document.getElementById('routeMapTitle').innerText = `🗺️ রুট ম্যাপ (${dateStr}) — মোট দূরত্ব: ${totalKM} কি.মি. (${pts.length} টি পয়েন্ট)`;
+    if (pts.length === 0) return alert('GPS লোকেশন নেই!');
+    document.getElementById('routeMapTitle').innerText = `🗺️ রুট ম্যাপ (${dateStr}) — মোট দূরত্ব: ${totalKM} কি.মি.`;
     document.getElementById('gmapFullRouteBtn').href = buildGoogleMapsRouteURL(pts);
+    document.getElementById('photoPopupModal').classList.add('hidden');
     document.getElementById('routeMapModal').classList.remove('hidden');
 
     setTimeout(() => {
       if (!leafletMap) {
         leafletMap = L.map('routeLeafletMap');
-        
-        // Google Streets & Hybrid Satellite Layers (No 403 Block Ever)
-        const googleStreets = L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
-          maxZoom: 20,
-          attribution: '© Google Maps'
-        });
-        const googleHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
-          maxZoom: 20,
-          attribution: '© Google Satellite'
-        });
-
+        const googleStreets = L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', { maxZoom: 20 });
         googleStreets.addTo(leafletMap);
-        L.control.layers({ "🗺️ রোড ম্যাপ (Road Map)": googleStreets, "🛰️ স্যাটেলাইট ভিউ (Satellite)": googleHybrid }).addTo(leafletMap);
-
         routeLayerGroup = L.layerGroup().addTo(leafletMap);
-      } else {
-        routeLayerGroup.clearLayers();
-      }
-
+      } else { routeLayerGroup.clearLayers(); }
       leafletMap.invalidateSize();
       const latLngs = [];
-
       pts.forEach(p => {
         const [lat, lng] = p.gps.split(',').map(Number);
         if (!isNaN(lat) && !isNaN(lng)) {
           latLngs.push([lat, lng]);
-          const icon = L.divIcon({
-            className: '',
-            html: `<div class="custom-pin" style="background:${p.color};">${p.badge}</div>`,
-            iconSize: [30, 30], iconAnchor: [15, 15], popupAnchor: [0, -15]
-          });
-          const marker = L.marker([lat, lng], { icon: icon }).bindPopup(`
-            <div style="font-family:'Hind Siliguri',sans-serif; min-width:180px;">
-              <strong style="font-size:14.5px; color:${p.color};">${p.title}</strong><br>
-              <small style="color:#64748b;">🕒 সময়: ${p.time}</small>
-              <hr style="margin:5px 0; border:none; border-top:1px solid #e2e8f0;">
-              <div style="font-size:13px;">${p.info}</div>
-              <a href="https://www.google.com/maps?q=${p.gps}" target="_blank" style="display:inline-block; margin-top:6px; font-size:12px; font-weight:700; color:#2563eb;">📍 Google Map-এ দেখুন ↗</a>
-            </div>
-          `);
-          routeLayerGroup.addLayer(marker);
+          const icon = L.divIcon({ className: '', html: `<div style="background:${p.color}; color:#fff; width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">${p.badge}</div>`, iconSize: [30,30], iconAnchor: [15,15] });
+          routeLayerGroup.addLayer(L.marker([lat, lng], { icon }).bindPopup(`<strong>${p.title}</strong><br>${p.time}`));
         }
       });
-
       if (latLngs.length > 1) {
-        const polyline = L.polyline(latLngs, { color: '#dc2626', weight: 4, opacity: 0.9, dashArray: '8, 6' });
+        const polyline = L.polyline(latLngs, { color: '#dc2626', weight: 4, dashArray: '8, 6' });
         routeLayerGroup.addLayer(polyline);
-        leafletMap.fitBounds(polyline.getBounds(), { padding: [45, 45] });
-      } else if (latLngs.length === 1) {
-        leafletMap.setView(latLngs[0], 16);
-      }
+        leafletMap.fitBounds(polyline.getBounds(), { padding: [40, 40] });
+      } else if (latLngs.length === 1) { leafletMap.setView(latLngs[0], 16); }
     }, 150);
   }
 
-  function closeRouteMapPopup() {
-    document.getElementById('routeMapModal').classList.add('hidden');
-  }
+  function closeRouteMapPopup() { document.getElementById('routeMapModal').classList.add('hidden'); }
 
-  window.addEventListener('DOMContentLoaded', () => {
-    if (localStorage.getItem(ADM_STORAGE_KEY)) showAdminUI();
-  });
+  window.addEventListener('DOMContentLoaded', () => { if (localStorage.getItem(ADM_STORAGE_KEY)) showAdminUI(); });
 
   function showAdminUI() {
     document.getElementById('loginView').classList.add('hidden');
@@ -458,7 +326,7 @@
   }
 
   function logoutAdmin() {
-    if (!confirm('আপনি কি অ্যাডমিন প্যানেল থেকে লগআউট করতে চান?')) return;
+    if (!confirm('লগআউট করতে চান?')) return;
     localStorage.removeItem(ADM_STORAGE_KEY);
     location.reload();
   }
@@ -479,37 +347,28 @@
       const res = await callAPI({ action: 'login', username: u, password: p });
       btn.disabled = false; btn.innerText = 'লগইন করুন';
       if (!res.success || res.user.role !== 'admin') {
-        document.getElementById('loginMsg').innerText = res.message || 'শুধুমাত্র অ্যাডমিন লগইন করতে পারবেন!';
+        document.getElementById('loginMsg').innerText = res.message || 'অ্যাডমিন এক্সেস নেই!';
         return;
       }
       localStorage.setItem(ADM_STORAGE_KEY, JSON.stringify(res.user));
       showAdminUI();
     } catch (e) {
       btn.disabled = false; btn.innerText = 'লগইন করুন';
-      alert('সার্ভার কানেকশন এরর!');
+      alert('কানেকশন এরর!');
     }
   }
 
   function switchAdmTab(tabId, btnEl) {
     ['admTabVisits', 'admTabConv', 'admTabRoutes', 'admTabAtt', 'admTabSalary', 'admTabSettings'].forEach(id => document.getElementById(id).classList.add('hidden'));
     document.getElementById(tabId).classList.remove('hidden');
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.menu-item').forEach(b => b.classList.remove('active'));
     btnEl.classList.add('active');
   }
 
   function populateWeeklyRouteFields(rawStr) {
     let plan = { sat: '', sun: '', mon: '', tue: '', wed: '', thu: '', fri: '', special: '' };
-    if (rawStr) {
-      try {
-        const parsed = JSON.parse(rawStr);
-        if (typeof parsed === 'object' && parsed !== null) plan = { ...plan, ...parsed };
-      } catch (e) {
-        plan.special = rawStr;
-      }
-    }
-    ['sat', 'sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'special'].forEach(k => {
-      document.getElementById('rt_' + k).value = plan[k] || '';
-    });
+    if (rawStr) { try { const p = JSON.parse(rawStr); if (typeof p === 'object') plan = { ...plan, ...p }; } catch (e) { plan.special = rawStr; } }
+    ['sat', 'sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'special'].forEach(k => { document.getElementById('rt_' + k).value = plan[k] || ''; });
   }
 
   async function loadAdminData() {
@@ -518,88 +377,68 @@
     const today = data.today;
 
     const todayAtt = data.attendance.find(a => a.date === today);
-    document.getElementById('admTodayStatus').innerText = todayAtt ? `${todayAtt.status} (${todayAtt.startTime})` : 'আজ এখনো শুরু করেনি';
-    document.getElementById('admTodayVisits').innerText = data.visits.filter(v => v.date === today && v.status !== 'Fake').length;
+    document.getElementById('admTodayStatus').innerText = todayAtt ? `${todayAtt.status} (${todayAtt.startTime})` : 'আজ শুরু করেনি';
+    document.getElementById('admTodayVisits').innerText = data.visits.filter(v => v.date === today && v.status !== 'Fake').length + ' টি';
     const todayRoute = data.routes.find(r => r.date === today);
     document.getElementById('admTodayKM').innerText = (todayRoute ? todayRoute.totalKM : '0') + ' কি.মি.';
 
     document.getElementById('admVisitBody').innerHTML = data.visits.map(v => {
       const safeShop = String(v.shop || '').replace(/'/g, "\\'");
-      return `
-      <tr>
+      return `<tr>
         <td>${v.date}<br><small>${v.time}</small></td>
-        <td><strong>${v.shop}</strong><br>${v.address}</td>
-        <td>${v.prop}<br><strong>${v.mobile}</strong><br><a href="tel:${v.mobile}" class="btn btn-success btn-sm" style="margin-top:4px;">📞 Call</a></td>
-        <td>${v.remarks}<br><small style="color:#2563eb;">ফলো-আপ: ${v.followUp || '--'}</small></td>
+        <td><strong>${v.shop}</strong><br><small>${v.address}</small></td>
+        <td>${v.prop}<br><strong>${v.mobile}</strong><br><a href="tel:${v.mobile}" class="btn btn-success btn-sm" style="padding:2px 6px;">📞 Call</a></td>
+        <td>${v.remarks}<br><small style="color:var(--primary);">ফলো-আপ: ${v.followUp || '--'}</small></td>
         <td>
-          ${v.photo ? `<button type="button" class="btn btn-primary btn-sm" onclick="openPhotoPopup('${v.photo}', '${safeShop} -${v.prop}')">🖼️ HD ছবি</button>` : ''}
-          ${v.gps ? `<a href="https://www.google.com/maps?q=${v.gps}" target="_blank" class="btn btn-warning btn-sm">📍 ম্যাপ পিন</a>` : ''}
+          ${v.photo ? `<button type="button" class="btn btn-primary btn-sm" onclick="openPhotoPopup('${v.photo}', '${safeShop}')" style="padding:4px 6px;">🖼️ ছবি</button>` : ''}
+          ${v.gps ? `<a href="https://www.google.com/maps?q=${v.gps}" target="_blank" class="btn btn-warning btn-sm" style="padding:4px 6px;">📍 ম্যাপ</a>` : ''}
         </td>
         <td><span class="badge ${v.status === 'Verified' ? 'b-green' : 'b-red'}">${v.status}</span></td>
         <td>
-          <button class="btn btn-warning btn-sm" onclick="changeVisitStatus('${v.id}', '${v.status === 'Verified' ? 'Fake' : 'Verified'}')">${v.status === 'Verified' ? 'Mark Fake' : 'Verify'}</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteVisitRecord('${v.id}')">🗑️ Delete</button>
+          <div style="display:flex; gap:4px;">
+            <button class="btn btn-warning btn-sm" onclick="changeVisitStatus('${v.id}', '${v.status === 'Verified' ? 'Fake' : 'Verified'}')" style="padding:4px 6px;">${v.status === 'Verified' ? 'Fake' : 'Verify'}</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteVisitRecord('${v.id}')" style="padding:4px 6px;">🗑️</button>
+          </div>
         </td>
-      </tr>
-    `}).join('');
-
-    document.getElementById('admConvBody').innerHTML = data.conveyances.map(c => {
-      let bClass = c.status === 'Approved' ? 'b-green' : (c.status === 'Pending' ? 'b-yellow' : 'b-red');
-      return `
-        <tr>
-          <td>${c.date}<br><small>${c.time}</small></td>
-          <td><strong>${c.from} ➔ ${c.to}</strong><br><small>${c.transport}</small></td>
-          <td><input type="number" id="amt_${c.id}" value="${c.amount}" class="form-control" style="width:90px;"></td>
-          <td><span class="badge ${bClass}">${c.status}</span><br><small>${c.note || ''}</small></td>
-          <td>
-            <div style="display:flex; gap:6px; flex-wrap:wrap;">
-              <select id="st_${c.id}" class="form-control" style="width:120px;">
-                <option value="Pending" ${c.status==='Pending'?'selected':''}>Pending</option>
-                <option value="Approved" ${c.status==='Approved'?'selected':''}>Approved</option>
-                <option value="Rejected" ${c.status==='Rejected'?'selected':''}>Rejected</option>
-                <option value="Cancelled" ${c.status==='Cancelled'?'selected':''}>Cancelled</option>
-              </select>
-              <input type="text" id="nt_${c.id}" value="${c.note || ''}" placeholder="কারণ লিখুন..." class="form-control" style="width:180px;">
-              <button class="btn btn-primary btn-sm" onclick="updateConvItem('${c.id}')">Save</button>
-            </div>
-          </td>
-        </tr>
-      `;
+      </tr>`;
     }).join('');
+
+    document.getElementById('admConvBody').innerHTML = data.conveyances.map(c => `<tr>
+      <td>${c.date}<br><small>${c.time}</small></td>
+      <td><strong>${c.from} ➔ ${c.to}</strong><br><small>${c.transport}</small></td>
+      <td><input type="number" id="amt_${c.id}" value="${c.amount}" class="form-control" style="width:80px; padding:4px;"></td>
+      <td><span class="badge ${c.status==='Approved'?'b-green':'b-yellow'}">${c.status}</span><br><small>${c.note || ''}</small></td>
+      <td>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <select id="st_${c.id}" class="form-control" style="width:105px; padding:4px;">
+            <option value="Pending" ${c.status==='Pending'?'selected':''}>Pending</option>
+            <option value="Approved" ${c.status==='Approved'?'selected':''}>Approved</option>
+            <option value="Rejected" ${c.status==='Rejected'?'selected':''}>Rejected</option>
+            <option value="Cancelled" ${c.status==='Cancelled'?'selected':''}>Cancelled</option>
+          </select>
+          <input type="text" id="nt_${c.id}" value="${c.note || ''}" placeholder="নোট..." class="form-control" style="width:130px; padding:4px;">
+          <button class="btn btn-primary btn-sm" onclick="updateConvItem('${c.id}')">সেভ</button>
+        </div>
+      </td>
+    </tr>`).join('');
 
     document.getElementById('admRouteBody').innerHTML = data.routes.map(r => {
       const pts = getRoutePointsForDate(r.date, r.username);
-      const gmapUrl = buildGoogleMapsRouteURL(pts);
-      return `
-      <tr>
-        <td><strong>${r.date}</strong></td>
-        <td>${r.startPoint}</td>
-        <td>${r.stops}</td>
-        <td>${r.steps}</td>
-        <td>${r.endPoint}</td>
-        <td><span class="badge b-green" style="font-size:14px;">${r.totalKM} কি.মি.</span></td>
-        <td>
-          <div style="display:flex; flex-direction:column; gap:5px;">
-            <button type="button" class="btn btn-primary btn-sm" onclick="openRouteMapPopup('${r.date}', '${r.username}', '${r.totalKM}')">🗺️ ম্যাপে রুট দেখুন</button>
-            ${pts.length > 0 ? `<a href="${gmapUrl}" target="_blank" class="btn btn-warning btn-sm">📍 Google Maps ↗</a>` : ''}
-          </div>
-        </td>
-      </tr>
-    `}).join('');
+      return `<tr>
+        <td><strong>${r.date}</strong></td><td>${r.startPoint}</td><td>${r.stops}</td><td>${r.steps}</td><td>${r.endPoint}</td>
+        <td><span class="badge b-green">${r.totalKM} কি.মি.</span></td>
+        <td><button type="button" class="btn btn-primary btn-sm" onclick="openRouteMapPopup('${r.date}', '${r.username}', '${r.totalKM}')" style="padding:4px 8px;">🗺️ রুট</button></td>
+      </tr>`;
+    }).join('');
 
-    document.getElementById('admAttBody').innerHTML = data.attendance.map(a => `
-      <tr>
-        <td><strong>${a.date}</strong></td>
-        <td>${a.startTime} ${a.startGPS ? `<a href="https://www.google.com/maps?q=${a.startGPS}" target="_blank" class="btn btn-warning btn-sm" style="padding:2px 6px;">📍 ম্যাপ</a>` : ''}</td>
-        <td>${a.endTime || '--'} ${a.endGPS ? `<a href="https://www.google.com/maps?q=${a.endGPS}" target="_blank" class="btn btn-warning btn-sm" style="padding:2px 6px;">📍 ম্যাপ</a>` : ''}</td>
-        <td>${a.hours} ঘণ্টা</td>
-        <td><span class="badge b-yellow">${a.status}</span></td>
-        <td>
-          <button class="btn btn-warning btn-sm" onclick="adminForceEndAtt('${a.id}')">Force Close</button>
-          <button class="btn btn-danger btn-sm" onclick="adminDeleteAtt('${a.id}')">Reset/Delete</button>
-        </td>
-      </tr>
-    `).join('');
+    document.getElementById('admAttBody').innerHTML = data.attendance.map(a => `<tr>
+      <td><strong>${a.date}</strong></td><td>${a.startTime}</td><td>${a.endTime || '--'}</td><td>${a.hours} ঘণ্টা</td>
+      <td><span class="badge b-yellow">${a.status}</span></td>
+      <td>
+        <button class="btn btn-warning btn-sm" onclick="adminForceEndAtt('${a.id}')" style="padding:2px 6px;">ফোর্স ক্লোজ</button>
+        <button class="btn btn-danger btn-sm" onclick="adminDeleteAtt('${a.id}')" style="padding:2px 6px;">রিসেট</button>
+      </td>
+    </tr>`).join('');
 
     const emp = data.users.find(u => u.role === 'employee');
     if (emp) {
@@ -626,7 +465,7 @@
   }
 
   async function deleteVisitRecord(id) {
-    if (!confirm('ভিজিটটি ডিলিট করতে চান?')) return;
+    if (!confirm('ডিলিট করতে চান?')) return;
     await callAPI({ action: 'manageVisit', id, subAction: 'DELETE', status: '' });
     loadAdminData();
   }
@@ -637,7 +476,7 @@
   }
 
   async function adminDeleteAtt(id) {
-    if (!confirm('হাজিরা রিসেট/ডিলিট করতে চান?')) return;
+    if (!confirm('রিসেট করতে চান?')) return;
     await callAPI({ action: 'manageAtt', id, subAction: 'DELETE', status: '' });
     loadAdminData();
   }
@@ -645,28 +484,13 @@
   async function saveEmployeeSettings() {
     const emp = adminCache.users.find(u => u.role === 'employee');
     if (!emp) return;
-
     const weeklyRouteObj = {
-      sat: document.getElementById('rt_sat').value.trim(),
-      sun: document.getElementById('rt_sun').value.trim(),
-      mon: document.getElementById('rt_mon').value.trim(),
-      tue: document.getElementById('rt_tue').value.trim(),
-      wed: document.getElementById('rt_wed').value.trim(),
-      thu: document.getElementById('rt_thu').value.trim(),
-      fri: document.getElementById('rt_fri').value.trim(),
-      special: document.getElementById('rt_special').value.trim()
+      sat: document.getElementById('rt_sat').value.trim(), sun: document.getElementById('rt_sun').value.trim(),
+      mon: document.getElementById('rt_mon').value.trim(), tue: document.getElementById('rt_tue').value.trim(),
+      wed: document.getElementById('rt_wed').value.trim(), thu: document.getElementById('rt_thu').value.trim(),
+      fri: document.getElementById('rt_fri').value.trim(), special: document.getElementById('rt_special').value.trim()
     };
-
-    const res = await callAPI({
-      action: 'updateUser',
-      payload: {
-        username: emp.username,
-        assignedRoute: JSON.stringify(weeklyRouteObj),
-        password: document.getElementById('setPass').value,
-        basicSalary: document.getElementById('setSalary').value,
-        status: document.getElementById('setStatus').value
-      }
-    });
+    const res = await callAPI({ action: 'updateUser', payload: { username: emp.username, assignedRoute: JSON.stringify(weeklyRouteObj), password: document.getElementById('setPass').value, basicSalary: document.getElementById('setSalary').value, status: document.getElementById('setStatus').value } });
     alert(res.message);
     loadAdminData();
   }
@@ -676,51 +500,30 @@
     const monthPrefix = document.getElementById('salaryMonthPicker').value;
     const emp = adminCache.users.find(u => u.role === 'employee') || { fullName: 'কর্মচারী', basicSalary: 0 };
     const mAtt = adminCache.attendance.filter(a => a.date.startsWith(monthPrefix));
-
     let totalDays = mAtt.length, totalHours = 0, lateCount = 0, totalVisitsMonth = 0, totalKMMonth = 0, totalApprovedConv = 0;
 
     const rowsHTML = mAtt.slice().reverse().map(a => {
-      const d = a.date;
-      const hrs = parseFloat(a.hours || 0);
-      totalHours += hrs;
+      const d = a.date; const hrs = parseFloat(a.hours || 0); totalHours += hrs;
       if (a.status.includes('Late') || a.status.includes('Early')) lateCount++;
-
-      const dVisits = adminCache.visits.filter(v => v.date === d && v.status === 'Verified').length;
-      totalVisitsMonth += dVisits;
-
-      const dRoute = adminCache.routes.find(r => r.date === d);
-      const km = dRoute ? parseFloat(dRoute.totalKM || 0) : 0;
-      totalKMMonth += km;
-
-      const dConv = adminCache.conveyances.filter(c => c.date === d && c.status === 'Approved').reduce((sum, c) => sum + Number(c.amount || 0), 0);
-      totalApprovedConv += dConv;
-
-      return `
-        <tr>
-          <td>${d}</td>
-          <td>${a.startTime} - ${a.endTime || 'চলমান'}</td>
-          <td>${hrs.toFixed(2)} ঘণ্টা</td>
-          <td>${a.status}</td>
-          <td>${dVisits} টি</td>
-          <td>${km.toFixed(2)} কি.মি.</td>
-          <td>${dConv} ৳</td>
-        </tr>
-      `;
+      const dVisits = adminCache.visits.filter(v => v.date === d && v.status === 'Verified').length; totalVisitsMonth += dVisits;
+      const dRoute = adminCache.routes.find(r => r.date === d); const km = dRoute ? parseFloat(dRoute.totalKM || 0) : 0; totalKMMonth += km;
+      const dConv = adminCache.conveyances.filter(c => c.date === d && c.status === 'Approved').reduce((sum, c) => sum + Number(c.amount || 0), 0); totalApprovedConv += dConv;
+      return `<tr><td>${d}</td><td>${a.startTime} - ${a.endTime || 'চলমান'}</td><td>${hrs.toFixed(2)}</td><td>${a.status}</td><td>${dVisits} টি</td><td>${km.toFixed(2)} কি.মি.</td><td>${dConv} ৳</td></tr>`;
     }).join('');
 
     const basic = Number(emp.basicSalary || 0);
     const netPayable = basic + totalApprovedConv;
 
-    document.getElementById('salSubHeader').innerText = `কর্মচারীর নাম: ${emp.fullName} | মাস: ${monthPrefix}`;
+    document.getElementById('salSubHeader').innerText = `কর্মচারী: ${emp.fullName} | মাস: ${monthPrefix}`;
     document.getElementById('salSummaryBoxes').innerHTML = `
-      <div class="stat-box"><span>মোট উপস্থিত দিন ও কাজের ঘণ্টা</span><strong>${totalDays} দিন (${totalHours.toFixed(1)} ঘণ্টা)</strong></div>
-      <div class="stat-box"><span>মোট Late / Early Leave</span><strong>${lateCount} দিন</strong></div>
-      <div class="stat-box"><span>মোট ভিজিট ও কিলোমিটার</span><strong>${totalVisitsMonth} টি (${totalKMMonth.toFixed(1)} কি.মি.)</strong></div>
-      <div class="stat-box"><span>মূল বেতন (Basic Salary)</span><strong>${basic} ৳</strong></div>
-      <div class="stat-box"><span>অনুমোদিত কনভেন্স (Approved)</span><strong>${totalApprovedConv} ৳</strong></div>
-      <div class="stat-box" style="border-left-color:#16a34a;"><span>সর্বমোট প্রদেয় (Net Payable)</span><strong>${netPayable} ৳</strong></div>
+      <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-info"><span>উপস্থিতি</span><strong>${totalDays} দিন (${totalHours.toFixed(1)} ঘ.)</strong></div></div>
+      <div class="stat-card orange"><div class="stat-icon">⚠️</div><div class="stat-info"><span>Late / Early</span><strong>${lateCount} দিন</strong></div></div>
+      <div class="stat-card green"><div class="stat-icon">📈</div><div class="stat-info"><span>ভিজিট ও কি.মি.</span><strong>${totalVisitsMonth} টি (${totalKMMonth.toFixed(1)} কি.)</strong></div></div>
+      <div class="stat-card"><div class="stat-icon">💵</div><div class="stat-info"><span>বেতন</span><strong>${basic} ৳</strong></div></div>
+      <div class="stat-card green"><div class="stat-icon">🚌</div><div class="stat-info"><span>বিল</span><strong>${totalApprovedConv} ৳</strong></div></div>
+      <div class="stat-card" style="border-left-color:var(--success);"><div class="stat-icon">💰</div><div class="stat-info"><span>প্রদেয়</span><strong style="color:var(--success);">${netPayable} ৳</strong></div></div>
     `;
-    document.getElementById('salTableBody').innerHTML = rowsHTML || '<tr><td colspan="7" style="text-align:center;">এই মাসে কোনো রেকর্ড পাওয়া যায়নি</td></tr>';
+    document.getElementById('salTableBody').innerHTML = rowsHTML || '<tr><td colspan="7" style="text-align:center;">কোনো রেকর্ড নেই</td></tr>';
   }
 </script>
 </body>
