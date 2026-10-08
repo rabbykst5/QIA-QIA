@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Master Admin Panel - Field Force Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Hind Siliguri', sans-serif; }
+    body { background: #f1f5f9; color: #1e293b; font-size: 14.5px; }
+    .hidden { display: none !important; }
+    .login-wrap { max-width: 400px; margin: 70px auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border-top: 6px solid #0f172a; }
+    .login-wrap h2 { text-align: center; color: #0f172a; margin-bottom: 20px; }
+    .topbar { background: #0f172a; color: #fff; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+    .container { max-width: 1200px; margin: 20px auto; padding: 0 12px; }
+    .nav-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+    .tab-btn { background: #fff; border: 1px solid #cbd5e1; padding: 9px 15px; border-radius: 8px; font-weight: 600; cursor: pointer; color: #334155; }
+    .tab-btn.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+    .card { background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); margin-bottom: 18px; border: 1px solid #e2e8f0; }
+    .card h4 { font-size: 17px; margin-bottom: 14px; color: #0f172a; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 18px; }
+    .stat-box { background: #fff; padding: 15px; border-radius: 10px; border-left: 5px solid #2563eb; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .stat-box span { font-size: 13px; color: #64748b; display: block; }
+    .stat-box strong { font-size: 21px; color: #0f172a; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-weight: 600; margin-bottom: 5px; }
+    .form-control { width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
+    .btn { padding: 9px 16px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; text-decoration: none; display: inline-block; }
+    .btn-primary { background: #2563eb; color: #fff; }
+    .btn-success { background: #16a34a; color: #fff; }
+    .btn-danger { background: #dc2626; color: #fff; }
+    .btn-warning { background: #d97706; color: #fff; }
+    .btn-sm { padding: 5px 10px; font-size: 12.5px; }
+    .table-responsive { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    table th, table td { border: 1px solid #cbd5e1; padding: 9px 10px; text-align: left; vertical-align: middle; }
+    table th { background: #f8fafc; font-weight: 700; }
+    .badge { padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; display: inline-block; }
+    .b-green { background: #dcfce7; color: #166534; }
+    .b-red { background: #fee2e2; color: #991b1b; }
+    .b-yellow { background: #fef9c3; color: #854d0e; }
+    @media print {
+      .topbar, .nav-tabs, .no-print { display: none !important; }
+      body { background: #fff; }
+      .card { box-shadow: none; border: 1px solid #000; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="loginView" class="login-wrap">
+  <h2>🛡️ অ্যাডমিন লগইন</h2>
+  <div class="form-group">
+    <label>অ্যাডমিন ইউজারনেম</label>
+    <input type="text" id="loginUser" class="form-control" placeholder="admin">
+  </div>
+  <div class="form-group">
+    <label>পাসওয়ার্ড</label>
+    <input type="password" id="loginPass" class="form-control" placeholder="পাসওয়ার্ড দিন">
+  </div>
+  <button id="btnLogin" class="btn btn-primary" style="width:100%;" onclick="handleAdminLogin()">লগইন করুন</button>
+  <p id="loginMsg" style="color:#dc2626; margin-top:10px; text-align:center; font-weight:600;"></p>
+</div>
+
+<div id="adminPanel" class="hidden">
+  <div class="topbar">
+    <h3>🛡️ মাস্টার অ্যাডমিন প্যানেল (A to Z কন্ট্রোল রুম)</h3>
+    <div>
+      <button class="btn btn-primary btn-sm" onclick="loadAdminData()">🔄 রিফ্রেশ ডাটা</button>
+      <button class="btn btn-danger btn-sm" onclick="location.reload()">লগআউট</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="grid-3 no-print">
+      <div class="stat-box"><span>আজকের ডিউটি স্ট্যাটাস</span><strong id="admTodayStatus">--</strong></div>
+      <div class="stat-box" style="border-left-color:#16a34a;"><span>আজকের মোট দোকান ভিজিট</span><strong id="admTodayVisits">0</strong></div>
+      <div class="stat-box" style="border-left-color:#d97706;"><span>আজকের মোট ভ্রমণ (Total KM)</span><strong id="admTodayKM">0 কি.মি.</strong></div>
+    </div>
+
+    <div class="nav-tabs no-print">
+      <button class="tab-btn active" onclick="switchAdmTab('admTabVisits', this)">🏪 ভিজিট ও ছবি ভেরিফিকেশন</button>
+      <button class="tab-btn" onclick="switchAdmTab('admTabConv', this)">💳 কনভেন্স বিল (Approve/Reject)</button>
+      <button class="tab-btn" onclick="switchAdmTab('admTabRoutes', this)">🗺️ রুট ও কিলোমিটার সামারি (৬ কলাম)</button>
+      <button class="tab-btn" onclick="switchAdmTab('admTabAtt', this)">⏰ হাজিরা কন্ট্রোল</button>
+      <button class="tab-btn" onclick="switchAdmTab('admTabSalary', this)">📄 মাসিক স্যালারি শিট (PDF)</button>
+      <button class="tab-btn" onclick="switchAdmTab('admTabSettings', this)">⚙️ রুট অ্যাসাইন ও পাসওয়ার্ড</button>
+    </div>
+
+    <div id="admTabVisits" class="card">
+      <h4>🏪 কর্মচারীর দোকান ভিজিট ভেরিফিকেশন, ১-ক্লিক কল ও ডিলিট</h4>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>তারিখ ও সময়</th>
+              <th>দোকান ও ঠিকানা</th>
+              <th>প্রোপাইটার ও ১-ক্লিক কল</th>
+              <th>মন্তব্য ও ফলো-আপ</th>
+              <th>HD ছবি ও ম্যাপ পিন</th>
+              <th>স্ট্যাটাস</th>
+              <th>অ্যাকশন</th>
+            </tr>
+          </thead>
+          <tbody id="admVisitBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="admTabConv" class="card hidden">
+      <h4>💳 যাতায়াত খরচ (Conveyance) অনুমোদন / বাতিল এবং কারণ নোট</h4>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>তারিখ</th>
+              <th>কোথা থেকে ➔ কোথায় (বাহন)</th>
+              <th>টাকার পরিমাণ</th>
+              <th>বর্তমান স্ট্যাটাস</th>
+              <th>স্ট্যাটাস পরিবর্তন ও কারণ নোট (Admin Note)</th>
+            </tr>
+          </thead>
+          <tbody id="admConvBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="admTabRoutes" class="card hidden">
+      <h4>🗺️ অটোমেটিক রুট ও কিলোমিটার সামারি (৬ কলামের বিশেষ রিপোর্ট)</h4>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>১. তারিখ</th>
+              <th>২. শুরুর স্থান ও সময়</th>
+              <th>৩. কোথায় কোথায় দাঁড়ালো</th>
+              <th>৪. কোথা থেকে কোথায় গেছে (ধাপ ও কি.মি.)</th>
+              <th>৫. শেষ স্থান ও সময়</th>
+              <th>৬. মোট দূরত্ব (Total KM)</th>
+            </tr>
+          </thead>
+          <tbody id="admRouteBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="admTabAtt" class="card hidden">
+      <h4>⏰ প্রতিদিনের হাজিরা (Attendance) সংশোধন ও ফোর্স ক্লোজ</h4>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>তারিখ</th>
+              <th>Start Time ও ম্যাপ</th>
+              <th>End Time ও ম্যাপ</th>
+              <th>মোট ঘণ্টা</th>
+              <th>স্ট্যাটাস</th>
+              <th>অ্যাডমিন কন্ট্রোল</th>
+            </tr>
+          </thead>
+          <tbody id="admAttBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="admTabSalary" class="card hidden">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;" class="no-print">
+        <div>
+          <label style="font-weight:700;">মাস নির্বাচন করুন: </label>
+          <input type="month" id="salaryMonthPicker" class="form-control" style="display:inline-block; width:180px;" onchange="generateSalarySheet()">
+        </div>
+        <button class="btn btn-primary" onclick="window.print()">🖨️ Print / Save PDF</button>
+      </div>
+
+      <div id="printableSalaryArea">
+        <h3 style="text-align:center; margin-bottom:4px;">মাসিক হাজিরা, পারফরম্যান্স ও স্যালারি শিট</h3>
+        <p style="text-align:center; color:#64748b; margin-bottom:15px;" id="salSubHeader"></p>
+        <div class="grid-3" id="salSummaryBoxes"></div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>তারিখ</th>
+                <th>হাজিরা সময় (In - Out)</th>
+                <th>কাজের ঘণ্টা</th>
+                <th>হাজিরা স্ট্যাটাস</th>
+                <th>মোট ভিজিট</th>
+                <th>মোট কি.মি.</th>
+                <th>অনুমোদিত কনভেন্স (Approved)</th>
+              </tr>
+            </thead>
+            <tbody id="salTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="admTabSettings" class="card hidden">
+      <h4>⚙️ কর্মচারীর আজকের রুট অ্যাসাইন, বেসিক স্যালারি ও পাসওয়ার্ড কন্ট্রোল</h4>
+      <div class="form-group">
+        <label>আজকের রুট / টার্গেট নির্দেশনা</label>
+        <input type="text" id="setRoute" class="form-control">
+      </div>
+      <div class="grid-3">
+        <div class="form-group">
+          <label>কর্মচারীর পাসওয়ার্ড</label>
+          <input type="text" id="setPass" class="form-control">
+        </div>
+        <div class="form-group">
+          <label>মাসিক মূল বেতন (Basic Salary ৳)</label>
+          <input type="number" id="setSalary" class="form-control">
+        </div>
+        <div class="form-group">
+          <label>একাউন্ট স্ট্যাটাস</label>
+          <select id="setStatus" class="form-control">
+            <option value="Active">Active (সচল)</option>
+            <option value="Blocked">Blocked (ব্লক/বন্ধ)</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="saveEmployeeSettings()">💾 সেটিংস আপডেট করুন</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw45glhGRu_tySZHMyawnkKEGOYxQnw1bx9KH_oZrKf16Mp-retUddYUo9wg8j17hlF/exec";
+  let adminCache = null;
+
+  async function callAPI(payload) {
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+    return await res.json();
+  }
+
+  async function handleAdminLogin() {
+    const u = document.getElementById('loginUser').value.trim();
+    const p = document.getElementById('loginPass').value.trim();
+    if (!u || !p) return alert('ইউজারনেম এবং পাসওয়ার্ড দিন!');
+    const btn = document.getElementById('btnLogin');
+    btn.disabled = true; btn.innerText = 'যাচাই হচ্ছে...';
+
+    try {
+      const res = await callAPI({ action: 'login', username: u, password: p });
+      btn.disabled = false; btn.innerText = 'লগইন করুন';
+      if (!res.success || res.user.role !== 'admin') {
+        document.getElementById('loginMsg').innerText = res.message || 'শুধুমাত্র অ্যাডমিন লগইন করতে পারবেন!';
+        return;
+      }
+      document.getElementById('loginView').classList.add('hidden');
+      document.getElementById('adminPanel').classList.remove('hidden');
+      document.getElementById('salaryMonthPicker').value = new Date().toISOString().slice(0, 7);
+      loadAdminData();
+    } catch (e) {
+      btn.disabled = false; btn.innerText = 'লগইন করুন';
+      alert('সার্ভার কানেকশন এরর! Code.gs আপডেট করে New Version-এ Deploy করুন।');
+    }
+  }
+
+  function switchAdmTab(tabId, btnEl) {
+    ['admTabVisits', 'admTabConv', 'admTabRoutes', 'admTabAtt', 'admTabSalary', 'admTabSettings'].forEach(id => document.getElementById(id).classList.add('hidden'));
+    document.getElementById(tabId).classList.remove('hidden');
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btnEl.classList.add('active');
+  }
+
+  async function loadAdminData() {
+    const data = await callAPI({ action: 'getAdminData' });
+    adminCache = data;
+    const today = data.today;
+
+    const todayAtt = data.attendance.find(a => a.date === today);
+    document.getElementById('admTodayStatus').innerText = todayAtt ? `${todayAtt.status} (${todayAtt.startTime})` : 'আজ এখনো শুরু করেনি';
+    document.getElementById('admTodayVisits').innerText = data.visits.filter(v => v.date === today && v.status !== 'Fake').length;
+    const todayRoute = data.routes.find(r => r.date === today);
+    document.getElementById('admTodayKM').innerText = (todayRoute ? todayRoute.totalKM : '0') + ' কি.মি.';
+
+    document.getElementById('admVisitBody').innerHTML = data.visits.map(v => `
+      <tr>
+        <td>${v.date}<br><small>${v.time}</small></td>
+        <td><strong>${v.shop}</strong><br>${v.address}</td>
+        <td>${v.prop}<br><strong>${v.mobile}</strong><br><a href="tel:${v.mobile}" class="btn btn-success btn-sm" style="margin-top:4px;">📞 Call</a></td>
+        <td>${v.remarks}<br><small style="color:#2563eb;">ফলো-আপ: ${v.followUp || '--'}</small></td>
+        <td>
+          ${v.photo ? `<a href="${v.photo}" target="_blank" class="btn btn-primary btn-sm">🖼️ HD ছবি</a>` : ''}
+          ${v.gps ? `<a href="https://www.google.com/maps?q=${v.gps}" target="_blank" class="btn btn-warning btn-sm">📍 ম্যাপ পিন</a>` : ''}
+        </td>
+        <td><span class="badge ${v.status === 'Verified' ? 'b-green' : 'b-red'}">${v.status}</span></td>
+        <td>
+          <button class="btn btn-warning btn-sm" onclick="changeVisitStatus('${v.id}', '${v.status === 'Verified' ? 'Fake' : 'Verified'}')">${v.status === 'Verified' ? 'Mark Fake' : 'Verify'}</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteVisitRecord('${v.id}')">🗑️ Delete</button>
+        </td>
+      </tr>
+    `).join('');
+
+    document.getElementById('admConvBody').innerHTML = data.conveyances.map(c => {
+      let bClass = c.status === 'Approved' ? 'b-green' : (c.status === 'Pending' ? 'b-yellow' : 'b-red');
+      return `
+        <tr>
+          <td>${c.date}<br><small>${c.time}</small></td>
+          <td><strong>${c.from} ➔ ${c.to}</strong><br><small>${c.transport}</small></td>
+          <td><input type="number" id="amt_${c.id}" value="${c.amount}" class="form-control" style="width:90px;"></td>
+          <td><span class="badge ${bClass}">${c.status}</span><br><small>${c.note || ''}</small></td>
+          <td>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <select id="st_${c.id}" class="form-control" style="width:120px;">
+                <option value="Pending" ${c.status==='Pending'?'selected':''}>Pending</option>
+                <option value="Approved" ${c.status==='Approved'?'selected':''}>Approved</option>
+                <option value="Rejected" ${c.status==='Rejected'?'selected':''}>Rejected</option>
+                <option value="Cancelled" ${c.status==='Cancelled'?'selected':''}>Cancelled</option>
+              </select>
+              <input type="text" id="nt_${c.id}" value="${c.note || ''}" placeholder="কারণ লিখুন..." class="form-control" style="width:180px;">
+              <button class="btn btn-primary btn-sm" onclick="updateConvItem('${c.id}')">Save</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    document.getElementById('admRouteBody').innerHTML = data.routes.map(r => `
+      <tr>
+        <td><strong>${r.date}</strong></td>
+        <td>${r.startPoint}</td>
+        <td>${r.stops}</td>
+        <td>${r.steps}</td>
+        <td>${r.endPoint}</td>
+        <td><span class="badge b-green" style="font-size:14px;">${r.totalKM} কি.মি.</span></td>
+      </tr>
+    `).join('');
+
+    document.getElementById('admAttBody').innerHTML = data.attendance.map(a => `
+      <tr>
+        <td><strong>${a.date}</strong></td>
+        <td>${a.startTime} ${a.startGPS ? `<a href="https://www.google.com/maps?q=${a.startGPS}" target="_blank">📍</a>` : ''}</td>
+        <td>${a.endTime || '--'} ${a.endGPS ? `<a href="https://www.google.com/maps?q=${a.endGPS}" target="_blank">📍</a>` : ''}</td>
+        <td>${a.hours} ঘণ্টা</td>
+        <td><span class="badge b-yellow">${a.status}</span></td>
+        <td>
+          <button class="btn btn-warning btn-sm" onclick="adminForceEndAtt('${a.id}')">Force Close</button>
+          <button class="btn btn-danger btn-sm" onclick="adminDeleteAtt('${a.id}')">Reset/Delete</button>
+        </td>
+      </tr>
+    `).join('');
+
+    const emp = data.users.find(u => u.role === 'employee');
+    if (emp) {
+      document.getElementById('setRoute').value = emp.assignedRoute;
+      document.getElementById('setPass').value = emp.password;
+      document.getElementById('setSalary').value = emp.basicSalary;
+      document.getElementById('setStatus').value = emp.status;
+    }
+    generateSalarySheet();
+  }
+
+  async function updateConvItem(id) {
+    const status = document.getElementById('st_' + id).value;
+    const note = document.getElementById('nt_' + id).value;
+    const amount = document.getElementById('amt_' + id).value;
+    const res = await callAPI({ action: 'updateConv', id, status, note, amount });
+    alert(res.message);
+    loadAdminData();
+  }
+
+  async function changeVisitStatus(id, status) {
+    await callAPI({ action: 'manageVisit', id, subAction: 'STATUS', status });
+    loadAdminData();
+  }
+
+  async function deleteVisitRecord(id) {
+    if (!confirm('ভিজিটটি ডিলিট করতে চান?')) return;
+    await callAPI({ action: 'manageVisit', id, subAction: 'DELETE', status: '' });
+    loadAdminData();
+  }
+
+  async function adminForceEndAtt(id) {
+    await callAPI({ action: 'manageAtt', id, subAction: 'FORCE_END', status: 'Admin Closed' });
+    loadAdminData();
+  }
+
+  async function adminDeleteAtt(id) {
+    if (!confirm('হাজিরা রিসেট/ডিলিট করতে চান?')) return;
+    await callAPI({ action: 'manageAtt', id, subAction: 'DELETE', status: '' });
+    loadAdminData();
+  }
+
+  async function saveEmployeeSettings() {
+    const emp = adminCache.users.find(u => u.role === 'employee');
+    if (!emp) return;
+    const res = await callAPI({
+      action: 'updateUser',
+      payload: {
+        username: emp.username,
+        assignedRoute: document.getElementById('setRoute').value,
+        password: document.getElementById('setPass').value,
+        basicSalary: document.getElementById('setSalary').value,
+        status: document.getElementById('setStatus').value
+      }
+    });
+    alert(res.message);
+    loadAdminData();
+  }
+
+  function generateSalarySheet() {
+    if (!adminCache) return;
+    const monthPrefix = document.getElementById('salaryMonthPicker').value;
+    const emp = adminCache.users.find(u => u.role === 'employee') || { fullName: 'কর্মচারী', basicSalary: 0 };
+    const mAtt = adminCache.attendance.filter(a => a.date.startsWith(monthPrefix));
+
+    let totalDays = mAtt.length, totalHours = 0, lateCount = 0, totalVisitsMonth = 0, totalKMMonth = 0, totalApprovedConv = 0;
+
+    const rowsHTML = mAtt.slice().reverse().map(a => {
+      const d = a.date;
+      const hrs = parseFloat(a.hours || 0);
+      totalHours += hrs;
+      if (a.status.includes('Late') || a.status.includes('Early')) lateCount++;
+
+      const dVisits = adminCache.visits.filter(v => v.date === d && v.status === 'Verified').length;
+      totalVisitsMonth += dVisits;
+
+      const dRoute = adminCache.routes.find(r => r.date === d);
+      const km = dRoute ? parseFloat(dRoute.totalKM || 0) : 0;
+      totalKMMonth += km;
+
+      const dConv = adminCache.conveyances.filter(c => c.date === d && c.status === 'Approved').reduce((sum, c) => sum + Number(c.amount || 0), 0);
+      totalApprovedConv += dConv;
+
+      return `
+        <tr>
+          <td>${d}</td>
+          <td>${a.startTime} - ${a.endTime || 'চলমান'}</td>
+          <td>${hrs.toFixed(2)} ঘণ্টা</td>
+          <td>${a.status}</td>
+          <td>${dVisits} টি</td>
+          <td>${km.toFixed(2)} কি.মি.</td>
+          <td>${dConv} ৳</td>
+        </tr>
+      `;
+    }).join('');
+
+    const basic = Number(emp.basicSalary || 0);
+    const netPayable = basic + totalApprovedConv;
+
+    document.getElementById('salSubHeader').innerText = `কর্মচারীর নাম: ${emp.fullName} | মাস: ${monthPrefix}`;
+    document.getElementById('salSummaryBoxes').innerHTML = `
+      <div class="stat-box"><span>মোট উপস্থিত দিন ও কাজের ঘণ্টা</span><strong>${totalDays} দিন (${totalHours.toFixed(1)} ঘণ্টা)</strong></div>
+      <div class="stat-box"><span>মোট Late / Early Leave</span><strong>${lateCount} দিন</strong></div>
+      <div class="stat-box"><span>মোট ভিজিট ও কিলোমিটার</span><strong>${totalVisitsMonth} টি (${totalKMMonth.toFixed(1)} কি.মি.)</strong></div>
+      <div class="stat-box"><span>মূল বেতন (Basic Salary)</span><strong>${basic} ৳</strong></div>
+      <div class="stat-box"><span>অনুমোদিত কনভেন্স (Approved)</span><strong>${totalApprovedConv} ৳</strong></div>
+      <div class="stat-box" style="border-left-color:#16a34a;"><span>সর্বমোট প্রদেয় (Net Payable)</span><strong>${netPayable} ৳</strong></div>
+    `;
+    document.getElementById('salTableBody').innerHTML = rowsHTML || '<tr><td colspan="7" style="text-align:center;">এই মাসে কোনো রেকর্ড পাওয়া যায়নি</td></tr>';
+  }
+</script>
+</body>
+</html>
