@@ -17,14 +17,12 @@
     body { background: var(--bg); color: var(--text); font-size: 15px; padding-bottom: 80px; }
     .hidden { display: none !important; }
 
-    /* Modern Login Screen */
     .login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%); margin-bottom: -80px; }
     .login-card { width: 100%; max-width: 390px; background: #fff; padding: 32px 26px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); text-align: center; }
     .login-icon { width: 68px; height: 68px; background: #eef2ff; color: var(--primary); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 32px; margin-bottom: 12px; }
     .login-card h2 { font-size: 23px; color: #111827; margin-bottom: 4px; }
     .login-card p.sub { font-size: 13.5px; color: #6b7280; margin-bottom: 22px; }
 
-    /* App Header */
     .app-header { background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); color: #fff; padding: 18px 18px 26px; border-radius: 0 0 24px 24px; box-shadow: 0 4px 15px rgba(79,70,229,0.25); }
     .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
     .user-info h3 { font-size: 18px; font-weight: 700; }
@@ -35,7 +33,6 @@
     .route-pill { background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); padding: 10px 14px; border-radius: 12px; font-size: 13.5px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
     .container { max-width: 600px; margin: -14px auto 0; padding: 0 14px; }
 
-    /* Stats & Duty Card */
     .duty-card { background: #fff; border-radius: 16px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 14px; border: 1px solid #e5e7eb; }
     .duty-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .duty-head span { font-size: 13px; color: #6b7280; font-weight: 600; }
@@ -48,7 +45,6 @@
     .stat-mini small { font-size: 12px; color: #6b7280; display: block; }
     .stat-mini strong { font-size: 19px; color: #111827; }
 
-    /* Content Cards & Inputs */
     .app-card { background: #fff; border-radius: 18px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); margin-bottom: 16px; border: 1px solid #e5e7eb; }
     .app-card h4 { font-size: 17px; color: #111827; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #f3f4f6; padding-bottom: 10px; }
 
@@ -57,25 +53,21 @@
     .field { width: 100%; padding: 12px 14px; border: 1.5px solid #d1d5db; border-radius: 12px; font-size: 14.5px; background: #f9fafb; outline: none; }
     .field:focus { border-color: var(--primary); background: #fff; }
 
-    /* Camera Upload Box */
     .camera-box { border: 2px dashed #818cf8; background: #eef2ff; border-radius: 14px; padding: 18px; text-align: center; cursor: pointer; position: relative; }
     .camera-box input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
     .camera-box .cam-title { font-weight: 700; color: var(--primary); font-size: 15px; display: block; margin-top: 4px; }
     .camera-box small { color: #6b7280; font-size: 12px; }
     #photoPreview { max-height: 140px; border-radius: 10px; margin-top: 10px; display: none; margin-left: auto; margin-right: auto; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
 
-    /* Verify Checkbox */
     .verify-box { background: #f8fafc; border: 1.5px solid #cbd5e1; padding: 13px; border-radius: 12px; margin: 16px 0; display: flex; align-items: center; gap: 12px; cursor: pointer; }
     .verify-box input { width: 22px; height: 22px; accent-color: var(--primary); cursor: pointer; flex-shrink: 0; }
 
-    /* Buttons */
     .btn { width: 100%; padding: 13px 18px; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; }
     .btn-primary { background: var(--primary); color: #fff; }
     .btn-success { background: var(--success); color: #fff; }
     .btn-danger { background: var(--danger); color: #fff; }
     .btn:disabled { background: #cbd5e1 !important; color: #64748b !important; cursor: not-allowed; }
 
-    /* History Cards */
     .item-card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 14px; padding: 14px; margin-bottom: 10px; }
     .item-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
     .item-title { font-weight: 700; font-size: 15.5px; color: #111827; }
@@ -87,13 +79,12 @@
 
     .pop-photo-btn { background: #eef2ff; color: #4f46e5; border: 1px solid #c7d2fe; padding: 4px 10px; border-radius: 8px; font-size: 12.5px; font-weight: 700; cursor: pointer; }
 
-    /* Bottom Navigation */
     .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #e5e7eb; display: grid; grid-template-columns: repeat(4, 1fr); padding: 6px 8px; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 999; max-width: 600px; margin: 0 auto; border-radius: 18px 18px 0 0; }
     .nav-item { background: none; border: none; padding: 6px 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; color: #6b7280; font-size: 11.5px; font-weight: 600; cursor: pointer; border-radius: 10px; }
     .nav-item span.ico { font-size: 20px; }
     .nav-item.active { color: var(--primary); background: #eef2ff; font-weight: 700; }
 
-    /* ==================== IMAGE POPUP MODAL ==================== */
+    /* Image Popup Modal */
     .img-modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(5px); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 15px; }
     .img-modal-box { position: relative; max-width: 95vw; max-height: 90vh; background: #fff; padding: 12px; border-radius: 16px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); text-align: center; }
     .img-modal-box img { max-width: 100%; max-height: 76vh; border-radius: 10px; object-fit: contain; display: block; margin: 0 auto; }
@@ -104,7 +95,7 @@
 <body>
 
 <!-- ==================== IMAGE POPUP MODAL ==================== -->
-<div id="photoPopupModal" class="img-modal-overlay hidden" onclick="closePhotoPopup(event)">
+<div id="photoPopupModal" class="img-modal-overlay hidden" onclick="closePhotoPopup()">
   <div class="img-modal-box" onclick="event.stopPropagation()">
     <button class="img-modal-close" onclick="closePhotoPopup()">✕</button>
     <img id="popupModalImg" src="" alt="Visit HD Photo">
@@ -146,7 +137,7 @@
     </div>
     <div class="route-pill">
       <span>🎯</span>
-      <div id="empTargetBanner">আজকের রুট নির্দেশনা লোড হচ্ছে...</div>
+      <div id="empTargetBanner">আজকের অটো রুট লোড হচ্ছে...</div>
     </div>
   </div>
 
@@ -204,15 +195,27 @@
         <input type="tel" id="vMobile" class="field" placeholder="01XXXXXXXXX">
       </div>
       <div class="input-box">
-        <label>৪. প্রোপাইটারের ঠিকানা / বাজার *</label>
-        <input type="text" id="vAddress" class="field" placeholder="বাজার বা এলাকার নাম">
+        <label>৪. জেলা / রুট নির্বাচন করুন *</label>
+        <select id="vRouteZone" class="field">
+          <option value="কুষ্টিয়া সদর">কুষ্টিয়া সদর</option>
+          <option value="কুমারখালী / খোকসা">কুমারখালী / খোকসা</option>
+          <option value="ভেড়ামারা / মিরপুর">ভেড়ামারা / মিরপুর</option>
+          <option value="মেহেরপুর / গাংনী">মেহেরপুর / গাংনী</option>
+          <option value="চুয়াডাঙ্গা / আলমডাঙ্গা">চুয়াডাঙ্গা / আলমডাঙ্গা</option>
+          <option value="ঝিনাইদহ / শৈলকুপা">ঝিনাইদহ / শৈলকুপা</option>
+          <option value="অন্যান্য রুট">অন্যান্য রুট</option>
+        </select>
       </div>
       <div class="input-box">
-        <label>৫. পরবর্তী ফলো-আপ তারিখ (ঐচ্ছিক)</label>
+        <label>৫. বাজার বা বিস্তারিত ঠিকানা *</label>
+        <input type="text" id="vAddress" class="field" placeholder="বাজার বা এলাকার নাম লিখুন">
+      </div>
+      <div class="input-box">
+        <label>৬. পরবর্তী ফলো-আপ তারিখ (ঐচ্ছিক)</label>
         <input type="date" id="vFollowUp" class="field">
       </div>
       <div class="input-box">
-        <label>৬. সরাসরি লাইভ ছবি তুলুন (HD Camera) *</label>
+        <label>৭. সরাসরি লাইভ ছবি তুলুন (HD Camera) *</label>
         <div class="camera-box">
           <div style="font-size:28px;">📸</div>
           <span class="cam-title" id="camStatusText">ক্যামেরা ওপেন করতে এখানে ট্যাপ করুন</span>
@@ -222,7 +225,7 @@
         </div>
       </div>
       <div class="input-box">
-        <label>৭. প্রোপাইটারের সঙ্গে আলোচনার মন্তব্য / নোট *</label>
+        <label>৮. প্রোপাইটারের সঙ্গে আলোচনার মন্তব্য / নোট *</label>
         <textarea id="vRemarks" class="field" rows="3" placeholder="কী কথা হলো বা অর্ডার/কালেকশন নোট লিখুন..."></textarea>
       </div>
 
@@ -299,7 +302,6 @@
   let currentUser = null;
   let compressedPhotoBase64 = '';
 
-  // ছবি পপ-আপ (Lightbox) ফাংশন
   function openPhotoPopup(url, title) {
     if (!url) return;
     let displayUrl = url;
@@ -315,6 +317,27 @@
   function closePhotoPopup() {
     document.getElementById('photoPopupModal').classList.add('hidden');
     document.getElementById('popupModalImg').src = '';
+  }
+
+  // সাপ্তাহিক অটো রুটিন থেকে আজকের বারের রুট বের করার ফাংশন
+  function resolveTodayAutoRoute(rawRouteStr) {
+    if (!rawRouteStr) return 'আজকের রুট: নির্ধারিত রুট অনুযায়ী ভিজিট করুন';
+    try {
+      const obj = JSON.parse(rawRouteStr);
+      if (typeof obj === 'object' && obj !== null) {
+        if (obj.special && obj.special.trim() !== '') {
+          return '⚡ আজকের বিশেষ রুট: ' + obj.special;
+        }
+        const dayKeys = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+        const dayNamesBN = ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'];
+        const dIdx = new Date().getDay();
+        const todayRoute = obj[dayKeys[dIdx]];
+        return `আজ (${dayNamesBN[dIdx]})-এর রুট: ` + (todayRoute || 'নির্ধারিত এরিয়া ভিজিট');
+      }
+    } catch (e) {
+      return rawRouteStr;
+    }
+    return rawRouteStr;
   }
 
   window.addEventListener('DOMContentLoaded', () => {
@@ -343,10 +366,7 @@
   }
 
   async function callAPI(payload) {
-    const res = await fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify(payload)
-    });
+    const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
     return await res.json();
   }
 
@@ -385,7 +405,7 @@
   async function loadEmployeeDashboard() {
     const data = await callAPI({ action: 'getEmpData', username: currentUser.username });
     document.getElementById('currentDateText').innerText = 'তারিখ: ' + data.today;
-    document.getElementById('empTargetBanner').innerText = data.assignedRoute || 'আজকের রুট নির্দেশনা।';
+    document.getElementById('empTargetBanner').innerText = resolveTodayAutoRoute(data.assignedRoute);
     document.getElementById('empTodayVisitCount').innerText = data.todayVisitCount + ' টি';
     document.getElementById('empTodayConvAmount').innerText = data.todayConvTotal + ' ৳';
 
@@ -507,21 +527,23 @@
     const shop = document.getElementById('vShop').value.trim();
     const prop = document.getElementById('vProp').value.trim();
     const mobile = document.getElementById('vMobile').value.trim();
-    const address = document.getElementById('vAddress').value.trim();
+    const zone = document.getElementById('vRouteZone').value;
+    const rawAddr = document.getElementById('vAddress').value.trim();
     const remarks = document.getElementById('vRemarks').value.trim();
     const followUp = document.getElementById('vFollowUp').value;
     const gps = document.getElementById('hiddenVisitGPS').value;
 
-    if (!shop || !prop || !mobile || !address || !remarks || !compressedPhotoBase64) {
+    if (!shop || !prop || !mobile || !rawAddr || !remarks || !compressedPhotoBase64) {
       return alert('সবগুলো ঘর পূরণ করুন এবং ক্যামেরা দিয়ে ছবি তুলুন!');
     }
 
+    const fullAddress = `[${zone}] ${rawAddr}`;
     const btn = document.getElementById('btnSubmitVisit');
     btn.disabled = true; btn.innerText = 'HD ছবি আপলোড হচ্ছে...';
 
     const res = await callAPI({
       action: 'submitVisit',
-      payload: { username: currentUser.username, shopName: shop, proprietor: prop, mobile, address, remarks, followUp, imageBase64: compressedPhotoBase64, gps }
+      payload: { username: currentUser.username, shopName: shop, proprietor: prop, mobile, address: fullAddress, remarks, followUp, imageBase64: compressedPhotoBase64, gps }
     });
 
     alert(res.message);

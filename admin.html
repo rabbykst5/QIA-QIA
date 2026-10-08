@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Master Admin Panel - Field Force Tracker</title>
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Interactive Map Library (Leaflet CSS & JS - 100% Free, No API Key Needed) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
@@ -43,21 +42,21 @@
     .b-red { background: #fee2e2; color: #991b1b; }
     .b-yellow { background: #fef9c3; color: #854d0e; }
 
-    /* ==================== POPUP MODALS (PHOTO & ROUTE MAP) ==================== */
+    /* Modals */
     .img-modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(5px); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 20px; }
     .img-modal-box { position: relative; max-width: 90vw; max-height: 90vh; background: #fff; padding: 14px; border-radius: 14px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); text-align: center; }
     .img-modal-box img { max-width: 100%; max-height: 78vh; border-radius: 8px; object-fit: contain; display: block; margin: 0 auto; }
     .img-modal-close { position: absolute; top: -14px; right: -14px; width: 38px; height: 38px; border-radius: 50%; background: #dc2626; color: #fff; border: 3px solid #fff; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; z-index: 1000; }
     .img-modal-caption { margin-top: 10px; font-size: 15px; font-weight: 700; color: #0f172a; }
 
-    /* Route Map Box */
     .map-modal-box { position: relative; width: 95vw; max-width: 950px; background: #fff; padding: 16px; border-radius: 14px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
     #routeLeafletMap { width: 100%; height: 70vh; border-radius: 10px; border: 2px solid #cbd5e1; z-index: 1; }
     .map-legend { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px; }
     .pin-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; background: #f1f5f9; padding: 4px 10px; border-radius: 20px; }
-
-    /* Custom Numbered Markers on Map */
     .custom-pin { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; color: #fff; font-weight: 700; font-size: 13px; border: 2px solid #fff; box-shadow: 0 3px 8px rgba(0,0,0,0.4); }
+
+    .day-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 12px; border-radius: 8px; }
+    .day-box label { color: #1e40af; font-size: 13.5px; }
 
     @media print {
       .topbar, .nav-tabs, .no-print { display: none !important; }
@@ -134,7 +133,7 @@
       <button class="tab-btn" onclick="switchAdmTab('admTabRoutes', this)">🗺️ রুট ও কিলোমিটার সামারি (ম্যাপসহ)</button>
       <button class="tab-btn" onclick="switchAdmTab('admTabAtt', this)">⏰ হাজিরা কন্ট্রোল</button>
       <button class="tab-btn" onclick="switchAdmTab('admTabSalary', this)">📄 মাসিক স্যালারি শিট (PDF)</button>
-      <button class="tab-btn" onclick="switchAdmTab('admTabSettings', this)">⚙️ রুট অ্যাসাইন ও পাসওয়ার্ড</button>
+      <button class="tab-btn" onclick="switchAdmTab('admTabSettings', this)">⚙️ সাপ্তাহিক অটো রুটিন ও পাসওয়ার্ড</button>
     </div>
 
     <!-- Tab 1: Visits -->
@@ -145,7 +144,7 @@
           <thead>
             <tr>
               <th>তারিখ ও সময়</th>
-              <th>দোকান ও ঠিকানা</th>
+              <th>দোকান ও ঠিকানা (রুট)</th>
               <th>প্রোপাইটার ও ১-ক্লিক কল</th>
               <th>মন্তব্য ও ফলো-আপ</th>
               <th>HD ছবি (পপ-আপ) ও ম্যাপ</th>
@@ -177,7 +176,7 @@
       </div>
     </div>
 
-    <!-- Tab 3: Route & KM Summary + Interactive Map Button -->
+    <!-- Tab 3: Route Summary + Map -->
     <div id="admTabRoutes" class="card hidden">
       <h4>🗺️ অটোমেটিক রুট ও কিলোমিটার সামারি (ক্লিক করলেই লাইভ রুট ম্যাপ দেখা যাবে)</h4>
       <div class="table-responsive">
@@ -251,13 +250,47 @@
       </div>
     </div>
 
-    <!-- Tab 6: Settings -->
+    <!-- Tab 6: Auto Weekly Route Plan & Account Settings -->
     <div id="admTabSettings" class="card hidden">
-      <h4>⚙️ কর্মচারীর আজকের রুট অ্যাসাইন, বেসিক স্যালারি ও পাসওয়ার্ড কন্ট্রোল</h4>
-      <div class="form-group">
-        <label>আজকের রুট / টার্গেট নির্দেশনা</label>
-        <input type="text" id="setRoute" class="form-control">
+      <h4>📅 সাপ্তাহিক ফিক্সড রুট প্ল্যান (মাত্র ১ বার সেট করলে প্রতিদিন বার অনুযায়ী অটোমেটিক চেঞ্জ হবে)</h4>
+      <p style="font-size:13px; color:#64748b; margin-bottom:14px;">প্রতিদিন রুট লেখার দরকার নেই। নিচে ৭ দিনের রুট একবার লিখে সেভ করে রাখুন, সিস্টেম প্রতিদিন বার অনুযায়ী কর্মচারীকে অটোমেটিক রুট দেখিয়ে দেবে:</p>
+      
+      <div class="grid-3" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+        <div class="form-group day-box">
+          <label>শনিবার (Saturday)</label>
+          <input type="text" id="rt_sat" class="form-control" placeholder="যেমন: কুষ্টিয়া সদর ও ভাদালিয়া বাজার">
+        </div>
+        <div class="form-group day-box">
+          <label>রবিবার (Sunday)</label>
+          <input type="text" id="rt_sun" class="form-control" placeholder="যেমন: কুমারখালী ও খোকসা">
+        </div>
+        <div class="form-group day-box">
+          <label>সোমবার (Monday)</label>
+          <input type="text" id="rt_mon" class="form-control" placeholder="যেমন: মেহেরপুর ও গাংনী">
+        </div>
+        <div class="form-group day-box">
+          <label>মঙ্গলবার (Tuesday)</label>
+          <input type="text" id="rt_tue" class="form-control" placeholder="যেমন: চুয়াডাঙ্গা ও আলমডাঙ্গা">
+        </div>
+        <div class="form-group day-box">
+          <label>বুধবার (Wednesday)</label>
+          <input type="text" id="rt_wed" class="form-control" placeholder="যেমন: ভেড়ামারা ও মিরপুর">
+        </div>
+        <div class="form-group day-box">
+          <label>বৃহস্পতিবার (Thursday)</label>
+          <input type="text" id="rt_thu" class="form-control" placeholder="যেমন: ঝিনাইদহ ও শৈলকুপা">
+        </div>
+        <div class="form-group day-box">
+          <label>শুক্রবার (Friday - ছুটি/অন্যান্য)</label>
+          <input type="text" id="rt_fri" class="form-control" placeholder="যেমন: সাপ্তাহিক ছুটি / বিশেষ ভিজিট">
+        </div>
+        <div class="form-group day-box" style="background:#fffbeb; border-color:#fde68a;">
+          <label style="color:#b45309;">⚡ আজকের জরুরি স্পেশাল নির্দেশনা (ঐচ্ছিক)</label>
+          <input type="text" id="rt_special" class="form-control" placeholder="খালি রাখলে উপরের সাপ্তাহিক অটো রুটিন চলবে">
+        </div>
       </div>
+
+      <h4 style="margin-top:20px;">🔐 কর্মচারীর একাউন্ট, স্যালারি ও পাসওয়ার্ড কন্ট্রোল</h4>
       <div class="grid-3">
         <div class="form-group">
           <label>কর্মচারীর পাসওয়ার্ড</label>
@@ -275,7 +308,7 @@
           </select>
         </div>
       </div>
-      <button class="btn btn-primary" onclick="saveEmployeeSettings()">💾 সেটিংস আপডেট করুন</button>
+      <button class="btn btn-primary" onclick="saveEmployeeSettings()">💾 সাপ্তাহিক রুটিন ও সেটিংস সেভ করুন</button>
     </div>
   </div>
 </div>
@@ -287,7 +320,6 @@
   let leafletMap = null;
   let routeLayerGroup = null;
 
-  // ১. ছবি পপ-আপ (Lightbox Modal) ফাংশন
   function openPhotoPopup(url, title) {
     if (!url) return;
     let displayUrl = url;
@@ -305,11 +337,9 @@
     document.getElementById('popupModalImg').src = '';
   }
 
-  // ২. নির্দিষ্ট তারিখের সবগুলো GPS পয়েন্ট বের করার হেল্পার
   function getRoutePointsForDate(dateStr, username) {
     if (!adminCache) return [];
     let pts = [];
-
     const att = adminCache.attendance.find(a => a.date === dateStr && (!username || a.username === username));
     if (att && att.startGPS && att.startGPS.includes(',')) {
       pts.push({ type: 'START', badge: 'S', color: '#16a34a', title: 'শুরু (Start Duty)', time: att.startTime, info: 'সকালের হাজিরা পয়েন্ট', gps: att.startGPS.trim() });
@@ -318,15 +348,12 @@
     const dayVisits = adminCache.visits
       .filter(v => v.date === dateStr && (!username || v.username === username) && v.status !== 'Fake' && v.gps && v.gps.includes(','))
       .slice()
-      .reverse(); // সকাল থেকে সন্ধ্যা ক্রমানুসারে সাজানো
+      .reverse();
 
     dayVisits.forEach((v, idx) => {
       pts.push({
-        type: 'VISIT',
-        badge: String(idx + 1),
-        color: '#2563eb',
-        title: `ভিজিট #${idx + 1}: ${v.shop}`,
-        time: v.time,
+        type: 'VISIT', badge: String(idx + 1), color: '#2563eb',
+        title: `ভিজিট #${idx + 1}: ${v.shop}`, time: v.time,
         info: `প্রোপাইটার: ${v.prop} (${v.mobile})<br>ঠিকানা: ${v.address}<br>নোট: ${v.remarks}`,
         gps: v.gps.trim()
       });
@@ -335,11 +362,9 @@
     if (att && att.endGPS && att.endGPS.includes(',')) {
       pts.push({ type: 'END', badge: 'E', color: '#dc2626', title: 'শেষ (End Duty)', time: att.endTime, info: 'সন্ধ্যার ছুটি পয়েন্ট', gps: att.endGPS.trim() });
     }
-
     return pts;
   }
 
-  // গুগল ম্যাপে মাল্টি-স্টপ ডিরেকশন লিংক তৈরি
   function buildGoogleMapsRouteURL(pts) {
     if (!pts || pts.length === 0) return '#';
     if (pts.length === 1) return `https://www.google.com/maps?q=${pts[0].gps}`;
@@ -349,7 +374,6 @@
     return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypoints ? '&waypoints=' + encodeURIComponent(waypoints) : ''}&travelmode=driving`;
   }
 
-  // ৩. লাইভ রুট ম্যাপ পপ-আপ ওপেন করা (Leaflet Interactive Map)
   function openRouteMapPopup(dateStr, username, totalKM) {
     const pts = getRoutePointsForDate(dateStr, username);
     if (pts.length === 0) {
@@ -363,10 +387,7 @@
     setTimeout(() => {
       if (!leafletMap) {
         leafletMap = L.map('routeLeafletMap');
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 19,
-          attribution: '© OpenStreetMap'
-        }).addTo(leafletMap);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(leafletMap);
         routeLayerGroup = L.layerGroup().addTo(leafletMap);
       } else {
         routeLayerGroup.clearLayers();
@@ -379,15 +400,11 @@
         const [lat, lng] = p.gps.split(',').map(Number);
         if (!isNaN(lat) && !isNaN(lng)) {
           latLngs.push([lat, lng]);
-
           const icon = L.divIcon({
             className: '',
             html: `<div class="custom-pin" style="background:${p.color};">${p.badge}</div>`,
-            iconSize: [30, 30],
-            iconAnchor: [15, 15],
-            popupAnchor: [0, -15]
+            iconSize: [30, 30], iconAnchor: [15, 15], popupAnchor: [0, -15]
           });
-
           const marker = L.marker([lat, lng], { icon: icon }).bindPopup(`
             <div style="font-family:'Hind Siliguri',sans-serif; min-width:180px;">
               <strong style="font-size:14.5px; color:${p.color};">${p.title}</strong><br>
@@ -401,14 +418,8 @@
         }
       });
 
-      // পয়েন্টগুলোর মধ্যে লাল রঙের রুট লাইন টানা
       if (latLngs.length > 1) {
-        const polyline = L.polyline(latLngs, {
-          color: '#dc2626',
-          weight: 4,
-          opacity: 0.85,
-          dashArray: '8, 6'
-        });
+        const polyline = L.polyline(latLngs, { color: '#dc2626', weight: 4, opacity: 0.85, dashArray: '8, 6' });
         routeLayerGroup.addLayer(polyline);
         leafletMap.fitBounds(polyline.getBounds(), { padding: [40, 40] });
       } else if (latLngs.length === 1) {
@@ -422,10 +433,7 @@
   }
 
   window.addEventListener('DOMContentLoaded', () => {
-    const saved = localStorage.getItem(ADM_STORAGE_KEY);
-    if (saved) {
-      showAdminUI();
-    }
+    if (localStorage.getItem(ADM_STORAGE_KEY)) showAdminUI();
   });
 
   function showAdminUI() {
@@ -442,10 +450,7 @@
   }
 
   async function callAPI(payload) {
-    const res = await fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify(payload)
-    });
+    const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
     return await res.json();
   }
 
@@ -478,6 +483,22 @@
     btnEl.classList.add('active');
   }
 
+  // সাপ্তাহিক রুটিন পার্স করার হেল্পার
+  function populateWeeklyRouteFields(rawStr) {
+    let plan = { sat: '', sun: '', mon: '', tue: '', wed: '', thu: '', fri: '', special: '' };
+    if (rawStr) {
+      try {
+        const parsed = JSON.parse(rawStr);
+        if (typeof parsed === 'object' && parsed !== null) plan = { ...plan, ...parsed };
+      } catch (e) {
+        plan.special = rawStr;
+      }
+    }
+    ['sat', 'sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'special'].forEach(k => {
+      document.getElementById('rt_' + k).value = plan[k] || '';
+    });
+  }
+
   async function loadAdminData() {
     const data = await callAPI({ action: 'getAdminData' });
     adminCache = data;
@@ -498,7 +519,7 @@
         <td>${v.prop}<br><strong>${v.mobile}</strong><br><a href="tel:${v.mobile}" class="btn btn-success btn-sm" style="margin-top:4px;">📞 Call</a></td>
         <td>${v.remarks}<br><small style="color:#2563eb;">ফলো-আপ: ${v.followUp || '--'}</small></td>
         <td>
-          ${v.photo ? `<button type="button" class="btn btn-primary btn-sm" onclick="openPhotoPopup('${v.photo}', '${safeShop} -${v.prop}')">🖼️ HD ছবি</button>` : ''}
+          ${v.photo ? `<button type="button" class="btn btn-primary btn-sm" onclick="openPhotoPopup('${v.photo}', '${safeShop} - ${v.prop}')">🖼️ HD ছবি</button>` : ''}
           ${v.gps ? `<a href="https://www.google.com/maps?q=${v.gps}" target="_blank" class="btn btn-warning btn-sm">📍 ম্যাপ পিন</a>` : ''}
         </td>
         <td><span class="badge ${v.status === 'Verified' ? 'b-green' : 'b-red'}">${v.status}</span></td>
@@ -533,7 +554,6 @@
       `;
     }).join('');
 
-    // ৩. রুট ও কিলোমিটার সামারি টেবিল + ম্যাপ বাটন
     document.getElementById('admRouteBody').innerHTML = data.routes.map(r => {
       const pts = getRoutePointsForDate(r.date, r.username);
       const gmapUrl = buildGoogleMapsRouteURL(pts);
@@ -570,7 +590,7 @@
 
     const emp = data.users.find(u => u.role === 'employee');
     if (emp) {
-      document.getElementById('setRoute').value = emp.assignedRoute;
+      populateWeeklyRouteFields(emp.assignedRoute);
       document.getElementById('setPass').value = emp.password;
       document.getElementById('setSalary').value = emp.basicSalary;
       document.getElementById('setStatus').value = emp.status;
@@ -612,11 +632,23 @@
   async function saveEmployeeSettings() {
     const emp = adminCache.users.find(u => u.role === 'employee');
     if (!emp) return;
+
+    const weeklyRouteObj = {
+      sat: document.getElementById('rt_sat').value.trim(),
+      sun: document.getElementById('rt_sun').value.trim(),
+      mon: document.getElementById('rt_mon').value.trim(),
+      tue: document.getElementById('rt_tue').value.trim(),
+      wed: document.getElementById('rt_wed').value.trim(),
+      thu: document.getElementById('rt_thu').value.trim(),
+      fri: document.getElementById('rt_fri').value.trim(),
+      special: document.getElementById('rt_special').value.trim()
+    };
+
     const res = await callAPI({
       action: 'updateUser',
       payload: {
         username: emp.username,
-        assignedRoute: document.getElementById('setRoute').value,
+        assignedRoute: JSON.stringify(weeklyRouteObj),
         password: document.getElementById('setPass').value,
         basicSalary: document.getElementById('setSalary').value,
         status: document.getElementById('setStatus').value
