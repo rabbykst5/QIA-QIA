@@ -374,6 +374,7 @@
     return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypoints ? '&waypoints=' + encodeURIComponent(waypoints) : ''}&travelmode=driving`;
   }
 
+  // পিসিতে বা লোকাল ফাইলে ১০০% আনব্লকড Google Maps ও Satellite View ইঞ্জিন
   function openRouteMapPopup(dateStr, username, totalKM) {
     const pts = getRoutePointsForDate(dateStr, username);
     if (pts.length === 0) {
@@ -387,7 +388,20 @@
     setTimeout(() => {
       if (!leafletMap) {
         leafletMap = L.map('routeLeafletMap');
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(leafletMap);
+        
+        // Google Streets & Hybrid Satellite Layers (No 403 Block Ever)
+        const googleStreets = L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+          maxZoom: 20,
+          attribution: '© Google Maps'
+        });
+        const googleHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+          maxZoom: 20,
+          attribution: '© Google Satellite'
+        });
+
+        googleStreets.addTo(leafletMap);
+        L.control.layers({ "🗺️ রোড ম্যাপ (Road Map)": googleStreets, "🛰️ স্যাটেলাইট ভিউ (Satellite)": googleHybrid }).addTo(leafletMap);
+
         routeLayerGroup = L.layerGroup().addTo(leafletMap);
       } else {
         routeLayerGroup.clearLayers();
@@ -419,11 +433,11 @@
       });
 
       if (latLngs.length > 1) {
-        const polyline = L.polyline(latLngs, { color: '#dc2626', weight: 4, opacity: 0.85, dashArray: '8, 6' });
+        const polyline = L.polyline(latLngs, { color: '#dc2626', weight: 4, opacity: 0.9, dashArray: '8, 6' });
         routeLayerGroup.addLayer(polyline);
-        leafletMap.fitBounds(polyline.getBounds(), { padding: [40, 40] });
+        leafletMap.fitBounds(polyline.getBounds(), { padding: [45, 45] });
       } else if (latLngs.length === 1) {
-        leafletMap.setView(latLngs[0], 15);
+        leafletMap.setView(latLngs[0], 16);
       }
     }, 150);
   }
@@ -483,7 +497,6 @@
     btnEl.classList.add('active');
   }
 
-  // সাপ্তাহিক রুটিন পার্স করার হেল্পার
   function populateWeeklyRouteFields(rawStr) {
     let plan = { sat: '', sun: '', mon: '', tue: '', wed: '', thu: '', fri: '', special: '' };
     if (rawStr) {
@@ -519,7 +532,7 @@
         <td>${v.prop}<br><strong>${v.mobile}</strong><br><a href="tel:${v.mobile}" class="btn btn-success btn-sm" style="margin-top:4px;">📞 Call</a></td>
         <td>${v.remarks}<br><small style="color:#2563eb;">ফলো-আপ: ${v.followUp || '--'}</small></td>
         <td>
-          ${v.photo ? `<button type="button" class="btn btn-primary btn-sm" onclick="openPhotoPopup('${v.photo}', '${safeShop} - ${v.prop}')">🖼️ HD ছবি</button>` : ''}
+          ${v.photo ? `<button type="button" class="btn btn-primary btn-sm" onclick="openPhotoPopup('${v.photo}', '${safeShop} -${v.prop}')">🖼️ HD ছবি</button>` : ''}
           ${v.gps ? `<a href="https://www.google.com/maps?q=${v.gps}" target="_blank" class="btn btn-warning btn-sm">📍 ম্যাপ পিন</a>` : ''}
         </td>
         <td><span class="badge ${v.status === 'Verified' ? 'b-green' : 'b-red'}">${v.status}</span></td>
