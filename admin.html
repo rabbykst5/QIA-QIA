@@ -129,13 +129,18 @@
       <button class="menu-item" onclick="switchAdmTab('admTabRoutes', this)"><span>🗺️</span> <span>রুট ও কি.মি. সামারি</span></button>
       <button class="menu-item" onclick="switchAdmTab('admTabAtt', this)"><span>⏰</span> <span>হাজিরা কন্ট্রোল</span></button>
       <button class="menu-item" onclick="switchAdmTab('admTabSalary', this)"><span>📄</span> <span>মাসিক স্যালারি শিট</span></button>
-      <button class="menu-item" onclick="switchAdmTab('admTabSettings', this)"><span>⚙️</span> <span>সাপ্তাহিক রুট ও সেটিংস</span></button>
+      <button class="menu-item" onclick="switchAdmTab('admTabSettings', this)"><span>⚙️</span> <span>কর্মচারী ও রুট সেটিংস</span></button>
     </div>
   </div>
 
   <div class="main-content">
     <div class="topbar no-print">
-      <h3 style="font-size: 18px; font-weight: 700;">ড্যাশবোর্ড কন্ট্রোল রুম</h3>
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <h3 style="font-size: 17px; font-weight: 700;">কন্ট্রোল রুম</h3>
+        <select id="filterEmpSelect" class="form-control" style="width: 180px; padding: 6px 10px;" onchange="renderAdminDataTables()">
+          <option value="ALL">সকল কর্মচারী (All)</option>
+        </select>
+      </div>
       <div style="display: flex; gap: 10px; align-items: center;">
         <button class="btn btn-primary btn-sm" onclick="loadAdminData()">🔄 রিফ্রেশ</button>
         <button class="btn btn-danger btn-sm" onclick="logoutAdmin()">লগআউট</button>
@@ -162,7 +167,7 @@
         <div class="panel-header">🏪 কর্মচারীর দোকান ভিজিট ও ছবি ভেরিফিকেশন</div>
         <div class="table-responsive">
           <table>
-            <thead><tr><th>তারিখ ও সময়</th><th>দোকান ও ঠিকানা</th><th>প্রোপাইটার ও কল</th><th>মন্তব্য ও ফলো-আপ</th><th>HD ছবি ও ম্যাপ</th><th>স্ট্যাটাস</th><th>অ্যাকশন</th></tr></thead>
+            <thead><tr><th>তারিখ ও সময়</th><th>কর্মচারী</th><th>দোকান ও ঠিকানা</th><th>প্রোপাইটার ও কল</th><th>মন্তব্য ও ফলো-আপ</th><th>HD ছবি ও ম্যাপ</th><th>স্ট্যাটাস</th><th>অ্যাকশন</th></tr></thead>
             <tbody id="admVisitBody"></tbody>
           </table>
         </div>
@@ -172,7 +177,7 @@
         <div class="panel-header">💳 যাতায়াত খরচ (Conveyance) অনুমোদন ও কারণ নোট</div>
         <div class="table-responsive">
           <table>
-            <thead><tr><th>তারিখ</th><th>কোথা থেকে ➔ কোথায়</th><th>টাকা</th><th>স্ট্যাটাস</th><th>কন্ট্রোল ও নোট</th></tr></thead>
+            <thead><tr><th>তারিখ</th><th>কর্মচারী</th><th>কোথা থেকে ➔ কোথায়</th><th>টাকা</th><th>স্ট্যাটাস</th><th>কন্ট্রোল ও নোট</th></tr></thead>
             <tbody id="admConvBody"></tbody>
           </table>
         </div>
@@ -182,7 +187,7 @@
         <div class="panel-header">🗺️ অটোমেটিক রুট ও কিলোমিটার সামারি</div>
         <div class="table-responsive">
           <table>
-            <thead><tr><th>তারিখ</th><th>শুরু</th><th>স্টপেজ</th><th>দূরত্ব</th><th>শেষ</th><th>মোট কি.মি.</th><th>ম্যাপ</th></tr></thead>
+            <thead><tr><th>তারিখ</th><th>কর্মচারী</th><th>শুরু</th><th>স্টপেজ</th><th>দূরত্ব</th><th>শেষ</th><th>মোট কি.মি.</th><th>ম্যাপ</th></tr></thead>
             <tbody id="admRouteBody"></tbody>
           </table>
         </div>
@@ -192,7 +197,7 @@
         <div class="panel-header">⏰ হাজিরা কন্ট্রোল</div>
         <div class="table-responsive">
           <table>
-            <thead><tr><th>তারিখ</th><th>শুরু</th><th>শেষ</th><th>ঘণ্টা</th><th>স্ট্যাটাস</th><th>অ্যাকশন</th></tr></thead>
+            <thead><tr><th>তারিখ</th><th>কর্মচারী</th><th>শুরু</th><th>শেষ</th><th>ঘণ্টা</th><th>স্ট্যাটাস</th><th>অ্যাকশন</th></tr></thead>
             <tbody id="admAttBody"></tbody>
           </table>
         </div>
@@ -220,7 +225,23 @@
       </div>
 
       <div id="admTabSettings" class="panel-card hidden">
-        <div class="panel-header">📅 সাপ্তাহিক রুট প্ল্যান ও সেটিংস</div>
+        <div class="panel-header">👥 কর্মচারী তালিকা ও নতুন অ্যাকাউন্ট তৈরি</div>
+        <div style="margin-bottom: 20px;">
+          <label style="font-weight:700; margin-bottom:6px; display:block;">বিদ্যমান কর্মচারী সিলেক্ট করুন:</label>
+          <select id="selectEmpToEdit" class="form-control" style="max-width:300px; margin-bottom:14px;" onchange="fillEmpSettingsForm()">
+            <option value="">-- নতুন কর্মচারী যোগ করুন --</option>
+          </select>
+        </div>
+
+        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 16px;">
+          <div class="form-group"><label>ইউজারনেম (Username)</label><input type="text" id="setEmpUser" class="form-control" placeholder="যেমন: emp2"></div>
+          <div class="form-group"><label>পূর্ণ নাম (Full Name)</label><input type="text" id="setEmpName" class="form-control" placeholder="কর্মচারীর নাম"></div>
+          <div class="form-group"><label>পাসওয়ার্ড</label><input type="text" id="setPass" class="form-control" placeholder="পাসওয়ার্ড"></div>
+          <div class="form-group"><label>মূল বেতন (Basic Salary)</label><input type="number" id="setSalary" class="form-control" placeholder="15000"></div>
+          <div class="form-group"><label>স্ট্যাটাস</label><select id="setStatus" class="form-control"><option value="Active">Active</option><option value="Blocked">Blocked</option></select></div>
+        </div>
+
+        <h4 style="font-size:15px; margin-bottom:10px;">📅 এই কর্মচারীর সাপ্তাহিক রুটিন:</h4>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 20px;">
           <div class="form-group"><label>শনিবার</label><input type="text" id="rt_sat" class="form-control"></div>
           <div class="form-group"><label>রবিবার</label><input type="text" id="rt_sun" class="form-control"></div>
@@ -231,13 +252,7 @@
           <div class="form-group"><label>শুক্রবার</label><input type="text" id="rt_fri" class="form-control"></div>
           <div class="form-group" style="background:#fffbeb; padding:8px; border-radius:8px;"><label style="color:#b45309;">⚡ স্পেশাল রুট</label><input type="text" id="rt_special" class="form-control"></div>
         </div>
-        <div class="panel-header">🔐 একাউন্ট কন্ট্রোল</div>
-        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 16px;">
-          <div class="form-group"><label>পাসওয়ার্ড</label><input type="text" id="setPass" class="form-control"></div>
-          <div class="form-group"><label>মূল বেতন</label><input type="number" id="setSalary" class="form-control"></div>
-          <div class="form-group"><label>স্ট্যাটাস</label><select id="setStatus" class="form-control"><option value="Active">Active</option><option value="Blocked">Blocked</option></select></div>
-        </div>
-        <button class="btn btn-primary" onclick="saveEmployeeSettings()">💾 সেভ করুন</button>
+        <button class="btn btn-primary" onclick="saveEmployeeSettings()">💾 তথ্য ও সেটিংস সেভ করুন</button>
       </div>
 
     </div>
@@ -267,9 +282,9 @@
   function getRoutePointsForDate(dateStr, username) {
     if (!adminCache) return [];
     let pts = [];
-    const att = adminCache.attendance.find(a => a.date === dateStr && (!username || a.username === username));
+    const att = adminCache.attendance.find(a => a.date === dateStr && a.username === username);
     if (att && att.startGPS && att.startGPS.includes(',')) pts.push({ badge: 'S', color: '#16a34a', title: 'শুরু', time: att.startTime, info: 'হাজিরা', gps: att.startGPS.trim() });
-    adminCache.visits.filter(v => v.date === dateStr && (!username || v.username === username) && v.status !== 'Fake' && v.gps && v.gps.includes(',')).slice().reverse().forEach((v, idx) => {
+    adminCache.visits.filter(v => v.date === dateStr && v.username === username && v.status !== 'Fake' && v.gps && v.gps.includes(',')).slice().reverse().forEach((v, idx) => {
       pts.push({ badge: String(idx + 1), color: '#2563eb', title: `ভিজিট #${idx + 1}: ${v.shop}`, time: v.time, info: `${v.prop} (${v.mobile})`, gps: v.gps.trim() });
     });
     if (att && att.endGPS && att.endGPS.includes(',')) pts.push({ badge: 'E', color: '#dc2626', title: 'শেষ', time: att.endTime, info: 'ছুটি', gps: att.endGPS.trim() });
@@ -365,46 +380,69 @@
     btnEl.classList.add('active');
   }
 
-  function populateWeeklyRouteFields(rawStr) {
-    let plan = { sat: '', sun: '', mon: '', tue: '', wed: '', thu: '', fri: '', special: '' };
-    if (rawStr) { try { const p = JSON.parse(rawStr); if (typeof p === 'object') plan = { ...plan, ...p }; } catch (e) { plan.special = rawStr; } }
-    ['sat', 'sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'special'].forEach(k => { document.getElementById('rt_' + k).value = plan[k] || ''; });
-  }
-
   async function loadAdminData() {
+    const btn = document.querySelector('.topbar .btn-primary');
+    if(btn) btn.innerText = 'লোড হচ্ছে...';
     const data = await callAPI({ action: 'getAdminData' });
     adminCache = data;
-    const today = data.today;
+    if(btn) btn.innerText = '🔄 রিফ্রেশ';
 
-    const todayAtt = data.attendance.find(a => a.date === today);
+    // কর্মচারী ড্রপডাউন পপুলেট
+    const employees = data.users.filter(u => u.role === 'employee');
+    const empSelect = document.getElementById('filterEmpSelect');
+    const currentSel = empSelect.value;
+    empSelect.innerHTML = `<option value="ALL">সকল কর্মচারী (All)</option>` + employees.map(e => `<option value="${e.username}">${e.fullName} (${e.username})</option>`).join('');
+    if (currentSel) empSelect.value = currentSel;
+
+    const editSelect = document.getElementById('selectEmpToEdit');
+    editSelect.innerHTML = `<option value="">-- নতুন কর্মচারী যোগ করুন --</option>` + employees.map(e => `<option value="${e.username}">${e.fullName} (${e.username})</option>`).join('');
+
+    renderAdminDataTables();
+  }
+
+  function renderAdminDataTables() {
+    if (!adminCache) return;
+    const today = adminCache.today;
+    const selectedEmp = document.getElementById('filterEmpSelect').value;
+
+    const filteredVisits = adminCache.visits.filter(v => selectedEmp === 'ALL' || v.username === selectedEmp);
+    const filteredConv = adminCache.conveyances.filter(c => selectedEmp === 'ALL' || c.username === selectedEmp);
+    const filteredRoutes = adminCache.routes.filter(r => selectedEmp === 'ALL' || r.username === selectedEmp);
+    const filteredAtt = adminCache.attendance.filter(a => selectedEmp === 'ALL' || a.username === selectedEmp);
+
+    const todayAtt = filteredAtt.find(a => a.date === today);
     document.getElementById('admTodayStatus').innerText = todayAtt ? `${todayAtt.status} (${todayAtt.startTime})` : 'আজ শুরু করেনি';
-    document.getElementById('admTodayVisits').innerText = data.visits.filter(v => v.date === today && v.status !== 'Fake').length + ' টি';
-    const todayRoute = data.routes.find(r => r.date === today);
+    document.getElementById('admTodayVisits').innerText = filteredVisits.filter(v => v.date === today && v.status !== 'Fake').length + ' টি';
+    const todayRoute = filteredRoutes.find(r => r.date === today);
     document.getElementById('admTodayKM').innerText = (todayRoute ? todayRoute.totalKM : '0') + ' কি.মি.';
 
-    document.getElementById('admVisitBody').innerHTML = data.visits.map(v => {
+    document.getElementById('admVisitBody').innerHTML = filteredVisits.length ? filteredVisits.map(v => {
       const safeShop = String(v.shop || '').replace(/'/g, "\\'");
       return `<tr>
         <td>${v.date}<br><small>${v.time}</small></td>
+        <td><strong style="color:var(--primary);">${v.username}</strong></td>
         <td><strong>${v.shop}</strong><br><small>${v.address}</small></td>
         <td>${v.prop}<br><strong>${v.mobile}</strong><br><a href="tel:${v.mobile}" class="btn btn-success btn-sm" style="padding:2px 6px;">📞 Call</a></td>
         <td>${v.remarks}<br><small style="color:var(--primary);">ফলো-আপ: ${v.followUp || '--'}</small></td>
         <td>
-          ${v.photo ? `<button type="button" class="btn btn-primary btn-sm" onclick="openPhotoPopup('${v.photo}', '${safeShop}')" style="padding:4px 6px;">🖼️ ছবি</button>` : ''}
-          ${v.gps ? `<a href="https://www.google.com/maps?q=${v.gps}" target="_blank" class="btn btn-warning btn-sm" style="padding:4px 6px;">📍 ম্যাপ</a>` : ''}
+          <div style="display:flex; gap:4px; flex-wrap:wrap;">
+            ${v.photo ? `<button type="button" class="btn btn-primary btn-sm" onclick="openPhotoPopup('${v.photo}', '${safeShop}')" style="padding:4px 8px;">🖼️ ছবি</button>` : ''}
+            ${v.gps ? `<a href="https://www.google.com/maps?q=${v.gps}" target="_blank" class="btn btn-warning btn-sm" style="padding:4px 8px;">📍 ম্যাপ</a>` : ''}
+          </div>
         </td>
         <td><span class="badge ${v.status === 'Verified' ? 'b-green' : 'b-red'}">${v.status}</span></td>
         <td>
           <div style="display:flex; gap:4px;">
-            <button class="btn btn-warning btn-sm" onclick="changeVisitStatus('${v.id}', '${v.status === 'Verified' ? 'Fake' : 'Verified'}')" style="padding:4px 6px;">${v.status === 'Verified' ? 'Fake' : 'Verify'}</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteVisitRecord('${v.id}')" style="padding:4px 6px;">🗑️</button>
+            <button class="btn btn-warning btn-sm" onclick="changeVisitStatus('${v.id}', '${v.status === 'Verified' ? 'Fake' : 'Verified'}')" style="padding:4px 8px;">${v.status === 'Verified' ? 'Fake' : 'Verify'}</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteVisitRecord('${v.id}')" style="padding:4px 8px;">🗑️</button>
           </div>
         </td>
       </tr>`;
-    }).join('');
+    }).join('') : '<tr><td colspan="8" style="text-align:center;">কোনো ভিজিট পাওয়া যায়নি</td></tr>';
 
-    document.getElementById('admConvBody').innerHTML = data.conveyances.map(c => `<tr>
+    document.getElementById('admConvBody').innerHTML = filteredConv.length ? filteredConv.map(c => `<tr>
       <td>${c.date}<br><small>${c.time}</small></td>
+      <td><strong style="color:var(--primary);">${c.username}</strong></td>
       <td><strong>${c.from} ➔ ${c.to}</strong><br><small>${c.transport}</small></td>
       <td><input type="number" id="amt_${c.id}" value="${c.amount}" class="form-control" style="width:80px; padding:4px;"></td>
       <td><span class="badge ${c.status==='Approved'?'b-green':'b-yellow'}">${c.status}</span><br><small>${c.note || ''}</small></td>
@@ -420,34 +458,55 @@
           <button class="btn btn-primary btn-sm" onclick="updateConvItem('${c.id}')">সেভ</button>
         </div>
       </td>
-    </tr>`).join('');
+    </tr>`).join('') : '<tr><td colspan="6" style="text-align:center;">কোনো খরচ বিল নেই</td></tr>';
 
-    document.getElementById('admRouteBody').innerHTML = data.routes.map(r => {
+    document.getElementById('admRouteBody').innerHTML = filteredRoutes.length ? filteredRoutes.map(r => {
       const pts = getRoutePointsForDate(r.date, r.username);
       return `<tr>
-        <td><strong>${r.date}</strong></td><td>${r.startPoint}</td><td>${r.stops}</td><td>${r.steps}</td><td>${r.endPoint}</td>
+        <td><strong>${r.date}</strong></td>
+        <td><strong style="color:var(--primary);">${r.username}</strong></td>
+        <td>${r.startPoint}</td><td>${r.stops}</td><td>${r.steps}</td><td>${r.endPoint}</td>
         <td><span class="badge b-green">${r.totalKM} কি.মি.</span></td>
         <td><button type="button" class="btn btn-primary btn-sm" onclick="openRouteMapPopup('${r.date}', '${r.username}', '${r.totalKM}')" style="padding:4px 8px;">🗺️ রুট</button></td>
       </tr>`;
-    }).join('');
+    }).join('') : '<tr><td colspan="8" style="text-align:center;">কোনো রুট সামারি নেই</td></tr>';
 
-    document.getElementById('admAttBody').innerHTML = data.attendance.map(a => `<tr>
-      <td><strong>${a.date}</strong></td><td>${a.startTime}</td><td>${a.endTime || '--'}</td><td>${a.hours} ঘণ্টা</td>
+    document.getElementById('admAttBody').innerHTML = filteredAtt.length ? filteredAtt.map(a => `<tr>
+      <td><strong>${a.date}</strong></td>
+      <td><strong style="color:var(--primary);">${a.username}</strong></td>
+      <td>${a.startTime}</td><td>${a.endTime || '--'}</td><td>${a.hours} ঘণ্টা</td>
       <td><span class="badge b-yellow">${a.status}</span></td>
       <td>
         <button class="btn btn-warning btn-sm" onclick="adminForceEndAtt('${a.id}')" style="padding:2px 6px;">ফোর্স ক্লোজ</button>
         <button class="btn btn-danger btn-sm" onclick="adminDeleteAtt('${a.id}')" style="padding:2px 6px;">রিসেট</button>
       </td>
-    </tr>`).join('');
+    </tr>`).join('') : '<tr><td colspan="7" style="text-align:center;">কোনো হাজিরা রেকর্ড নেই</td></tr>';
 
-    const emp = data.users.find(u => u.role === 'employee');
+    generateSalarySheet();
+  }
+
+  function fillEmpSettingsForm() {
+    const username = document.getElementById('selectEmpToEdit').value;
+    if (!username) {
+      document.getElementById('setEmpUser').value = '';
+      document.getElementById('setEmpName').value = '';
+      document.getElementById('setPass').value = '';
+      document.getElementById('setSalary').value = '';
+      ['sat','sun','mon','tue','wed','thu','fri','special'].forEach(k => document.getElementById('rt_' + k).value = '');
+      return;
+    }
+    const emp = adminCache.users.find(u => u.username === username);
     if (emp) {
-      populateWeeklyRouteFields(emp.assignedRoute);
+      document.getElementById('setEmpUser').value = emp.username;
+      document.getElementById('setEmpName').value = emp.fullName;
       document.getElementById('setPass').value = emp.password;
       document.getElementById('setSalary').value = emp.basicSalary;
       document.getElementById('setStatus').value = emp.status;
+
+      let plan = { sat: '', sun: '', mon: '', tue: '', wed: '', thu: '', fri: '', special: '' };
+      try { const p = JSON.parse(emp.assignedRoute); if (typeof p === 'object') plan = { ...plan, ...p }; } catch (e) { plan.special = emp.assignedRoute; }
+      ['sat', 'sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'special'].forEach(k => { document.getElementById('rt_' + k).value = plan[k] || ''; });
     }
-    generateSalarySheet();
   }
 
   async function updateConvItem(id) {
@@ -482,15 +541,28 @@
   }
 
   async function saveEmployeeSettings() {
-    const emp = adminCache.users.find(u => u.role === 'employee');
-    if (!emp) return;
+    const targetUser = document.getElementById('setEmpUser').value.trim();
+    const fullName = document.getElementById('setEmpName').value.trim();
+    const password = document.getElementById('setPass').value.trim();
+    const basicSalary = document.getElementById('setSalary').value;
+    const status = document.getElementById('setStatus').value;
+
+    if (!targetUser || !fullName || !password) return alert('ইউজারনেম, নাম ও পাসওয়ার্ড দিন!');
+
     const weeklyRouteObj = {
       sat: document.getElementById('rt_sat').value.trim(), sun: document.getElementById('rt_sun').value.trim(),
       mon: document.getElementById('rt_mon').value.trim(), tue: document.getElementById('rt_tue').value.trim(),
       wed: document.getElementById('rt_wed').value.trim(), thu: document.getElementById('rt_thu').value.trim(),
       fri: document.getElementById('rt_fri').value.trim(), special: document.getElementById('rt_special').value.trim()
     };
-    const res = await callAPI({ action: 'updateUser', payload: { username: emp.username, assignedRoute: JSON.stringify(weeklyRouteObj), password: document.getElementById('setPass').value, basicSalary: document.getElementById('setSalary').value, status: document.getElementById('setStatus').value } });
+
+    const isExisting = adminCache.users.some(u => u.username === targetUser);
+    const actionType = isExisting ? 'updateUser' : 'addNewEmp';
+
+    const res = await callAPI({
+      action: actionType,
+      payload: { username: targetUser, fullName, password, basicSalary, assignedRoute: JSON.stringify(weeklyRouteObj), status }
+    });
     alert(res.message);
     loadAdminData();
   }
@@ -498,23 +570,26 @@
   function generateSalarySheet() {
     if (!adminCache) return;
     const monthPrefix = document.getElementById('salaryMonthPicker').value;
-    const emp = adminCache.users.find(u => u.role === 'employee') || { fullName: 'কর্মচারী', basicSalary: 0 };
-    const mAtt = adminCache.attendance.filter(a => a.date.startsWith(monthPrefix));
+    const selectedEmp = document.getElementById('filterEmpSelect').value;
+    const targetUsername = selectedEmp === 'ALL' ? (adminCache.users.find(u => u.role === 'employee')?.username || '') : selectedEmp;
+    const emp = adminCache.users.find(u => u.username === targetUsername) || { fullName: 'কর্মচারী', basicSalary: 0 };
+
+    const mAtt = adminCache.attendance.filter(a => a.date.startsWith(monthPrefix) && a.username === targetUsername);
     let totalDays = mAtt.length, totalHours = 0, lateCount = 0, totalVisitsMonth = 0, totalKMMonth = 0, totalApprovedConv = 0;
 
     const rowsHTML = mAtt.slice().reverse().map(a => {
       const d = a.date; const hrs = parseFloat(a.hours || 0); totalHours += hrs;
       if (a.status.includes('Late') || a.status.includes('Early')) lateCount++;
-      const dVisits = adminCache.visits.filter(v => v.date === d && v.status === 'Verified').length; totalVisitsMonth += dVisits;
-      const dRoute = adminCache.routes.find(r => r.date === d); const km = dRoute ? parseFloat(dRoute.totalKM || 0) : 0; totalKMMonth += km;
-      const dConv = adminCache.conveyances.filter(c => c.date === d && c.status === 'Approved').reduce((sum, c) => sum + Number(c.amount || 0), 0); totalApprovedConv += dConv;
+      const dVisits = adminCache.visits.filter(v => v.date === d && v.username === targetUsername && v.status === 'Verified').length; totalVisitsMonth += dVisits;
+      const dRoute = adminCache.routes.find(r => r.date === d && r.username === targetUsername); const km = dRoute ? parseFloat(dRoute.totalKM || 0) : 0; totalKMMonth += km;
+      const dConv = adminCache.conveyances.filter(c => c.date === d && c.username === targetUsername && c.status === 'Approved').reduce((sum, c) => sum + Number(c.amount || 0), 0); totalApprovedConv += dConv;
       return `<tr><td>${d}</td><td>${a.startTime} - ${a.endTime || 'চলমান'}</td><td>${hrs.toFixed(2)}</td><td>${a.status}</td><td>${dVisits} টি</td><td>${km.toFixed(2)} কি.মি.</td><td>${dConv} ৳</td></tr>`;
     }).join('');
 
     const basic = Number(emp.basicSalary || 0);
     const netPayable = basic + totalApprovedConv;
 
-    document.getElementById('salSubHeader').innerText = `কর্মচারী: ${emp.fullName} | মাস: ${monthPrefix}`;
+    document.getElementById('salSubHeader').innerText = `কর্মচারী: ${emp.fullName} (${targetUsername}) | মাস: ${monthPrefix}`;
     document.getElementById('salSummaryBoxes').innerHTML = `
       <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-info"><span>উপস্থিতি</span><strong>${totalDays} দিন (${totalHours.toFixed(1)} ঘ.)</strong></div></div>
       <div class="stat-card orange"><div class="stat-icon">⚠️</div><div class="stat-info"><span>Late / Early</span><strong>${lateCount} দিন</strong></div></div>
@@ -523,7 +598,7 @@
       <div class="stat-card green"><div class="stat-icon">🚌</div><div class="stat-info"><span>বিল</span><strong>${totalApprovedConv} ৳</strong></div></div>
       <div class="stat-card" style="border-left-color:var(--success);"><div class="stat-icon">💰</div><div class="stat-info"><span>প্রদেয়</span><strong style="color:var(--success);">${netPayable} ৳</strong></div></div>
     `;
-    document.getElementById('salTableBody').innerHTML = rowsHTML || '<tr><td colspan="7" style="text-align:center;">কোনো রেকর্ড নেই</td></tr>';
+    document.getElementById('salTableBody').innerHTML = rowsHTML || '<tr><td colspan="7" style="text-align:center;">এই কর্মচারীর কোনো রেকর্ড নেই</td></tr>';
   }
 </script>
 </body>
