@@ -379,7 +379,7 @@
         currentVisitGPS = pos.coords.latitude.toFixed(6) + ',' + pos.coords.longitude.toFixed(6);
         document.getElementById('hiddenVisitGPS').value = currentVisitGPS;
         document.getElementById('gpsStatusText').innerText = `📍 GPS: ${currentVisitGPS}`;
-        document.getElementById('camStatusText').innerText = '✔ GPS কনফার্ম! ছবি তুলতে ট্যাপ করুন';
+        document.getElementById('camStatusText').innerText = '✔ ID! ছবি তুলতে ট্যাপ করুন';
       },
       err => {
         alert('⚠️ GPS লোকেশন পাওয়া যায়নি! দয়া করে ফোনের Location/GPS অন করুন।');
